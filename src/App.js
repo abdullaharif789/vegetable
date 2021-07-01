@@ -1,25 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+// in src/App.js
+import * as React from "react";
+import { Admin, Resource } from "react-admin";
 
-function App() {
+import authProvider from "./providers/authProvider";
+import dataProvider from "./providers/dataProvider";
+import layout from "./layout";
+import dashboard from "./dashboard";
+import items from "./items";
+import inventories from "./inventories";
+import parties from "./parties";
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Admin
+      layout={layout}
+      dashboard={dashboard}
+      dataProvider={dataProvider}
+      authProvider={authProvider}
+    >
+      <Resource {...parties} />
+      <Resource {...items} />
+      <Resource {...inventories} />
+    </Admin>
   );
 }
-
-export default App;
