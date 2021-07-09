@@ -18,24 +18,55 @@ import {
   useRefresh,
   useRedirect,
   NumberInput,
+  RadioButtonGroupInput,
+  Filter,
+  useDataProvider,
+  DeleteButton,
 } from "react-admin";
-import { InputAdornment } from "@material-ui/core";
+import {
+  InputAdornment,
+  TextField as MaterialTextField,
+} from "@material-ui/core";
+import DynamicFeedIcon from "@material-ui/icons/DynamicFeed";
 const InventoryTitle = ({ record }) => {
   //return <span>Inventory {record ? ` - ${record.name}` : ""}</span>;
   return <span>Inventory</span>;
 };
+const InventoryFilter = (props) => (
+  <Filter {...props}>
+    <TextInput
+      label="Search Inventory"
+      source="q"
+      alwaysOn
+      variant="outlined"
+      fullWidth
+    />
+    {/* <ReferenceInput
+      label="Items"
+      source="item_id"
+      reference="items"
+      allowEmpty
+      variant="outlined"
+    >
+      <SelectInput optionText="name" />
+    </ReferenceInput> */}
+  </Filter>
+);
 const InventoryList = (props) => {
   return (
-    <List {...props}>
+    <List
+      {...props}
+      // filters={<InventoryFilter />}
+    >
       <Datagrid rowClick="show">
-        <TextField source="id" />
         <ReferenceField source="item_id" reference="items">
           <TextField source="name" />
         </ReferenceField>
-        <TextField source="buying_price" label="Buying Price(£)" />
-        <TextField source="selling_price" label="Selling Price(£)" />
+        <TextField source="buying_price" label="Buying Price(€)" />
+        <TextField source="selling_price" label="Selling Price(€)" />
         <TextField source="unit" label="Units" />
         <TextField source="date" />
+        <DeleteButton label="" />
       </Datagrid>
     </List>
   );
@@ -54,21 +85,39 @@ const InventoryCreate = (props) => {
   const notify = useNotify();
   const refresh = useRefresh();
   const redirect = useRedirect();
-
+  const [choices, setChoices] = React.useState([]);
+  const [newIndex, setNewIndex] = React.useState(0);
+  const dataProvider = useDataProvider();
   const onSuccess = () => {
-    alert("onSuccess");
-    // notify(`Inventory Saved.`);
-    // redirect("/products");
-    // refresh();
+    notify(`Inventory addedd successfully.`);
+    redirect("/inventories");
+    refresh();
+  };
+  const loadSellingPrice = (item_id) => {
+    dataProvider
+      .getListSimple("inventories", { item_id })
+      .then(({ data }) => {
+        const newChoices = data.map((item, index) => ({
+          id: parseFloat(item.selling_price),
+          name: `€ ${item.selling_price} - ${item.date}`,
+          value: parseFloat(item.selling_price),
+        }));
+        setChoices(newChoices);
+        setNewIndex(newChoices.length);
+      })
+      .catch((error) => {});
+  };
+  const addSellingPrice = (newSellingPrice) => {
+    var temp = [...choices];
+    temp[newIndex] = {
+      id: newSellingPrice,
+      name: `€ ${newSellingPrice ? newSellingPrice : 0} - Today`,
+      value: newSellingPrice,
+    };
+    setChoices(temp);
   };
   return (
-    <Create
-      {...props}
-      onSuccess={onSuccess}
-      onFailure={() => {
-        alert("onFailure");
-      }}
-    >
+    <Create {...props} onSuccess={onSuccess}>
       <SimpleForm>
         <ReferenceInput
           source="item_id"
@@ -76,6 +125,7 @@ const InventoryCreate = (props) => {
           fullWidth
           validate={[required()]}
           variant="outlined"
+          onChange={(event) => loadSellingPrice(event.target.value)}
         >
           <SelectInput optionText="name" />
         </ReferenceInput>
@@ -90,7 +140,23 @@ const InventoryCreate = (props) => {
             startAdornment: <InputAdornment position="start">€</InputAdornment>,
           }}
         />
-        <NumberInput
+        <MaterialTextField
+          fullWidth
+          placeholder="150"
+          label="Selling Price"
+          variant="outlined"
+          size="small"
+          type="number"
+          required
+          onChange={(event) => addSellingPrice(parseFloat(event.target.value))}
+          InputProps={{
+            startAdornment: <InputAdornment position="start">€</InputAdornment>,
+          }}
+          style={{
+            marginBottom: 20,
+          }}
+        />
+        {/* <NumberInput
           source="selling_price"
           fullWidth
           placeholder="150"
@@ -100,7 +166,8 @@ const InventoryCreate = (props) => {
           InputProps={{
             startAdornment: <InputAdornment position="start">€</InputAdornment>,
           }}
-        />
+          onChange={(event) => addSellingPrice(parseFloat(event.target.value))}
+        /> */}
         <NumberInput
           source="unit"
           fullWidth
@@ -108,7 +175,19 @@ const InventoryCreate = (props) => {
           label="Units"
           variant="outlined"
           validate={[required()]}
+          InputProps={{
+            startAdornment: <InputAdornment position="start">=</InputAdornment>,
+          }}
         />
+        {choices.length > 0 && (
+          <RadioButtonGroupInput
+            label="Today's Selling Price"
+            source="selling_price"
+            choices={choices}
+            validate={[required()]}
+            row={false}
+          />
+        )}
       </SimpleForm>
     </Create>
   );
@@ -120,8 +199,8 @@ const InventoryShow = (props) => (
       <ReferenceField source="item_id" reference="items">
         <TextField source="name" />
       </ReferenceField>
-      <TextField source="buying_price" label="Buying Price(£)" />
-      <TextField source="selling_price" label="Selling Price(£)" />
+      <TextField source="buying_price" label="Buying Price(€)" />
+      <TextField source="selling_price" label="Selling Price(€)" />
       <TextField source="units" />
       <TextField source="date" />
     </SimpleShowLayout>

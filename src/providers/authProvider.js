@@ -70,7 +70,7 @@ export default {
     return Promise.resolve({
       id: token.token,
       fullName: token.name,
-      avatar: "https://randomuser.me/api/portraits/men/40.jpg",
+      avatar: "https://randomuser.me/api/portraits/men/1.jpg",
     });
   },
 };

@@ -11,12 +11,16 @@ import {
   Show,
   Create,
   SimpleShowLayout,
+  useNotify,
+  useRefresh,
+  useRedirect,
   required,
+  ImageField,
 } from "react-admin";
 import PersonIcon from "@material-ui/icons/Person";
 import { useMediaQuery } from "@material-ui/core";
 const PartyTitle = ({ record }) => {
-  return <span>Party {record ? ` - ${record.name}` : ""}</span>;
+  return <span>Parties {record ? ` - ${record.name}` : ""}</span>;
 };
 const PartyList = (props) => {
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down("md"));
@@ -29,7 +33,12 @@ const PartyList = (props) => {
         />
       ) : (
         <Datagrid rowClick="show">
-          <TextField source="id" />
+          <ImageField
+            source="avatar"
+            className="img-round img-50"
+            title="Party image"
+            label="Avatar"
+          />
           <TextField source="name" />
           <EmailField source="email" />
           <TextField source="business_name" />
@@ -62,14 +71,23 @@ const PartyShow = (props) => (
   </Show>
 );
 const PartyCreate = (props) => {
+  const notify = useNotify();
+  const refresh = useRefresh();
+  const redirect = useRedirect();
+  const onSuccess = () => {
+    notify(`Party addedd successfully.`);
+    redirect("/parties");
+    refresh();
+  };
   return (
-    <Create {...props}>
+    <Create {...props} onSuccess={onSuccess}>
       <SimpleForm>
         <TextInput
           source="name"
           fullWidth
           variant="outlined"
           validate={required()}
+          value="Abdullah"
         />
         <TextInput
           source="email"
@@ -91,7 +109,7 @@ const PartyCreate = (props) => {
           variant="outlined"
           validate={required()}
           multiline
-          rows={3}
+          rows={2}
         />
         <TextInput
           label="Contact Number"
@@ -108,7 +126,7 @@ export default {
   list: PartyList,
   show: PartyShow,
   create: PartyCreate,
-  edit: PartyEdit,
+  // edit: PartyEdit,
   icon: PersonIcon,
   name: "parties",
 };

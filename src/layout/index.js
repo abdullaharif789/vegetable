@@ -81,6 +81,14 @@ export default (props) => {
           backgroundColor: "#d7d7d7",
         },
       },
+      MuiDrawer: {
+        root: {
+          backgroundColor: "rgba(0, 0, 0, 0.04)",
+          marginRight: 10,
+          borderBottom: `10px solid ${app.colorOne}`,
+          paddingRight: 10,
+        },
+      },
       MuiFilledInput: {
         root: {
           backgroundColor: "rgba(0, 0, 0, 0.04)",

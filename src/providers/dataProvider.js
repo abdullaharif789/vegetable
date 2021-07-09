@@ -27,7 +27,6 @@ export default {
 
   getOne: (resource, params) => {
     const url = `${apiUrl}/${resource}/${params.id}`;
-    console.log(url);
     return httpClient(url).then(({ json }) => ({
       data: json,
     }));
@@ -83,6 +82,7 @@ export default {
       console.log(params.data.image.image);
       return Promise.resolve(console.log(params.data.image));
     } else {
+      console.log(params.data);
       return httpClient(`${apiUrl}/${resource}`, {
         method: "POST",
         body: JSON.stringify(params.data),
@@ -101,8 +101,17 @@ export default {
     const query = {
       filter: JSON.stringify({ id: params.ids }),
     };
-    return httpClient(`${apiUrl}/${resource}?${stringify(query)}`, {
+    const url = `${apiUrl}/${resource}?${stringify(query)}`;
+    return httpClient(url, {
       method: "DELETE",
     }).then(({ json }) => ({ data: json }));
+  },
+  getListSimple: async (resource, params) => {
+    const url = `${apiUrl}/${resource}?${stringify(params)}`;
+    return httpClient(url).then(({ json }) => {
+      return {
+        data: json,
+      };
+    });
   },
 };

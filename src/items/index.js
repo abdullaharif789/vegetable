@@ -14,6 +14,9 @@ import {
   Show,
   SimpleShowLayout,
   required,
+  ReferenceField,
+  ReferenceInput,
+  SelectInput,
 } from "react-admin";
 import KitchenIcon from "@material-ui/icons/Kitchen";
 const ItemTitle = ({ record }) => {
@@ -25,6 +28,9 @@ export const ItemList = (props) => {
       <Datagrid rowClick="edit">
         <TextField source="id" />
         <TextField source="name" />
+        <ReferenceField source="category_id" reference="categories">
+          <TextField source="name" />
+        </ReferenceField>
         <TextField source="added" />
         <ImageField
           source="image"
@@ -39,7 +45,12 @@ export const ItemEdit = (props) => {
   return (
     <Edit {...props} title={<ItemTitle />}>
       <SimpleForm>
-        <TextInput source="name" fullWidth validate={[required()]} />
+        <TextInput
+          source="name"
+          fullWidth
+          validate={[required()]}
+          variant="outlined"
+        />
         <ImageField source="image" className="img-round" />
       </SimpleForm>
     </Edit>
@@ -56,6 +67,15 @@ export const ItemCreate = (props) => {
           autoFocus
           variant="outlined"
         />
+        <ReferenceInput
+          source="category_id"
+          reference="categories"
+          fullWidth
+          validate={[required()]}
+          variant="outlined"
+        >
+          <SelectInput optionText="name" />
+        </ReferenceInput>
         <ImageInput source="image" accept="image/*">
           <ImageField source="image" title="title" />
         </ImageInput>
