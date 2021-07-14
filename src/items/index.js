@@ -17,6 +17,10 @@ import {
   ReferenceField,
   ReferenceInput,
   SelectInput,
+  useNotify,
+  useRefresh,
+  useRedirect,
+  DateField,
 } from "react-admin";
 import KitchenIcon from "@material-ui/icons/Kitchen";
 const ItemTitle = ({ record }) => {
@@ -24,26 +28,34 @@ const ItemTitle = ({ record }) => {
 };
 export const ItemList = (props) => {
   return (
-    <List {...props}>
+    <List {...props} bulkActionButtons={false}>
       <Datagrid rowClick="edit">
-        <TextField source="id" />
-        <TextField source="name" />
-        <ReferenceField source="category_id" reference="categories">
-          <TextField source="name" />
-        </ReferenceField>
-        <TextField source="added" />
         <ImageField
           source="image"
           className="img-round img-50"
           title="Item image"
         />
+        <TextField source="name" />
+        <ReferenceField source="category_id" reference="categories">
+          <TextField source="name" />
+        </ReferenceField>
+        <DateField source="added" showTime />
       </Datagrid>
     </List>
   );
 };
 export const ItemEdit = (props) => {
+  const refresh = useRefresh();
+  const notify = useNotify();
   return (
-    <Edit {...props} title={<ItemTitle />}>
+    <Edit
+      {...props}
+      title={<ItemTitle />}
+      onFailure={(data) => {
+        notify(data.body, "error");
+        refresh();
+      }}
+    >
       <SimpleForm>
         <TextInput
           source="name"
@@ -51,14 +63,36 @@ export const ItemEdit = (props) => {
           validate={[required()]}
           variant="outlined"
         />
-        <ImageField source="image" className="img-round" />
+        <ReferenceInput
+          source="category_id"
+          reference="categories"
+          fullWidth
+          validate={[required()]}
+          variant="outlined"
+        >
+          <SelectInput optionText="name" />
+        </ReferenceInput>
       </SimpleForm>
     </Edit>
   );
 };
 export const ItemCreate = (props) => {
+  const notify = useNotify();
+  const refresh = useRefresh();
+  const redirect = useRedirect();
+  const onSuccess = () => {
+    notify(`Item added successfully.`);
+    redirect("/items");
+    refresh();
+  };
   return (
-    <Create {...props}>
+    <Create
+      {...props}
+      onSuccess={onSuccess}
+      onFailure={(data) => {
+        notify(data.body, "error");
+      }}
+    >
       <SimpleForm>
         <TextInput
           source="name"
@@ -76,9 +110,6 @@ export const ItemCreate = (props) => {
         >
           <SelectInput optionText="name" />
         </ReferenceInput>
-        <ImageInput source="image" accept="image/*">
-          <ImageField source="image" title="title" />
-        </ImageInput>
       </SimpleForm>
     </Create>
   );
@@ -88,6 +119,10 @@ export const ItemShow = (props) => (
     <SimpleShowLayout>
       <TextField source="id" />
       <TextField source="name" />
+      <ReferenceField source="category_id" reference="categories">
+        <TextField source="name" />
+      </ReferenceField>
+      <DateField source="added" showTime />
       <ImageField source="image" className="img-round" alt="item image" />
     </SimpleShowLayout>
   </Show>

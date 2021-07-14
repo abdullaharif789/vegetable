@@ -44,7 +44,12 @@ const CustomAppBar = (props) => {
         className={classes.title}
         id="react-admin-title"
       ></Typography>
-      {/* <Logo /> */}
+      <img
+        src="./logo.png"
+        style={{
+          width: 55,
+        }}
+      />
       <span className={classes.spacer} />
     </AppBar>
   );

@@ -1,11 +1,8 @@
 import * as React from "react";
 import { Layout, Sidebar } from "react-admin";
+import { app } from "../contants";
 import AppBar from "./AppBar";
 const CustomSidebar = (props) => <Sidebar {...props} />;
-const app = {
-  colorOne: "#775CD9",
-  colorTwo: "#AE9EFD",
-};
 export default (props) => {
   const theme = {
     palette: {

@@ -15,6 +15,7 @@ import {
   useNotify,
   useRefresh,
   useRedirect,
+  DeleteButton,
 } from "react-admin";
 import CategoryIcon from "@material-ui/icons/Category";
 const CategoryTitle = ({ record }) => {
@@ -22,17 +23,27 @@ const CategoryTitle = ({ record }) => {
 };
 export const CategoryList = (props) => {
   return (
-    <List {...props}>
+    <List {...props} bulkActionButtons={false}>
       <Datagrid rowClick="edit">
         <TextField source="id" />
         <TextField source="name" />
+        <DeleteButton />
       </Datagrid>
     </List>
   );
 };
 export const CategoryEdit = (props) => {
+  const refresh = useRefresh();
+  const notify = useNotify();
   return (
-    <Edit {...props} title={<CategoryTitle />}>
+    <Edit
+      {...props}
+      title={<CategoryTitle />}
+      onFailure={(data) => {
+        notify(data.body, "error");
+        refresh();
+      }}
+    >
       <SimpleForm>
         <TextInput
           source="name"
@@ -54,7 +65,13 @@ export const CategoryCreate = (props) => {
     refresh();
   };
   return (
-    <Create {...props} onSuccess={onSuccess}>
+    <Create
+      {...props}
+      onSuccess={onSuccess}
+      onFailure={(data) => {
+        notify(data.body, "error");
+      }}
+    >
       <SimpleForm>
         <TextInput
           source="name"

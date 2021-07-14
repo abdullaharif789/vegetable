@@ -28,6 +28,7 @@ import {
   TextField as MaterialTextField,
 } from "@material-ui/core";
 import DynamicFeedIcon from "@material-ui/icons/DynamicFeed";
+import { app } from "../contants";
 const InventoryTitle = ({ record }) => {
   //return <span>Inventory {record ? ` - ${record.name}` : ""}</span>;
   return <span>Inventory</span>;
@@ -57,13 +58,20 @@ const InventoryList = (props) => {
     <List
       {...props}
       // filters={<InventoryFilter />}
+      bulkActionButtons={false}
     >
       <Datagrid rowClick="show">
         <ReferenceField source="item_id" reference="items">
           <TextField source="name" />
         </ReferenceField>
-        <TextField source="buying_price" label="Buying Price(€)" />
-        <TextField source="selling_price" label="Selling Price(€)" />
+        <TextField
+          source="buying_price"
+          label={`Buying Price(${app.currencySymbol})`}
+        />
+        <TextField
+          source="selling_price"
+          label={`Selling Price(${app.currencySymbol})`}
+        />
         <TextField source="unit" label="Units" />
         <TextField source="date" />
         <DeleteButton label="" />
@@ -137,7 +145,11 @@ const InventoryCreate = (props) => {
           label="Buying Price"
           variant="outlined"
           InputProps={{
-            startAdornment: <InputAdornment position="start">€</InputAdornment>,
+            startAdornment: (
+              <InputAdornment position="start">
+                {app.currencySymbol}
+              </InputAdornment>
+            ),
           }}
         />
         <MaterialTextField
@@ -150,24 +162,16 @@ const InventoryCreate = (props) => {
           required
           onChange={(event) => addSellingPrice(parseFloat(event.target.value))}
           InputProps={{
-            startAdornment: <InputAdornment position="start">€</InputAdornment>,
+            startAdornment: (
+              <InputAdornment position="start">
+                {app.currencySymbol}
+              </InputAdornment>
+            ),
           }}
           style={{
             marginBottom: 20,
           }}
         />
-        {/* <NumberInput
-          source="selling_price"
-          fullWidth
-          placeholder="150"
-          validate={[required()]}
-          label="Selling Price"
-          variant="outlined"
-          InputProps={{
-            startAdornment: <InputAdornment position="start">€</InputAdornment>,
-          }}
-          onChange={(event) => addSellingPrice(parseFloat(event.target.value))}
-        /> */}
         <NumberInput
           source="unit"
           fullWidth
@@ -199,9 +203,15 @@ const InventoryShow = (props) => (
       <ReferenceField source="item_id" reference="items">
         <TextField source="name" />
       </ReferenceField>
-      <TextField source="buying_price" label="Buying Price(€)" />
-      <TextField source="selling_price" label="Selling Price(€)" />
-      <TextField source="units" />
+      <TextField
+        source="buying_price"
+        label={`Buying Price(${app.currencySymbol})`}
+      />
+      <TextField
+        source="selling_price"
+        label={`Selling Price(${app.currencySymbol})`}
+      />
+      <TextField source="unit" />
       <TextField source="date" />
     </SimpleShowLayout>
   </Show>
@@ -210,7 +220,7 @@ export default {
   list: InventoryList,
   create: InventoryCreate,
   show: InventoryShow,
-  edit: InventoryEdit,
+  // edit: InventoryEdit,
   options: {
     label: "Inventory",
   },

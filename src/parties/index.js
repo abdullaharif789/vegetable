@@ -16,6 +16,7 @@ import {
   useRedirect,
   required,
   ImageField,
+  DeleteButton,
 } from "react-admin";
 import PersonIcon from "@material-ui/icons/Person";
 import { useMediaQuery } from "@material-ui/core";
@@ -25,40 +26,33 @@ const PartyTitle = ({ record }) => {
 const PartyList = (props) => {
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down("md"));
   return (
-    <List {...props}>
-      {isSmall ? (
+    <List {...props} bulkActionButtons={false}>
+      {/* {isSmall ? (
         <SimpleList
           primaryText={(record) => record.name}
           secondaryText={(record) => `${record.email}`}
+          rowClick="edit"
         />
-      ) : (
-        <Datagrid rowClick="show">
-          <ImageField
-            source="avatar"
-            className="img-round img-50"
-            title="Party image"
-            label="Avatar"
-          />
-          <TextField source="name" />
-          <EmailField source="email" />
-          <TextField source="business_name" />
-          <TextField source="address" />
-          <TextField source="contact_number" />
-        </Datagrid>
-      )}
+      ) : ( */}
+      <Datagrid rowClick="edit">
+        <ImageField
+          source="avatar"
+          className="img-round img-50"
+          title="Party image"
+          label="Avatar"
+        />
+        <TextField source="name" />
+        <EmailField source="email" />
+        <TextField source="business_name" />
+        <TextField source="address" />
+        <TextField source="contact_number" />
+        <DeleteButton label="" />
+      </Datagrid>
+      {/* )} */}
     </List>
   );
 };
-const PartyEdit = (props) => {
-  return (
-    <Edit {...props} title={<PartyTitle />}>
-      <SimpleForm>
-        <TextInput source="name" fullWidth />
-        <TextInput source="email" fullWidth disabled />
-      </SimpleForm>
-    </Edit>
-  );
-};
+
 const PartyShow = (props) => (
   <Show {...props} title={<PartyTitle />}>
     <SimpleShowLayout>
@@ -70,6 +64,56 @@ const PartyShow = (props) => (
     </SimpleShowLayout>
   </Show>
 );
+const PartyEdit = (props) => {
+  const notify = useNotify();
+  const refresh = useRefresh();
+  const redirect = useRedirect();
+  const onSuccess = () => {
+    notify(`Party updated successfully.`);
+    redirect("/parties");
+    refresh();
+  };
+  return (
+    <Edit
+      {...props}
+      title={<PartyTitle />}
+      onFailure={(data) => {
+        notify(data.body, "error");
+        refresh();
+      }}
+      // onSuccess={(data) => {
+      //   console.log("Success", data);
+      //   redirect("/parties");
+      //   refresh();
+      // }}
+    >
+      <SimpleForm>
+        <TextInput
+          label="Business Name"
+          source="business_name"
+          fullWidth
+          variant="outlined"
+          validate={required()}
+        />
+        <TextInput
+          source="address"
+          fullWidth
+          variant="outlined"
+          validate={required()}
+          multiline
+          rows={2}
+        />
+        <TextInput
+          label="Contact Number"
+          source="contact_number"
+          fullWidth
+          variant="outlined"
+          validate={required()}
+        />
+      </SimpleForm>
+    </Edit>
+  );
+};
 const PartyCreate = (props) => {
   const notify = useNotify();
   const refresh = useRefresh();
@@ -80,7 +124,13 @@ const PartyCreate = (props) => {
     refresh();
   };
   return (
-    <Create {...props} onSuccess={onSuccess}>
+    <Create
+      {...props}
+      onSuccess={onSuccess}
+      onFailure={(data) => {
+        notify(data.body, "error");
+      }}
+    >
       <SimpleForm>
         <TextInput
           source="name"
@@ -126,7 +176,7 @@ export default {
   list: PartyList,
   show: PartyShow,
   create: PartyCreate,
-  // edit: PartyEdit,
+  edit: PartyEdit,
   icon: PersonIcon,
   name: "parties",
 };

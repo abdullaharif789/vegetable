@@ -24,7 +24,6 @@ export default {
   },
   // called when the user clicks on the logout button
   logout: () => {
-    localStorage.removeItem("auth");
     if (localStorage.getItem("auth")) {
       const request = new Request(app.api + "logout", {
         method: "GET",
@@ -41,10 +40,13 @@ export default {
           }
           return response.json();
         })
-        .then(() => {})
+        .then(() => {
+          localStorage.removeItem("auth");
+          return Promise.resolve();
+        })
         .catch(() => {});
     }
-    Promise.resolve();
+    return Promise.resolve();
   },
   // called when the API returns an error
   checkError: ({ status }) => {
