@@ -4,7 +4,7 @@ import { AppBar, UserMenu, MenuItemLink, useTranslate } from "react-admin";
 import Typography from "@material-ui/core/Typography";
 import SettingsIcon from "@material-ui/icons/Settings";
 import { makeStyles } from "@material-ui/core/styles";
-
+import logo from "./logo.png";
 const useStyles = makeStyles({
   title: {
     flex: 1,
@@ -45,7 +45,7 @@ const CustomAppBar = (props) => {
         id="react-admin-title"
       ></Typography>
       <img
-        src="./logo.png"
+        src={logo}
         style={{
           width: 55,
         }}

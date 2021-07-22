@@ -21,15 +21,24 @@ import {
   useRefresh,
   useRedirect,
   DateField,
+  Toolbar,
+  SaveButton,
+  DeleteButton,
+  EditButton,
 } from "react-admin";
 import KitchenIcon from "@material-ui/icons/Kitchen";
 const ItemTitle = ({ record }) => {
   return <span>Item {record ? ` - ${record.name}` : ""}</span>;
 };
+const UserEditToolbar = (props) => (
+  <Toolbar {...props}>
+    <SaveButton {...props} label="Update Item" />
+  </Toolbar>
+);
 export const ItemList = (props) => {
   return (
     <List {...props} bulkActionButtons={false}>
-      <Datagrid rowClick="edit">
+      <Datagrid rowClick="show">
         <ImageField
           source="image"
           className="img-round img-50"
@@ -40,6 +49,7 @@ export const ItemList = (props) => {
           <TextField source="name" />
         </ReferenceField>
         <DateField source="added" showTime />
+        <EditButton />
       </Datagrid>
     </List>
   );
@@ -56,7 +66,7 @@ export const ItemEdit = (props) => {
         refresh();
       }}
     >
-      <SimpleForm>
+      <SimpleForm toolbar={<UserEditToolbar />}>
         <TextInput
           source="name"
           fullWidth

@@ -2,6 +2,7 @@ import * as React from "react";
 import { Layout, Sidebar } from "react-admin";
 import { app } from "../contants";
 import AppBar from "./AppBar";
+
 const CustomSidebar = (props) => <Sidebar {...props} />;
 export default (props) => {
   const theme = {
@@ -10,8 +11,8 @@ export default (props) => {
         main: app.colorOne,
       },
       secondary: {
-        light: app.colorTwo,
         main: app.colorOne,
+        light: app.colorTwo,
         dark: "#001064",
         contrastText: "#fff",
       },

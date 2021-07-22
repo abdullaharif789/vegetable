@@ -17,12 +17,21 @@ import {
   required,
   ImageField,
   DeleteButton,
+  Toolbar,
+  SaveButton,
+  EditButton,
+  NumberInput,
 } from "react-admin";
 import PersonIcon from "@material-ui/icons/Person";
 import { useMediaQuery } from "@material-ui/core";
 const PartyTitle = ({ record }) => {
   return <span>Parties {record ? ` - ${record.name}` : ""}</span>;
 };
+const UserEditToolbar = (props) => (
+  <Toolbar {...props}>
+    <SaveButton {...props} label="Update Party" />
+  </Toolbar>
+);
 const PartyList = (props) => {
   const isSmall = useMediaQuery((theme) => theme.breakpoints.down("md"));
   return (
@@ -34,7 +43,7 @@ const PartyList = (props) => {
           rowClick="edit"
         />
       ) : ( */}
-      <Datagrid rowClick="edit">
+      <Datagrid rowClick="show">
         <ImageField
           source="avatar"
           className="img-round img-50"
@@ -46,7 +55,7 @@ const PartyList = (props) => {
         <TextField source="business_name" />
         <TextField source="address" />
         <TextField source="contact_number" />
-        <DeleteButton label="" />
+        <EditButton />
       </Datagrid>
       {/* )} */}
     </List>
@@ -87,7 +96,7 @@ const PartyEdit = (props) => {
       //   refresh();
       // }}
     >
-      <SimpleForm>
+      <SimpleForm toolbar={<UserEditToolbar />}>
         <TextInput
           label="Business Name"
           source="business_name"
@@ -161,7 +170,7 @@ const PartyCreate = (props) => {
           multiline
           rows={2}
         />
-        <TextInput
+        <NumberInput
           label="Contact Number"
           source="contact_number"
           fullWidth

@@ -22,6 +22,8 @@ import {
   Filter,
   useDataProvider,
   DeleteButton,
+  DateField,
+  DateInput,
 } from "react-admin";
 import {
   InputAdornment,
@@ -35,30 +37,21 @@ const InventoryTitle = ({ record }) => {
 };
 const InventoryFilter = (props) => (
   <Filter {...props}>
-    <TextInput
-      label="Search Inventory"
-      source="q"
+    <DateInput
+      source="created_at"
+      label="Select Date"
+      variant="outlined"
       alwaysOn
-      variant="outlined"
-      fullWidth
     />
-    {/* <ReferenceInput
-      label="Items"
-      source="item_id"
-      reference="items"
-      allowEmpty
-      variant="outlined"
-    >
-      <SelectInput optionText="name" />
-    </ReferenceInput> */}
   </Filter>
 );
 const InventoryList = (props) => {
   return (
     <List
       {...props}
-      // filters={<InventoryFilter />}
+      filters={<InventoryFilter />}
       bulkActionButtons={false}
+      sort={{ field: "id", order: "desc" }}
     >
       <Datagrid rowClick="show">
         <ReferenceField source="item_id" reference="items">
@@ -73,8 +66,8 @@ const InventoryList = (props) => {
           label={`Selling Price(${app.currencySymbol})`}
         />
         <TextField source="unit" label="Units" />
-        <TextField source="date" />
-        <DeleteButton label="" />
+        <DateField source="date" showTime />
+        {/* <DeleteButton label="" /> */}
       </Datagrid>
     </List>
   );
@@ -212,7 +205,7 @@ const InventoryShow = (props) => (
         label={`Selling Price(${app.currencySymbol})`}
       />
       <TextField source="unit" />
-      <TextField source="date" />
+      <DateField source="date" showTime />
     </SimpleShowLayout>
   </Show>
 );

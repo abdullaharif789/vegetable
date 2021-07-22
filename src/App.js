@@ -1,7 +1,7 @@
 // in src/App.js
 import * as React from "react";
 import { Admin, Resource } from "react-admin";
-import zlFetch from "zl-fetch";
+
 import authProvider from "./providers/authProvider";
 import dataProvider from "./providers/dataProvider";
 
@@ -14,6 +14,8 @@ import inventories from "./inventories";
 import parties from "./parties";
 import categories from "./categories";
 import orders from "./orders";
+import invoices from "./invoices";
+import reports from "./reports";
 
 export default function App() {
   return (
@@ -29,6 +31,8 @@ export default function App() {
       <Resource {...items} />
       <Resource {...inventories} />
       <Resource {...orders} />
+      <Resource {...invoices} />
+      <Resource {...reports} />
     </Admin>
   );
 }

@@ -16,18 +16,26 @@ import {
   useRefresh,
   useRedirect,
   DeleteButton,
+  Toolbar,
+  SaveButton,
+  EditButton,
 } from "react-admin";
 import CategoryIcon from "@material-ui/icons/Category";
 const CategoryTitle = ({ record }) => {
   return <span>Category {record ? ` - ${record.name}` : ""}</span>;
 };
+const UserEditToolbar = (props) => (
+  <Toolbar {...props}>
+    <SaveButton {...props} label="Update Category" />
+  </Toolbar>
+);
 export const CategoryList = (props) => {
   return (
     <List {...props} bulkActionButtons={false}>
-      <Datagrid rowClick="edit">
-        <TextField source="id" />
+      <Datagrid rowClick="show">
+        {/* <TextField source="id" /> */}
         <TextField source="name" />
-        <DeleteButton />
+        <EditButton />
       </Datagrid>
     </List>
   );
@@ -44,7 +52,7 @@ export const CategoryEdit = (props) => {
         refresh();
       }}
     >
-      <SimpleForm>
+      <SimpleForm toolbar={<UserEditToolbar />}>
         <TextInput
           source="name"
           fullWidth

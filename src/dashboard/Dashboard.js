@@ -14,7 +14,7 @@ import { app } from "../contants";
 
 import NewOrders from "./NewOrders";
 import NewCustomers from "./NewCustomers";
-//   import PendingOrders from "./PendingOrders";
+import PendingOrders from "./PendingOrders";
 //   import PendingReviews from "./PendingReviews";
 
 import OrderChart from "./OrderChart";
@@ -48,13 +48,18 @@ const styles = {
   leftCol: { flex: 1, marginRight: "0.5em" },
   rightCol: { flex: 1, marginLeft: "0.5em" },
   singleCol: { marginTop: "1em", marginBottom: "1em" },
+  topZeroMargin: { marginTop: "0em", marginBottom: "1em" },
 };
 
 const Spacer = () => <span style={{ width: "1em" }} />;
 const VerticalSpacer = () => <span style={{ height: "1em" }} />;
 
 const Dashboard = () => {
-  const [state, setState] = useState({ revenue: 0, recentOrders: [] });
+  const [state, setState] = useState({
+    revenue: app.currencySymbol + "0.00",
+    recentOrders: [],
+    newOrders: "0",
+  });
   const version = useVersion();
   const dataProvider = useDataProvider();
   const isXSmall = useMediaQuery((theme) => theme.breakpoints.down("xs"));
@@ -68,17 +73,18 @@ const Dashboard = () => {
       pagination: { page: 1, perPage: 50 },
     });
     const aggregations = recentOrders
-      // .filter((order) => order.status == "Initiated")
+      .filter(
+        (order) => order.status == "Completed" || order.status == "Initiated"
+      )
       .reduce(
         (stats, order) => {
-          // if (order.status == "Initiated") {
-          stats.revenue += parseFloat(order.total);
-          stats.newOrders++;
-          stats.pendingOrders.push(order);
-          // }
-          // if (order.status === "Initiated") {
-          //   stats.pendingOrders.push(order);
-          // }
+          if (order.status == "Completed") {
+            stats.revenue += parseFloat(order.total);
+          }
+          if (order.status === "Initiated") {
+            stats.newOrders++;
+            stats.pendingOrders.push(order);
+          }
           return stats;
         },
         {
@@ -87,28 +93,31 @@ const Dashboard = () => {
           pendingOrders: [],
         }
       );
+
     setState((state) => ({
       ...state,
       recentOrders,
+      newOrders: aggregations.newOrders ? aggregations.newOrders : "0",
       revenue: aggregations.revenue.toLocaleString(undefined, {
         style: "currency",
         currency: app.currencyCode,
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
       }),
       // nbNewOrders: aggregations.newOrders,
-      // pendingOrders: aggregations.pendingOrders,
+      pendingOrders: aggregations.pendingOrders,
     }));
-    // const { data: customers } = (await dataProvider.getMany)("parties", {
-    //   ids: aggregations.pendingOrders.map((order) => order.customer_id),
-    // });
-    // setState((state) => ({
-    //   ...state,
-    //   pendingOrdersCustomers: customers.reduce((prev, customer) => {
-    //     prev[customer.id] = customer; // eslint-disable-line no-param-reassign
-    //     return prev;
-    //   }, {}),
-    // }));
+    // console.log(aggregations.pendingOrders);
+    const { data: customers } = await dataProvider.getMany("parties", {
+      ids: aggregations.pendingOrders.map((order) => order.party_id),
+    });
+    setState((state) => ({
+      ...state,
+      pendingOrdersCustomers: customers.reduce((prev, customer) => {
+        prev[customer.id] = customer; // eslint-disable-line no-param-reassign
+        return prev;
+      }, {}),
+    }));
   }, [dataProvider]);
 
   // const fetchReviews = useCallback(async () => {
@@ -152,13 +161,14 @@ const Dashboard = () => {
     pendingReviewsCustomers,
     revenue,
     recentOrders,
+    newOrders,
   } = state;
   return isXSmall ? (
     <div>
       <div style={styles.flexColumn}>
         <MonthlyRevenue value={revenue} />
         <VerticalSpacer />
-        <NewOrders value={recentOrders ? recentOrders.length : 0} />
+        <NewOrders value={newOrders} />
         <VerticalSpacer />
         {/* <PendingOrders
           orders={pendingOrders}
@@ -171,16 +181,16 @@ const Dashboard = () => {
       <div style={styles.flex}>
         <MonthlyRevenue value={revenue} />
         <Spacer />
-        <NewOrders value={recentOrders ? recentOrders.length : 0} />
+        <NewOrders value={newOrders} />
       </div>
       <div style={styles.singleCol}>
         <OrderChart orders={recentOrders} />
       </div>
       <div style={styles.singleCol}>
-        {/* <PendingOrders
+        <PendingOrders
           orders={pendingOrders}
           customers={pendingOrdersCustomers}
-        /> */}
+        />
       </div>
     </div>
   ) : (
@@ -190,7 +200,7 @@ const Dashboard = () => {
           <div style={styles.flex}>
             <MonthlyRevenue value={revenue} />
             <Spacer />
-            <NewOrders value={recentOrders ? recentOrders.length : 0} />
+            <NewOrders value={newOrders} />
           </div>
           <div style={styles.singleCol}>
             <OrderChart orders={recentOrders} />
@@ -203,14 +213,20 @@ const Dashboard = () => {
           </div>
         </div>
         <div style={styles.rightCol}>
-          <div style={styles.flex}>
+          <div style={styles.topZeroMargin}>
             {/* <PendingReviews
               nb={nbPendingReviews}
               reviews={pendingReviews}
               customers={pendingReviewsCustomers}
             /> */}
-            <Spacer />
             <NewCustomers />
+          </div>
+          <div style={styles.singleCol}>
+            <Spacer />
+            <PendingOrders
+              orders={pendingOrders}
+              customers={pendingOrdersCustomers}
+            />
           </div>
         </div>
       </div>

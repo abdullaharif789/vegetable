@@ -22,7 +22,7 @@ const dateFormatter = (date) => new Date(date).toLocaleDateString();
 
 const aggregateOrdersByDay = (orders) =>
   orders
-    // .filter((order) => order.status !== "cancelled")
+    .filter((order) => order.status == "Completed")
     .reduce((acc, curr) => {
       const day = moment(curr.created_at).format("YYYY-MM-DD");
       if (!acc[day]) {

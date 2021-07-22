@@ -62,7 +62,7 @@ const NewCustomers = () => {
                 <ListItemAvatar>
                   <Avatar src={`${record.avatar}`} />
                 </ListItemAvatar>
-                <ListItemText primary={`${record.name}`} />
+                <ListItemText primary={`${record.business_name}`} />
               </ListItem>
             ))
           : null}
