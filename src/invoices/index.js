@@ -8,6 +8,7 @@ import {
   DateInput,
   Filter,
   TextInput,
+  EditButton,
 } from "react-admin";
 import ReactToPrint from "react-to-print";
 import PagesIcon from "@material-ui/icons/Pages";

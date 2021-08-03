@@ -3,13 +3,10 @@ import {
   List,
   Datagrid,
   TextField,
-  SimpleList,
-  EmailField,
   Edit,
   SimpleForm,
   TextInput,
   Create,
-  ImageInput,
   ImageField,
   Show,
   SimpleShowLayout,
@@ -23,8 +20,10 @@ import {
   DateField,
   Toolbar,
   SaveButton,
-  DeleteButton,
   EditButton,
+  BooleanField,
+  RadioButtonGroupInput,
+  ImageInput,
 } from "react-admin";
 import KitchenIcon from "@material-ui/icons/Kitchen";
 const ItemTitle = ({ record }) => {
@@ -49,6 +48,7 @@ export const ItemList = (props) => {
           <TextField source="name" />
         </ReferenceField>
         <DateField source="added" showTime />
+        <BooleanField source="tax_boolean" label="20% VAT" />
         <EditButton />
       </Datagrid>
     </List>
@@ -60,6 +60,7 @@ export const ItemEdit = (props) => {
   return (
     <Edit
       {...props}
+      undoable={false}
       title={<ItemTitle />}
       onFailure={(data) => {
         notify(data.body, "error");
@@ -82,6 +83,22 @@ export const ItemEdit = (props) => {
         >
           <SelectInput optionText="name" />
         </ReferenceInput>
+        <RadioButtonGroupInput
+          required
+          source="tax"
+          label="20% VAT"
+          choices={[
+            { id: "yes", name: "Yes" },
+            { id: "no", name: "No" },
+          ]}
+        />
+        <ImageInput
+          source="image"
+          accept="image/png, image/jpg, image/jpeg"
+          maxSize={5000000}
+        >
+          <ImageField source="image" />
+        </ImageInput>
       </SimpleForm>
     </Edit>
   );
@@ -110,6 +127,7 @@ export const ItemCreate = (props) => {
           placeholder="Potato"
           autoFocus
           variant="outlined"
+          validate={[required()]}
         />
         <ReferenceInput
           source="category_id"
@@ -120,6 +138,22 @@ export const ItemCreate = (props) => {
         >
           <SelectInput optionText="name" />
         </ReferenceInput>
+        <RadioButtonGroupInput
+          required
+          source="tax"
+          label="20% VAT"
+          choices={[
+            { id: "yes", name: "Yes" },
+            { id: "no", name: "No" },
+          ]}
+        />
+        <ImageInput
+          source="image"
+          accept="image/png, image/jpg, image/jpeg"
+          maxSize={5000000}
+        >
+          <ImageField source="image" />
+        </ImageInput>
       </SimpleForm>
     </Create>
   );

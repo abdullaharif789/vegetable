@@ -18,7 +18,8 @@ export default {
       .then((auth) => {
         localStorage.setItem("auth", JSON.stringify(auth));
       })
-      .catch(() => {
+      .catch((error) => {
+        console.log(error);
         throw new Error("Invalid credentials.");
       });
   },
@@ -70,6 +71,7 @@ export default {
     if (localStorage.getItem("auth"))
       token = JSON.parse(localStorage.getItem("auth"));
     return Promise.resolve({
+      user_id: token.user_id,
       id: token.token,
       fullName: token.name,
       avatar: "https://randomuser.me/api/portraits/men/1.jpg",

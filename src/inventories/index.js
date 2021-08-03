@@ -21,9 +21,12 @@ import {
   RadioButtonGroupInput,
   Filter,
   useDataProvider,
-  DeleteButton,
+  EditButton,
   DateField,
   DateInput,
+  BooleanField,
+  Toolbar,
+  SaveButton,
 } from "react-admin";
 import {
   InputAdornment,
@@ -35,6 +38,11 @@ const InventoryTitle = ({ record }) => {
   //return <span>Inventory {record ? ` - ${record.name}` : ""}</span>;
   return <span>Inventory</span>;
 };
+const UserEditToolbar = (props) => (
+  <Toolbar {...props}>
+    <SaveButton {...props} label="Update Inventory" />
+  </Toolbar>
+);
 const InventoryFilter = (props) => (
   <Filter {...props}>
     <DateInput
@@ -43,6 +51,14 @@ const InventoryFilter = (props) => (
       variant="outlined"
       alwaysOn
     />
+    <ReferenceInput
+      source="item_id"
+      reference="items"
+      alwaysOn
+      variant="outlined"
+    >
+      <SelectInput optionText="name" />
+    </ReferenceInput>
   </Filter>
 );
 const InventoryList = (props) => {
@@ -53,7 +69,7 @@ const InventoryList = (props) => {
       bulkActionButtons={false}
       sort={{ field: "id", order: "desc" }}
     >
-      <Datagrid rowClick="show">
+      <Datagrid rowClick="edit">
         <ReferenceField source="item_id" reference="items">
           <TextField source="name" />
         </ReferenceField>
@@ -65,19 +81,115 @@ const InventoryList = (props) => {
           source="selling_price"
           label={`Selling Price(${app.currencySymbol})`}
         />
-        <TextField source="unit" label="Units" />
+        <TextField source="unit" label="Total Units" />
+        <TextField source="remaining_unit" label="Remaining Units" />
+        <BooleanField source="tax_available" label="20% VAT" sortable={false} />
+        <BooleanField source="active" label="Price on App" sortable={false} />
         <DateField source="date" showTime />
-        {/* <DeleteButton label="" /> */}
       </Datagrid>
     </List>
   );
 };
+
 const InventoryEdit = (props) => {
+  const [choices, setChoices] = React.useState([]);
+  const [newIndex, setNewIndex] = React.useState(0);
+  const dataProvider = useDataProvider();
+
+  const loadSellingPrice = (item_id) => {
+    dataProvider
+      .getListSimple("inventories", { item_id })
+      .then(({ data }) => {
+        const newChoices = data.map((item, index) => ({
+          id: parseFloat(item.selling_price),
+          name: `€ ${item.selling_price} - ${item.date}`,
+          value: parseFloat(item.selling_price),
+        }));
+        setChoices(newChoices);
+        setNewIndex(newChoices.length);
+      })
+      .catch((error) => {});
+  };
+  const addSellingPrice = (newSellingPrice) => {
+    var temp = [...choices];
+    temp[newIndex] = {
+      id: newSellingPrice,
+      name: `€ ${newSellingPrice ? newSellingPrice : 0} - Today`,
+      value: newSellingPrice,
+    };
+    setChoices(temp);
+  };
+  React.useEffect(() => {
+    dataProvider
+      .getOne("inventories", { id: props.id })
+      .then(({ data }) => {
+        loadSellingPrice(data.item_id);
+      })
+      .catch((error) => {});
+  }, []);
   return (
-    <Edit {...props} title={<InventoryTitle />}>
-      <SimpleForm>
-        <TextInput source="name" fullWidth />
-        <ImageField source="image" className="img-round" />
+    <Edit {...props} undoable={false}>
+      <SimpleForm toolbar={<UserEditToolbar />}>
+        <ReferenceInput
+          source="item_id"
+          reference="items"
+          fullWidth
+          validate={[required()]}
+          variant="outlined"
+          onChange={(event) => loadSellingPrice(event.target.value)}
+        >
+          <SelectInput optionText="name" />
+        </ReferenceInput>
+        <NumberInput
+          source="buying_price"
+          InputProps={{
+            inputProps: {
+              max: 100,
+              min: 10,
+            },
+          }}
+          fullWidth
+          placeholder="100"
+          validate={[required()]}
+          label="Buying Price"
+          variant="outlined"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                {app.currencySymbol}
+              </InputAdornment>
+            ),
+          }}
+        />
+        <MaterialTextField
+          fullWidth
+          placeholder="150"
+          label="Selling Price"
+          variant="outlined"
+          size="small"
+          type="number"
+          required
+          onChange={(event) => addSellingPrice(parseFloat(event.target.value))}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                {app.currencySymbol}
+              </InputAdornment>
+            ),
+          }}
+          style={{
+            marginBottom: 20,
+          }}
+        />
+        {choices.length > 0 && (
+          <RadioButtonGroupInput
+            label="Today's Selling Price"
+            source="selling_price"
+            choices={choices}
+            validate={[required()]}
+            row={false}
+          />
+        )}
       </SimpleForm>
     </Edit>
   );
@@ -213,7 +325,7 @@ export default {
   list: InventoryList,
   create: InventoryCreate,
   show: InventoryShow,
-  // edit: InventoryEdit,
+  edit: InventoryEdit,
   options: {
     label: "Inventory",
   },

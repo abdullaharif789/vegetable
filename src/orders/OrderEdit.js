@@ -20,7 +20,6 @@ import {
   TableHead,
   TableRow,
 } from "@material-ui/core";
-import PropTypes from "prop-types";
 import { app } from "../contants";
 import axios from "axios";
 const OrderTitle = ({ record }) => {
@@ -37,6 +36,7 @@ const classes = {
   invoices: { margin: "10px 0" },
 };
 const Cart = (props) => {
+  var totalWithOutTax = 0;
   return (
     <Table size="small">
       <TableHead>
@@ -49,39 +49,45 @@ const Cart = (props) => {
             Unit Price({app.currencySymbol})
           </TableCell>
           <TableCell style={classes.rightAlignedCell} align="right">
+            20% VAT({app.currencySymbol})
+          </TableCell>
+          <TableCell style={classes.rightAlignedCell} align="right">
             Total({app.currencySymbol})
           </TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
-        {props.record.cart.map((item, index) => (
-          <TableRow key={index}>
-            <TableCell>
-              <Link to={`/items/${item.item_id}/show`} target="_blank">
-                {item.title}
-              </Link>
-            </TableCell>
-            <TableCell align="right">{item.quantity}</TableCell>
-            <TableCell align="right">{item.price}</TableCell>
-            <TableCell align="right">
-              <strong>{item.total}</strong>
-            </TableCell>
-          </TableRow>
-        ))}
+        {props.record.cart.map((item, index) => {
+          totalWithOutTax += parseFloat(item.total);
+          return (
+            <TableRow key={index}>
+              <TableCell>
+                <Link to={`/items/${item.item_id}/show`} target="_blank">
+                  {item.title}
+                </Link>
+              </TableCell>
+              <TableCell align="right">{item.quantity}</TableCell>
+              <TableCell align="right">{item.price}</TableCell>
+              <TableCell align="right">{item.tax}</TableCell>
+              <TableCell align="right">
+                <strong>{item.total}</strong>
+              </TableCell>
+            </TableRow>
+          );
+        })}
         <TableRow>
           <TableCell></TableCell>
           <TableCell align="right"></TableCell>
-          <TableCell align="right">
-            <strong>20% VAT({app.currencySymbol})</strong>
-          </TableCell>
+          <TableCell align="right"></TableCell>
           <TableCell align="right">
             <strong>{props.record.total_tax}</strong>
           </TableCell>
+          <TableCell align="right">
+            <strong>{totalWithOutTax.toFixed(2)}</strong>
+          </TableCell>
         </TableRow>
         <TableRow>
-          <TableCell></TableCell>
-          <TableCell align="right"></TableCell>
-          <TableCell align="right">
+          <TableCell align="right" colSpan={4}>
             <strong>Total({app.currencySymbol})</strong>
           </TableCell>
           <TableCell align="right">
@@ -104,38 +110,13 @@ class OrderEdit extends Component {
       const status = result.data.status;
       const choices = [
         {
-          id: "Initiated",
-          name: "Initiated",
-          disabled:
-            status == "Cancelled" || status == "Completed" ? true : false,
-        },
-        {
           id: "Progress",
           name: "Progress",
-          disabled:
-            status == "Cancelled" || status == "Completed" ? true : false,
-        },
-        {
-          id: "Delivered",
-          name: "Delivered",
-          disabled:
-            status == "Cancelled" || status == "Completed" ? true : false,
+          disabled: status == "Completed" ? true : false,
         },
         {
           id: "Completed",
           name: "Completed",
-          disabled:
-            status == "Cancelled" ||
-            status == "Initiated" ||
-            status == "Progress" ||
-            status == "Delivered"
-              ? true
-              : false,
-        },
-        {
-          id: "Cancelled",
-          name: "Cancelled",
-          disabled: status == "Completed" ? true : false,
         },
       ];
       this.setState({ choices });
@@ -147,7 +128,7 @@ class OrderEdit extends Component {
   render() {
     return (
       <>
-        <Edit {...this.props} title={<OrderTitle />}>
+        <Edit {...this.props} title={<OrderTitle />} undoable={false}>
           <SimpleForm toolbar={<UserEditToolbar />}>
             <TextField
               source="order_code"

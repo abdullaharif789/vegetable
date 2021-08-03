@@ -5,7 +5,7 @@ import zlFetch from "zl-fetch";
 const apiUrl = app.api;
 const httpClient = fetchUtils.fetchJson;
 
-export default {
+const dataProvider = {
   getList: async (resource, params) => {
     const { page, perPage } = params.pagination;
     const { field, order } = params.sort;
@@ -15,7 +15,6 @@ export default {
       filter: JSON.stringify(params.filter),
     };
     const url = `${apiUrl}${resource}?${stringify(query)}`;
-    console.log(url);
     return httpClient(url).then(({ headers, json }) => {
       const total = headers.get("content-range")
         ? parseInt(headers.get("content-range").split("/").pop(), 10)
@@ -72,25 +71,6 @@ export default {
     }).then(({ json }) => ({ data: json }));
   },
 
-  create: (resource, params) => {
-    return zlFetch(`${apiUrl}${resource}`, {
-      method: "POST",
-      body: params.data,
-    }).then((response) => ({
-      data: { ...params.data, id: response.id },
-    }));
-  },
-
-  update: (resource, params) => {
-    const url = `${apiUrl}${resource}/${params.id}`;
-    return zlFetch(url, {
-      method: "PUT",
-      body: params.data,
-    }).then((response) => ({
-      data: response.body,
-    }));
-  },
-
   delete: (resource, params) =>
     httpClient(`${apiUrl}${resource}/${params.id}`, {
       method: "DELETE",
@@ -107,10 +87,87 @@ export default {
   },
   getListSimple: async (resource, params) => {
     const url = `${apiUrl}${resource}?${stringify(params)}`;
+    console.log(url);
     return httpClient(url).then(({ json }) => {
       return {
         data: json,
       };
     });
   },
+  create: (resource, params) => {
+    return zlFetch(`${apiUrl}${resource}`, {
+      method: "POST",
+      body: params.data,
+    }).then((response) => {
+      return {
+        data: { ...params.data, id: response.id },
+      };
+    });
+  },
+
+  update: (resource, params) => {
+    const url = `${apiUrl}${resource}/${params.id}`;
+    return zlFetch(url, {
+      method: "PUT",
+      body: params.data,
+    }).then((response) => {
+      console.log(response.body);
+      return {
+        data: response.body,
+      };
+    });
+  },
 };
+
+export default {
+  ...dataProvider,
+  update: (resource, params) => {
+    if (!params.data.image || resource !== "items") {
+      return dataProvider.update(resource, params);
+    } else {
+      var image = params.data.image.rawFile ? params.data.image : null;
+      if (image) {
+        return convertFileToBase64(image).then((image) => {
+          return dataProvider.update(resource, {
+            ...params,
+            data: {
+              ...params.data,
+              image,
+            },
+          });
+        });
+      } else {
+        return dataProvider.update(resource, {
+          ...params,
+          data: {
+            ...params.data,
+          },
+        });
+      }
+    }
+  },
+  create: (resource, params) => {
+    if (!params.data.image || resource !== "items") {
+      return dataProvider.create(resource, params);
+    } else {
+      var image = params.data.image;
+      return convertFileToBase64(image).then((image) => {
+        return dataProvider.create(resource, {
+          ...params,
+          data: {
+            ...params.data,
+            image,
+          },
+        });
+      });
+    }
+  },
+};
+
+const convertFileToBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file.rawFile);
+  });

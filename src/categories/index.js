@@ -46,9 +46,11 @@ export const CategoryEdit = (props) => {
   return (
     <Edit
       {...props}
+      undoable={false}
       title={<CategoryTitle />}
       onFailure={(data) => {
         notify(data.body, "error");
+
         refresh();
       }}
     >

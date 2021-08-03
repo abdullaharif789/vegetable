@@ -72,27 +72,23 @@ const Dashboard = () => {
       sort: { field: "created_at", order: "DESC" },
       pagination: { page: 1, perPage: 50 },
     });
-    const aggregations = recentOrders
-      .filter(
-        (order) => order.status == "Completed" || order.status == "Initiated"
-      )
-      .reduce(
-        (stats, order) => {
-          if (order.status == "Completed") {
-            stats.revenue += parseFloat(order.total);
-          }
-          if (order.status === "Initiated") {
-            stats.newOrders++;
-            stats.pendingOrders.push(order);
-          }
-          return stats;
-        },
-        {
-          revenue: 0,
-          newOrders: 0,
-          pendingOrders: [],
+    const aggregations = recentOrders.reduce(
+      (stats, order) => {
+        if (order.status == "Completed") {
+          stats.revenue += parseFloat(order.total);
         }
-      );
+        if (order.status === "Progress") {
+          stats.newOrders++;
+          stats.pendingOrders.push(order);
+        }
+        return stats;
+      },
+      {
+        revenue: 0,
+        newOrders: 0,
+        pendingOrders: [],
+      }
+    );
 
     setState((state) => ({
       ...state,

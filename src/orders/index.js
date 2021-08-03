@@ -33,34 +33,24 @@ const OrderFilter = (props) => (
       variant="outlined"
       fullWidth
     />
-    <DateInput source="created_at" label="Date" variant="outlined" />
     <SelectInput
+      alwaysOn
       choices={[
-        {
-          id: "Initiated",
-          name: "Initiated",
-        },
         {
           id: "Progress",
           name: "Progress",
         },
-        {
-          id: "Delivered",
-          name: "Delivered",
-        },
+
         {
           id: "Completed",
           name: "Completed",
-        },
-        {
-          id: "Cancelled",
-          name: "Cancelled",
         },
       ]}
       source="status"
       label="Status"
       variant="outlined"
     />
+    <DateInput source="created_at" label="Date" variant="outlined" alwaysOn />
   </Filter>
 );
 export const OrderList = (props) => {
@@ -89,6 +79,7 @@ export const OrderList = (props) => {
           label={`Total Amount(${app.currencySymbol})`}
         />
         <TextField source="status" />
+        <TextField source="order_from" label="Order From" />
         <DateField source="created_at" showTime label="Date" />
       </Datagrid>
     </List>

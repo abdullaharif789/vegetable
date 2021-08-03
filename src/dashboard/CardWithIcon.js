@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CardWithIcon = (props) => {
-  const { icon, title, subtitle, to, children } = props;
+  const { icon, title, subtitle, to, children, color } = props;
   const classes = useStyles(props);
   return (
     <Card className={classes.card}>
@@ -47,7 +47,13 @@ const CardWithIcon = (props) => {
             <Typography className={classes.title} color="textSecondary">
               {title}
             </Typography>
-            <Typography variant="h5" component="h2">
+            <Typography
+              variant="h5"
+              component="h2"
+              style={{
+                color: color ? color : "#000",
+              }}
+            >
               {subtitle || " "}
             </Typography>
           </Box>

@@ -12,7 +12,7 @@ code {
     monospace;
 }
 .img-round img {
-  border-radius: 100%;
+  border-radius: 2px;
 }
 .img-50 img {
   width: 40px;
@@ -27,4 +27,52 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type="number"] {
   -moz-appearance: textfield;
+}
+
+/* .table-container {
+  overflow-x: auto;
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 50px;
+  padding: 10px;
+  margin: 10px;
+}
+
+tr {
+  height: 40px !important;
+}
+
+th {
+  max-width: 125px;
+  min-width: 125px;
+  padding: 0 !important;
+  overflow-x: auto;
+  white-space: nowrap;
+  text-align: center !important;
+}
+
+td {
+  height: 40px !important;
+  padding: 5px !important;
+  text-align: center !important;
+} */
+/* width */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #999;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #666;
 }

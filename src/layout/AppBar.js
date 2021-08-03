@@ -2,7 +2,7 @@ import * as React from "react";
 import { forwardRef } from "react";
 import { AppBar, UserMenu, MenuItemLink, useTranslate } from "react-admin";
 import Typography from "@material-ui/core/Typography";
-import SettingsIcon from "@material-ui/icons/Settings";
+import LockIcon from "@material-ui/icons/Lock";
 import { makeStyles } from "@material-ui/core/styles";
 import logo from "./logo.png";
 const useStyles = makeStyles({
@@ -17,13 +17,16 @@ const useStyles = makeStyles({
   },
 });
 
-const AddItem = forwardRef((props, ref) => {
+const ManagePassword = forwardRef((props, ref) => {
   return (
     <MenuItemLink
+      style={{
+        paddingLeft: 10,
+      }}
       ref={ref}
-      to="/item"
-      primaryText={"item"}
-      leftIcon={<SettingsIcon />}
+      to="/passwords"
+      primaryText={"Manage Password"}
+      leftIcon={<LockIcon />}
       onClick={props.onClick}
       sidebarIsOpen
     />
@@ -31,7 +34,7 @@ const AddItem = forwardRef((props, ref) => {
 });
 
 const CustomUserMenu = (props) => (
-  <UserMenu {...props}>{/* <AddItem /> */}</UserMenu>
+  <UserMenu {...props}>{<ManagePassword />}</UserMenu>
 );
 
 const CustomAppBar = (props) => {
