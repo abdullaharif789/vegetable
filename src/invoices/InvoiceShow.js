@@ -18,9 +18,7 @@ import { app } from "../contants";
 const CustomerField = ({ record }) =>
   record ? (
     <Typography>
-      <strong>{record.name}</strong>
-      <br />
-      {record.business_name}
+      <strong>{record.business_name}</strong>
       <br />
       {record.address}
       <br />
@@ -28,38 +26,77 @@ const CustomerField = ({ record }) =>
     </Typography>
   ) : null;
 export class InvoiceShow extends React.PureComponent {
-  componentDidMount() {
-    console.log(this.props.record);
-  }
   render() {
     this.classes = {
       root: { margin: "auto", border: "none" },
       spacer: { height: 20 },
       invoices: { margin: "10px 0" },
+      margin0: { margin: 0 },
+      margin1: { margin: 0, marginTop: 5 },
     };
     if (!this.props.record) return null;
 
     return (
       <Card style={this.classes.root}>
         <CardContent>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <div>
               <img
                 src={logo}
                 style={{
                   width: 100,
                 }}
               />
-              <Typography variant="h6">
+              <h4 style={this.classes.margin0}>Everyday Fresh Food Ltd.</h4>
+              <p style={this.classes.margin0}>
+                Unite 5E Jaguar Point Manning Road
+              </p>
+              <p style={this.classes.margin0}>Poole</p>
+              <p style={this.classes.margin0}>Bh12 4NQ</p>
+              <h4 style={this.classes.margin1}>Banking Information</h4>
+              <p style={this.classes.margin0}>
+                Check payable to <strong>Everyday Fresh Food Ltd.</strong>
+              </p>
+              {this.props.record.bank_visible == 1 && (
+                <>
+                  <p style={this.classes.margin1}>
+                    <strong>Account Name:</strong> Everyday fresh Food
+                  </p>
+                  <p style={this.classes.margin0}>
+                    <strong>Account:</strong> 30106852
+                  </p>
+                  <p style={this.classes.margin0}>
+                    <strong>Sort Code:</strong> 40-18-00
+                  </p>
+                  <p style={this.classes.margin0}>
+                    <strong>Bank Name:</strong> HSB
+                  </p>
+                </>
+              )}
+            </div>
+            <div>
+              <img
+                src={logo}
+                style={{
+                  width: 100,
+                  opacity: 0,
+                }}
+              />
+              <h4
+                style={{
+                  margin: 0,
+                }}
+              >
                 Invoice# {this.props.record.id}
-              </Typography>
-            </Grid>
-          </Grid>
-          <Grid container spacing={2}>
-            <Grid item xs={12} container alignContent="flex-end">
+              </h4>
               <CustomerField record={this.props.record.party} />
-            </Grid>
-          </Grid>
+            </div>
+          </div>
           <div style={this.classes.spacer}>&nbsp;</div>
           <Grid container spacing={2}>
             <Grid item xs={6}>
@@ -67,7 +104,7 @@ export class InvoiceShow extends React.PureComponent {
                 Date
               </Typography>
               <Typography gutterBottom align="center">
-                {new Date(this.props.record.created_at).toLocaleDateString()}
+                {this.props.record.created_at}
               </Typography>
             </Grid>
 

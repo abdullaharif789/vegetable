@@ -61,7 +61,7 @@ const PendingOrders = ({ orders = [], customers = {} }) => {
                 )}
               </ListItemAvatar>
               <ListItemText
-                primary={new Date(record.created_at).toLocaleString("en-GB")}
+                primary={record.created_at}
                 secondary={
                   customers[record.party_id]
                     ? record.cart.length == 1

@@ -257,6 +257,7 @@ export class ReportList extends React.PureComponent {
     return (
       <div>
         <List
+          pagination={false}
           {...this.props}
           bulkActionButtons={false}
           filters={<ReportFilter />}

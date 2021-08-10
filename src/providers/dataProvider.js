@@ -87,7 +87,6 @@ const dataProvider = {
   },
   getListSimple: async (resource, params) => {
     const url = `${apiUrl}${resource}?${stringify(params)}`;
-    console.log(url);
     return httpClient(url).then(({ json }) => {
       return {
         data: json,
@@ -111,7 +110,6 @@ const dataProvider = {
       method: "PUT",
       body: params.data,
     }).then((response) => {
-      console.log(response.body);
       return {
         data: response.body,
       };

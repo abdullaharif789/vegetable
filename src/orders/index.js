@@ -50,12 +50,20 @@ const OrderFilter = (props) => (
       label="Status"
       variant="outlined"
     />
+    <SelectInput
+      alwaysOn
+      choices={app.vans.map((item) => ({ id: item, name: item }))}
+      source="van"
+      label="Van"
+      variant="outlined"
+    />
     <DateInput source="created_at" label="Date" variant="outlined" alwaysOn />
   </Filter>
 );
 export const OrderList = (props) => {
   return (
     <List
+      pagination={false}
       {...props}
       bulkActionButtons={false}
       filters={<OrderFilter />}
@@ -80,46 +88,47 @@ export const OrderList = (props) => {
         />
         <TextField source="status" />
         <TextField source="order_from" label="Order From" />
-        <DateField source="created_at" showTime label="Date" />
+        <TextField source="van" />
+        <TextField source="created_at" label="Date" />
       </Datagrid>
     </List>
   );
 };
 
-export class OrderPrint extends React.PureComponent {
-  render() {
-    return (
-      <div>
-        <ReactToPrint
-          trigger={() => {
-            return (
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  marginTop: 10,
-                }}
-              >
-                <Button
-                  variant="contained"
-                  color="primary"
-                  startIcon={<Print fontSize="inherit" />}
-                >
-                  Print
-                </Button>
-              </div>
-            );
-          }}
-          content={() => this.componentRef}
-        />
-        <OrderEdit ref={(el) => (this.componentRef = el)} {...this.props} />
-      </div>
-    );
-  }
-}
+// export class OrderPrint extends React.PureComponent {
+//   render() {
+//     return (
+//       <div>
+//         <ReactToPrint
+//           trigger={() => {
+//             return (
+//               <div
+//                 style={{
+//                   display: "flex",
+//                   justifyContent: "flex-end",
+//                   marginTop: 10,
+//                 }}
+//               >
+//                 <Button
+//                   variant="contained"
+//                   color="primary"
+//                   startIcon={<Print fontSize="inherit" />}
+//                 >
+//                   Print
+//                 </Button>
+//               </div>
+//             );
+//           }}
+//           content={() => this.componentRef}
+//         />
+//         <OrderEdit ref={(el) => (this.componentRef = el)} {...this.props} />
+//       </div>
+//     );
+//   }
+// }
 export default {
   list: OrderList,
   name: "orders",
   icon: ShoppingCartIcon,
-  edit: OrderPrint,
+  edit: OrderEdit,
 };

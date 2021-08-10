@@ -27,9 +27,15 @@ import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import { app } from "../contants";
 import { makeStyles } from "@material-ui/core/styles";
-import { AddShoppingCart, PlusOne } from "@material-ui/icons";
+import { AddShoppingCart, PlusOne, RemoveCircle } from "@material-ui/icons";
 import Button from "@material-ui/core/Button";
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+
+import FormLabel from "@material-ui/core/FormLabel";
 import {
+  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -76,6 +82,7 @@ const OrderFilter = (props) => (
 export const OrderList = (props) => {
   return (
     <List
+      pagination={false}
       {...props}
       bulkActionButtons={false}
       filters={<OrderFilter />}
@@ -100,19 +107,29 @@ export const OrderList = (props) => {
         />
         <TextField source="status" />
         <TextField source="order_from" label="Order From" />
-        <DateField source="created_at" showTime label="Date" />
+        <TextField source="created_at" label="Date" />
       </Datagrid>
     </List>
   );
 };
 
-const Cart = ({ data, submitOrder }) => {
+const Cart = ({ data, submitOrder, setData }) => {
   var totalWithOutTax = 0;
   if (data.cart.length == 0) return <p>There is no item in cart.</p>;
+  const handleRemoveCartItem = (id) => {
+    let newData = { ...data };
+    newData.cart = newData.cart.filter((item) => item.inventory_id != id);
+    setData(newData);
+  };
   return (
     <Table size="small">
       <TableHead>
         <TableRow>
+          <TableCell
+            style={{
+              width: 10,
+            }}
+          ></TableCell>
           <TableCell>Item</TableCell>
           <TableCell align="right">Quantity</TableCell>
           <TableCell align="right">Unit Price({app.currencySymbol})</TableCell>
@@ -122,11 +139,21 @@ const Cart = ({ data, submitOrder }) => {
       </TableHead>
       <TableBody>
         {data.cart.map((item, index) => {
+          console.log(item);
           let total = parseFloat(item.price) * item.quantity;
           totalWithOutTax += total;
           total += item.quantity * item.tax;
           return (
             <TableRow key={index}>
+              <TableCell>
+                <IconButton
+                  edge="end"
+                  aria-label="comments"
+                  onClick={() => handleRemoveCartItem(item.inventory_id)}
+                >
+                  <RemoveCircle color="error" />
+                </IconButton>
+              </TableCell>
               <TableCell>
                 <Link to={`/items/${item.item_id}/show`} target="_blank">
                   {item.title}
@@ -145,6 +172,7 @@ const Cart = ({ data, submitOrder }) => {
           <TableCell></TableCell>
           <TableCell align="right"></TableCell>
           <TableCell align="right"></TableCell>
+          <TableCell align="right"></TableCell>
           <TableCell align="right">
             <strong>{data.total_tax.toFixed(2)}</strong>
           </TableCell>
@@ -153,7 +181,7 @@ const Cart = ({ data, submitOrder }) => {
           </TableCell>
         </TableRow>
         <TableRow>
-          <TableCell align="right" colSpan={4}>
+          <TableCell align="right" colSpan={5}>
             <strong>Total({app.currencySymbol})</strong>
           </TableCell>
           <TableCell align="right">
@@ -161,7 +189,7 @@ const Cart = ({ data, submitOrder }) => {
           </TableCell>
         </TableRow>
         <TableRow>
-          <TableCell align="right" colSpan={5}>
+          <TableCell align="right" colSpan={6}>
             <Button
               startIcon={<SaveIcon />}
               variant="contained"
@@ -207,6 +235,7 @@ export const ItemCreate = (props) => {
   const [inventories, setInventories] = React.useState([]);
   const [party, setParty] = React.useState([]);
   const [quantity, setQuantity] = React.useState(1);
+  const [sellPrice, setSellPrice] = React.useState(0);
   const [inventory, setInventory] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   React.useEffect(() => {
@@ -228,21 +257,26 @@ export const ItemCreate = (props) => {
           quantity: 0,
           item_id: item.item_id,
           max: item.remaining_unit,
-          date: item.date.split(" ")[0],
+          date: item.date.split(",")[0],
         }))
         .sort((a, b) => b.id - a.id);
       setInventories(inventories);
       setParties(parties);
       setInventory(inventories[0].id);
+      setSellPrice(inventories[0].price);
       setParty(parties[0].id);
       setLoading(false);
     };
     loadData();
   }, []);
   const addItemInCart = () => {
-    if (quantity == "" || parseInt(quantity) <= 0) {
-      notify(`Sorry, please select any quantity.`, "error");
+    if (quantity == "" || parseFloat(quantity) <= 0) {
+      notify(`Sorry, please select and valid quantity.`, "error");
       setQuantity("");
+      return;
+    }
+    if (!Number.isInteger(quantity / 0.5)) {
+      notify(`Sorry, please select quantity of multiple 0.5.`, "error");
       return;
     }
     let completeInventory = [
@@ -258,13 +292,13 @@ export const ItemCreate = (props) => {
             "error"
           );
           return;
-        } else items[i].quantity += parseInt(quantity);
+        } else items[i].quantity += parseFloat(quantity);
         clash = true;
         completeInventory = items[i];
         break;
       }
     }
-    if (!clash) completeInventory.quantity = parseInt(quantity);
+    if (!clash) completeInventory.quantity = parseFloat(quantity);
     completeInventory.inventory_id = inventory;
     if (completeInventory.max == 0) {
       notify(`Sorry, item is out of stock.`, "error");
@@ -277,11 +311,25 @@ export const ItemCreate = (props) => {
       return;
     }
     if (!clash) items.push(completeInventory);
-    const totalSum = items.reduce((a, b) => a + b["price"] * b["quantity"], 0);
-    const totalTax = items.reduce((a, b) => a + b["tax"] * b["quantity"], 0);
+    /**
+     * Change sell price accordingly to given price
+     */
+    let tempItems = [...items];
+    try {
+      tempItems[tempItems.findIndex((item) => item.id == inventory)].price =
+        sellPrice;
+    } catch (error) {}
+    const totalSum = tempItems.reduce(
+      (a, b) => a + b["price"] * b["quantity"],
+      0
+    );
+    const totalTax = tempItems.reduce(
+      (a, b) => a + b["tax"] * b["quantity"],
+      0
+    );
     let temp = {
       party_id: party,
-      cart: items.map((item) => ({
+      cart: tempItems.map((item) => ({
         price: parseFloat(item.price).toFixed(2),
         buying_price: item.buying_price,
         tax: parseFloat(item.tax),
@@ -298,6 +346,7 @@ export const ItemCreate = (props) => {
       total_tax: parseFloat(totalTax),
     };
     setData(temp);
+    setQuantity("1");
   };
   const submitOrder = async () => {
     let temp = { ...data };
@@ -306,6 +355,7 @@ export const ItemCreate = (props) => {
       tax: (item.tax * item.quantity).toFixed(2),
     }));
     temp.manual = 1;
+    temp.bank = value;
     setLoading(true);
     const url = app.api + "orders";
     await axios
@@ -322,6 +372,11 @@ export const ItemCreate = (props) => {
       });
     setLoading(false);
   };
+  const [value, setValue] = React.useState("No");
+
+  const handleChange = (event) => {
+    setValue(event.target.value);
+  };
   if (loading) return <Loading loadingPrimary="" loadingSecondary="" />;
   else
     return (
@@ -332,6 +387,9 @@ export const ItemCreate = (props) => {
             <Grid item xs={12}>
               <FormControl className={classes.form} size="small">
                 <h4 className={classes.headings}>Party</h4>
+                <FormLabel component="legend" className={classes.headings}>
+                  Party
+                </FormLabel>
                 <Select
                   required
                   value={party}
@@ -353,14 +411,36 @@ export const ItemCreate = (props) => {
             </Grid>
             <Grid item xs={12}>
               <FormControl className={classes.form} size="small">
-                <h4 className={classes.headings}>Add Item</h4>
+                <FormLabel component="legend" className={classes.headings}>
+                  Add Bank Information to Invioce
+                </FormLabel>
+                <RadioGroup value={value} onChange={handleChange}>
+                  <FormControlLabel
+                    value="Yes"
+                    control={<Radio />}
+                    label="Yes"
+                  />
+                  <FormControlLabel value="No" control={<Radio />} label="No" />
+                </RadioGroup>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <FormControl className={classes.form} size="small">
+                <FormLabel component="legend" className={classes.headings}>
+                  Add Item
+                </FormLabel>
                 <Grid container spacing={2}>
-                  <Grid item xs={5}>
+                  <Grid item xs={12} md={6}>
                     <Select
                       required
                       value={inventory}
                       onChange={(event) => {
                         setInventory(event.target.value);
+                        setSellPrice(
+                          inventories.filter(
+                            (item) => item.id == event.target.value
+                          )[0].price
+                        );
                       }}
                       displayEmpty
                       fullWidth
@@ -374,7 +454,7 @@ export const ItemCreate = (props) => {
                       ))}
                     </Select>
                   </Grid>
-                  <Grid item xs={5}>
+                  <Grid item xs={12} md={2}>
                     <MaterialTextField
                       fullWidth
                       placeholder="150"
@@ -395,7 +475,30 @@ export const ItemCreate = (props) => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={2}>
+                  <Grid item xs={12} md={2}>
+                    <MaterialTextField
+                      fullWidth
+                      placeholder="350"
+                      label="Selling Price"
+                      variant="outlined"
+                      size="small"
+                      type="number"
+                      required
+                      value={sellPrice}
+                      onChange={(event) => setSellPrice(event.target.value)}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            {app.currencySymbol}
+                          </InputAdornment>
+                        ),
+                      }}
+                      style={{
+                        marginBottom: 20,
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={2}>
                     <Button
                       startIcon={<SaveIcon />}
                       variant="contained"
@@ -410,8 +513,10 @@ export const ItemCreate = (props) => {
               </FormControl>
             </Grid>
             <Grid item xs={12}>
-              <h4 className={classes.headings}>Cart</h4>
-              <Cart data={data} submitOrder={submitOrder} />
+              <FormLabel component="legend" className={classes.headings}>
+                Cart
+              </FormLabel>
+              <Cart data={data} submitOrder={submitOrder} setData={setData} />
             </Grid>
           </Grid>
         </CardContent>

@@ -64,6 +64,7 @@ const InventoryFilter = (props) => (
 const InventoryList = (props) => {
   return (
     <List
+      pagination={false}
       {...props}
       filters={<InventoryFilter />}
       bulkActionButtons={false}
@@ -85,7 +86,7 @@ const InventoryList = (props) => {
         <TextField source="remaining_unit" label="Remaining Units" />
         <BooleanField source="tax_available" label="20% VAT" sortable={false} />
         <BooleanField source="active" label="Price on App" sortable={false} />
-        <DateField source="date" showTime />
+        <TextField source="date" label="Added" />
       </Datagrid>
     </List>
   );

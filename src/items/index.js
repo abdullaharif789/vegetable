@@ -47,8 +47,9 @@ export const ItemList = (props) => {
         <ReferenceField source="category_id" reference="categories">
           <TextField source="name" />
         </ReferenceField>
-        <DateField source="added" showTime />
+        <TextField source="added" />
         <BooleanField source="tax_boolean" label="20% VAT" />
+        <BooleanField source="visible_boolean" label="Visible On App" />
         <EditButton />
       </Datagrid>
     </List>
@@ -84,9 +85,16 @@ export const ItemEdit = (props) => {
           <SelectInput optionText="name" />
         </ReferenceInput>
         <RadioButtonGroupInput
-          required
           source="tax"
           label="20% VAT"
+          choices={[
+            { id: "yes", name: "Yes" },
+            { id: "no", name: "No" },
+          ]}
+        />
+        <RadioButtonGroupInput
+          source="visible"
+          label="Visible on App"
           choices={[
             { id: "yes", name: "Yes" },
             { id: "no", name: "No" },
@@ -139,9 +147,16 @@ export const ItemCreate = (props) => {
           <SelectInput optionText="name" />
         </ReferenceInput>
         <RadioButtonGroupInput
-          required
           source="tax"
           label="20% VAT"
+          choices={[
+            { id: "yes", name: "Yes" },
+            { id: "no", name: "No" },
+          ]}
+        />
+        <RadioButtonGroupInput
+          source="visible"
+          label="Visible on App"
           choices={[
             { id: "yes", name: "Yes" },
             { id: "no", name: "No" },

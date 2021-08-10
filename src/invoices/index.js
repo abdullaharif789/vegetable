@@ -64,6 +64,7 @@ export class InvoicePrint extends React.PureComponent {
 export const InvoiceList = (props) => {
   return (
     <List
+      pagination={false}
       {...props}
       bulkActionButtons={false}
       filters={<OrderFilter />}
@@ -99,7 +100,7 @@ export const InvoiceList = (props) => {
           source="order.total"
           label={`Total Amount(${app.currencySymbol})`}
         />
-        <DateField source="created_at" showTime label="Date" />
+        <TextField source="created_at" label="Date" />
       </Datagrid>
     </List>
   );
