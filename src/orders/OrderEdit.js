@@ -195,38 +195,45 @@ const OrderEdit = (props) => {
   React.useEffect(() => {
     const loadData = async () => {
       setLoading(true);
-      const { data: singleOrder } = await dataProvider.getOne("orders", {
-        id: props.id,
-      });
-      setOrder(singleOrder);
-      setVan(singleOrder.van);
-      setData({
-        ...data,
-        cart: singleOrder.cart,
-        ...getUpdatedTotal(singleOrder.cart),
-      });
-      setStatus(singleOrder.status);
-      var inventories = (
-        await dataProvider.getListSimple("inventories", {
-          available: true,
-        })
-      ).data;
-      inventories = inventories
-        .map((item) => ({
-          id: item.id,
-          title: item.title,
-          price: parseFloat(item.selling_price).toFixed(2),
-          buying_price: parseFloat(item.buying_price).toFixed(2),
-          tax: item.tax,
-          quantity: 0,
-          item_id: item.item_id,
-          max: item.remaining_unit,
-          date: item.date.split(",")[0],
-        }))
-        .sort((a, b) => b.id - a.id);
-      setInventories(inventories);
-      setInventory(inventories[0].id);
-      setSellPrice(inventories[0].price);
+      try {
+        const { data: singleOrder } = await dataProvider.getOne("orders", {
+          id: props.id,
+        });
+        setOrder(singleOrder);
+        setVan(singleOrder.van);
+        setData({
+          ...data,
+          cart: singleOrder.cart,
+          ...getUpdatedTotal(singleOrder.cart),
+        });
+        setStatus(singleOrder.status);
+        var inventories = (
+          await dataProvider.getListSimple("inventories", {
+            available: true,
+          })
+        ).data;
+        inventories = inventories
+          .map((item) => ({
+            id: item.id,
+            title: item.title,
+            price: parseFloat(item.selling_price).toFixed(2),
+            buying_price: parseFloat(item.buying_price).toFixed(2),
+            tax: item.tax,
+            quantity: 0,
+            item_id: item.item_id,
+            max: item.remaining_unit,
+            date: item.date.split(",")[0],
+          }))
+          .sort((a, b) => b.id - a.id);
+        setInventories(inventories);
+        setInventory(inventories[0].id);
+        setSellPrice(inventories[0].price);
+      } catch (error) {
+        notify(`Sorry, order not found.`, "error");
+        redirect("/orders");
+        refresh();
+      }
+
       setLoading(false);
     };
     loadData();
@@ -355,7 +362,9 @@ const OrderEdit = (props) => {
               <Grid item xs={12} md={6}>
                 <label className={classes.label}>Status</label>
                 <br />
-                {order.status == "Progress" ? (
+                {order.status == "Progress" ||
+                order.status == "Canceled" ||
+                order.status == "Completed" ? (
                   <FormControl className={classes.form} size="small">
                     <Select
                       required
@@ -368,8 +377,11 @@ const OrderEdit = (props) => {
                       variant="outlined"
                       placeholder="Party"
                     >
-                      <MenuItem value={"Progress"}>Progress</MenuItem>
-                      <MenuItem value={"Completed"}>Completed</MenuItem>
+                      {app.status.map((item, index) => (
+                        <MenuItem key={index} value={item}>
+                          {item}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
                 ) : (
@@ -379,7 +391,9 @@ const OrderEdit = (props) => {
               <Grid item xs={12} md={6}>
                 <label className={classes.label}>Van</label>
                 <br />
-                {order.status == "Progress" ? (
+                {order.status == "Progress" ||
+                order.status == "Canceled" ||
+                order.status == "Completed" ? (
                   <FormControl className={classes.form} size="small">
                     <Select
                       required
@@ -403,7 +417,9 @@ const OrderEdit = (props) => {
                   <span>{order.van}</span>
                 )}
               </Grid>
-              {order.status == "Progress" && (
+              {(order.status == "Progress" ||
+                order.status == "Canceled" ||
+                order.status == "Completed") && (
                 <Grid item xs={12}>
                   <FormControl className={classes.form} size="small">
                     <h4 className={classes.headings}>Add Item</h4>
@@ -499,7 +515,11 @@ const OrderEdit = (props) => {
                   data={data}
                   submitOrder={submitOrder}
                   setData={setData}
-                  del={order.status == "Progress" ? true : false}
+                  del={
+                    order.status == "Progress" || order.status == "Canceled"
+                      ? true
+                      : false
+                  }
                 />
               </Grid>
             </Grid>

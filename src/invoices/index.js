@@ -9,6 +9,7 @@ import {
   Filter,
   TextInput,
   EditButton,
+  ListGuesser,
 } from "react-admin";
 import ReactToPrint from "react-to-print";
 import PagesIcon from "@material-ui/icons/Pages";
@@ -79,7 +80,7 @@ export const InvoiceList = (props) => {
           }}
         />
         <ReferenceField source="order_id" reference="orders" label="Order#">
-          <TextField source="order_code" />
+          <TextField source="id" />
         </ReferenceField>
         <ReferenceField
           source="order.party_id"

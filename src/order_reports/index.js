@@ -37,6 +37,15 @@ const ReportFilter = (props) => (
     >
       <SelectInput optionText="business_name" />
     </ReferenceInput>
+    {/* <SelectInput
+      alwaysOn
+      choices={[
+        { id: "Manual Order", name: "Manual Order" }
+      ]}
+      source="van"
+      label="Van"
+      variant="outlined"
+    /> */}
     <TextInput
       label="Order#"
       source="order_code"

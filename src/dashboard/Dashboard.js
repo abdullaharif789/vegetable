@@ -67,7 +67,7 @@ const Dashboard = () => {
 
   const fetchOrders = useCallback(async () => {
     const aMonthAgo = subDays(new Date(), 30);
-    const { data: recentOrders } = await dataProvider.getList("orders", {
+    const { data: recentOrders } = await dataProvider.getList("all_orders", {
       filter: { date_gte: aMonthAgo.toISOString() },
       sort: { field: "created_at", order: "DESC" },
       pagination: { page: 1, perPage: 50 },

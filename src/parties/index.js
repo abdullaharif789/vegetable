@@ -90,6 +90,7 @@ const PartyEdit = (props) => {
         notify(data.body, "error");
         refresh();
       }}
+      undoable={false}
       // onSuccess={(data) => {
       //   console.log("Success", data);
       //   redirect("/parties");

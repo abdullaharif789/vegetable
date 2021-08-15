@@ -4,23 +4,12 @@ import {
   Datagrid,
   TextField,
   ReferenceField,
-  ArrayField,
-  NumberField,
-  DateField,
-  Edit,
-  SimpleForm,
-  RadioButtonGroupInput,
   Filter,
   TextInput,
   DateInput,
   SelectInput,
-  Toolbar,
-  SaveButton,
 } from "react-admin";
-import ReactToPrint from "react-to-print";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
-import Button from "@material-ui/core/Button";
-import Print from "@material-ui/icons/Print";
 import { app } from "../contants";
 import OrderEdit from "./OrderEdit";
 
@@ -35,17 +24,7 @@ const OrderFilter = (props) => (
     />
     <SelectInput
       alwaysOn
-      choices={[
-        {
-          id: "Progress",
-          name: "Progress",
-        },
-
-        {
-          id: "Completed",
-          name: "Completed",
-        },
-      ]}
+      choices={app.status.map((item) => ({ id: item, name: item }))}
       source="status"
       label="Status"
       variant="outlined"
@@ -131,4 +110,5 @@ export default {
   name: "orders",
   icon: ShoppingCartIcon,
   edit: OrderEdit,
+  options: { label: "App Orders" },
 };

@@ -60,17 +60,7 @@ const OrderFilter = (props) => (
     />
     <SelectInput
       alwaysOn
-      choices={[
-        {
-          id: "Progress",
-          name: "Progress",
-        },
-
-        {
-          id: "Completed",
-          name: "Completed",
-        },
-      ]}
+      choices={app.status.map((item) => ({ id: item, name: item }))}
       source="status"
       label="Status"
       variant="outlined"
@@ -107,6 +97,7 @@ export const OrderList = (props) => {
         />
         <TextField source="status" />
         <TextField source="order_from" label="Order From" />
+        <TextField source="van" />
         <TextField source="created_at" label="Date" />
       </Datagrid>
     </List>
@@ -139,7 +130,6 @@ const Cart = ({ data, submitOrder, setData }) => {
       </TableHead>
       <TableBody>
         {data.cart.map((item, index) => {
-          console.log(item);
           let total = parseFloat(item.price) * item.quantity;
           totalWithOutTax += total;
           total += item.quantity * item.tax;
@@ -235,6 +225,7 @@ export const ItemCreate = (props) => {
   const [inventories, setInventories] = React.useState([]);
   const [party, setParty] = React.useState([]);
   const [quantity, setQuantity] = React.useState(1);
+  const [van, setVan] = React.useState(app.vans[0]);
   const [sellPrice, setSellPrice] = React.useState(0);
   const [inventory, setInventory] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
@@ -356,11 +347,13 @@ export const ItemCreate = (props) => {
     }));
     temp.manual = 1;
     temp.bank = value;
+    temp.van_id = van;
     setLoading(true);
     const url = app.api + "orders";
     await axios
       .post(url, temp)
-      .then(() => {
+      .then((response) => {
+        console.log(response);
         setLoading(false);
         notify(`Manual order added successfully.`);
         redirect("/manual_orders");
@@ -383,10 +376,9 @@ export const ItemCreate = (props) => {
       <Card className={classes.root}>
         <Title title="Add Manual Order" />
         <CardContent>
-          <Grid container>
-            <Grid item xs={12}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
               <FormControl className={classes.form} size="small">
-                <h4 className={classes.headings}>Party</h4>
                 <FormLabel component="legend" className={classes.headings}>
                   Party
                 </FormLabel>
@@ -404,6 +396,30 @@ export const ItemCreate = (props) => {
                   {parties.map((party, index) => (
                     <MenuItem key={index} value={party.id}>
                       {party.business_name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <FormControl className={classes.form} size="small">
+                <FormLabel component="legend" className={classes.headings}>
+                  Van
+                </FormLabel>
+                <Select
+                  required
+                  value={van}
+                  onChange={(event) => {
+                    setVan(event.target.value);
+                  }}
+                  displayEmpty
+                  fullWidth
+                  variant="outlined"
+                  placeholder="Party"
+                >
+                  {app.vans.map((van, index) => (
+                    <MenuItem key={index} value={van}>
+                      {van}
                     </MenuItem>
                   ))}
                 </Select>

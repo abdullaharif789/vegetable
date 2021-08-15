@@ -54,10 +54,13 @@ export class InvoiceShow extends React.PureComponent {
               />
               <h4 style={this.classes.margin0}>Everyday Fresh Food Ltd.</h4>
               <p style={this.classes.margin0}>
-                Unite 5E Jaguar Point Manning Road
+                Unite 5E Jaguar Point Manning Heath Road
               </p>
               <p style={this.classes.margin0}>Poole</p>
               <p style={this.classes.margin0}>Bh12 4NQ</p>
+              <p style={this.classes.margin0}>
+                <strong>Tel : 01202-131924</strong>
+              </p>
               <h4 style={this.classes.margin1}>Banking Information</h4>
               <p style={this.classes.margin0}>
                 Check payable to <strong>Everyday Fresh Food Ltd.</strong>
@@ -74,7 +77,7 @@ export class InvoiceShow extends React.PureComponent {
                     <strong>Sort Code:</strong> 40-18-00
                   </p>
                   <p style={this.classes.margin0}>
-                    <strong>Bank Name:</strong> HSB
+                    <strong>Bank Name:</strong> HSBC
                   </p>
                 </>
               )}
@@ -180,6 +183,13 @@ export class InvoiceShow extends React.PureComponent {
               </TableBody>
             </Table>
           </div>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <h4>
+                <i> Thank you for your business with us.</i>
+              </h4>
+            </Grid>
+          </Grid>
         </CardContent>
       </Card>
     );
