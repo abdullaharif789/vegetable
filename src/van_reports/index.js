@@ -99,7 +99,7 @@ const Report = (props) => {
     return (
       <p
         style={{
-          margin: 5,
+          margin: 10,
         }}
       >
         Sorry, no records found!
