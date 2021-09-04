@@ -21,6 +21,7 @@ import order_reports from "./order_reports";
 import inventory_reports from "./inventory_reports";
 import van_reports from "./van_reports";
 import manual_orders from "./manual_orders";
+import transactions from "./transactions";
 import { app } from "./contants";
 
 export default function App() {
@@ -61,6 +62,7 @@ export default function App() {
       <Resource {...inventories} />
       <Resource {...orders} />
       <Resource {...manual_orders} />
+      <Resource {...transactions} />
       <Resource {...invoices} />
       <Resource {...order_reports} />
       <Resource {...van_reports} />

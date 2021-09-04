@@ -325,12 +325,16 @@ const OrderEdit = (props) => {
       total: data.total,
       total_tax: data.total_tax,
     };
-    await dataProvider.update("orders", {
-      id: props.id,
-      data: updatedData,
-    });
-    redirect("/orders");
-    refresh();
+    try {
+      await dataProvider.update("orders", {
+        id: props.id,
+        data: updatedData,
+      });
+      redirect("/orders");
+      refresh();
+    } catch (error) {
+      notify(error.body, "error");
+    }
   };
   if (loading) return <Loading loadingPrimary="" loadingSecondary="" />;
   else if (order)

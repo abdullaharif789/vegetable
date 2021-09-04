@@ -42,7 +42,7 @@ const OrderFilter = (props) => (
 export const OrderList = (props) => {
   return (
     <List
-      pagination={false}
+      // pagination={false}
       {...props}
       bulkActionButtons={false}
       filters={<OrderFilter />}

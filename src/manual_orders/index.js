@@ -72,7 +72,7 @@ const OrderFilter = (props) => (
 export const OrderList = (props) => {
   return (
     <List
-      pagination={false}
+      // pagination={false}
       {...props}
       bulkActionButtons={false}
       filters={<OrderFilter />}
@@ -225,6 +225,7 @@ export const ItemCreate = (props) => {
   const [inventories, setInventories] = React.useState([]);
   const [party, setParty] = React.useState([]);
   const [quantity, setQuantity] = React.useState(1);
+  const [costPrice, setCostPrice] = React.useState(0);
   const [van, setVan] = React.useState(app.vans[0]);
   const [sellPrice, setSellPrice] = React.useState(0);
   const [inventory, setInventory] = React.useState([]);
@@ -253,9 +254,10 @@ export const ItemCreate = (props) => {
         .sort((a, b) => b.id - a.id);
       setInventories(inventories);
       setParties(parties);
-      setInventory(inventories[0].id);
+      setInventory(inventories[0]);
       setSellPrice(inventories[0].price);
-      setParty(parties[0].id);
+      setCostPrice(inventories[0].buying_price);
+      setParty(parties[0]);
       setLoading(false);
     };
     loadData();
@@ -271,12 +273,12 @@ export const ItemCreate = (props) => {
       return;
     }
     let completeInventory = [
-      ...inventories.filter((item) => item.id == inventory),
+      ...inventories.filter((item) => item.id == inventory.id),
     ][0];
     var items = [...data.cart];
     var clash = false;
     for (let i = 0; i < items.length; i++) {
-      if (items[i].inventory_id == inventory) {
+      if (items[i].inventory_id == inventory.id) {
         if (items[i].quantity + 1 > completeInventory.max) {
           notify(
             `Sorry, stock limit reached. Maximum stock is ${completeInventory.max} units.`,
@@ -290,7 +292,7 @@ export const ItemCreate = (props) => {
       }
     }
     if (!clash) completeInventory.quantity = parseFloat(quantity);
-    completeInventory.inventory_id = inventory;
+    completeInventory.inventory_id = inventory.id;
     if (completeInventory.max == 0) {
       notify(`Sorry, item is out of stock.`, "error");
       return;
@@ -307,7 +309,7 @@ export const ItemCreate = (props) => {
      */
     let tempItems = [...items];
     try {
-      tempItems[tempItems.findIndex((item) => item.id == inventory)].price =
+      tempItems[tempItems.findIndex((item) => item.id == inventory.id)].price =
         sellPrice;
     } catch (error) {}
     const totalSum = tempItems.reduce(
@@ -319,7 +321,7 @@ export const ItemCreate = (props) => {
       0
     );
     let temp = {
-      party_id: party,
+      party_id: party.id,
       cart: tempItems.map((item) => ({
         price: parseFloat(item.price).toFixed(2),
         buying_price: item.buying_price,
@@ -382,7 +384,7 @@ export const ItemCreate = (props) => {
                 <FormLabel component="legend" className={classes.headings}>
                   Party
                 </FormLabel>
-                <Select
+                {/* <Select
                   required
                   value={party}
                   onChange={(event) => {
@@ -398,7 +400,34 @@ export const ItemCreate = (props) => {
                       {party.business_name}
                     </MenuItem>
                   ))}
-                </Select>
+                </Select> */}
+                <Autocomplete
+                  value={party}
+                  onChange={(event, newValue) => {
+                    if (newValue && newValue.id) setParty(newValue);
+                    // if (newValue && newValue.id) {
+                    //   setInventory(newValue);
+                    //   let inventory = inventories.filter(
+                    //     (item) => item.id == newValue.id
+                    //   )[0];
+                    //   setSellPrice(inventory.price);
+                    //   setCostPrice(inventory.buying_price);
+                    // } else {
+                    //   setSellPrice(0);
+                    //   setCostPrice(0);
+                    // }
+                  }}
+                  options={parties}
+                  getOptionLabel={(party) => party.business_name}
+                  renderInput={(params) => (
+                    <MaterialTextField
+                      {...params}
+                      label=""
+                      variant="outlined"
+                      size="small"
+                    />
+                  )}
+                />
               </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -443,20 +472,57 @@ export const ItemCreate = (props) => {
             <Grid item xs={12}>
               <FormControl className={classes.form} size="small">
                 <FormLabel component="legend" className={classes.headings}>
-                  Add Item
+                  Choose Inventory ( {"1. "}
+                  <Link to="/inventories/create" target="_blank">
+                    Add Inventory
+                  </Link>
+                  {" - 2. "}
+                  <span
+                    style={{
+                      color: app.colorOne,
+                      cursor: "pointer",
+                    }}
+                    onClick={async () => {
+                      var inventories = (
+                        await dataProvider.getListSimple("inventories", {
+                          available: true,
+                        })
+                      ).data;
+                      inventories = inventories
+                        .map((item) => ({
+                          id: item.id,
+                          title: item.title,
+                          price: parseFloat(item.selling_price).toFixed(2),
+                          buying_price: parseFloat(item.buying_price).toFixed(
+                            2
+                          ),
+                          tax: item.tax,
+                          quantity: 0,
+                          item_id: item.item_id,
+                          max: item.remaining_unit,
+                          date: item.date.split(",")[0],
+                        }))
+                        .sort((a, b) => b.id - a.id);
+                      setInventories(inventories);
+                      notify("Inventory refetch successfully.", "success");
+                    }}
+                  >
+                    Refetch Inventory
+                  </span>
+                  )
                 </FormLabel>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} md={6}>
-                    <Select
+                  <Grid item xs={12} md={5}>
+                    {/* <Select
                       required
                       value={inventory}
                       onChange={(event) => {
                         setInventory(event.target.value);
-                        setSellPrice(
-                          inventories.filter(
-                            (item) => item.id == event.target.value
-                          )[0].price
-                        );
+                        let inventory = inventories.filter(
+                          (item) => item.id == event.target.value
+                        )[0];
+                        setSellPrice(inventory.price);
+                        setCostPrice(inventory.buying_price);
                       }}
                       displayEmpty
                       fullWidth
@@ -468,9 +534,37 @@ export const ItemCreate = (props) => {
                           {`${inventory.title} - ${app.currencySymbol} ${inventory.price}, ${inventory.date}`}
                         </MenuItem>
                       ))}
-                    </Select>
+                    </Select> */}
+                    <Autocomplete
+                      value={inventory}
+                      onChange={(event, newValue) => {
+                        if (newValue && newValue.id) {
+                          setInventory(newValue);
+                          let inventory = inventories.filter(
+                            (item) => item.id == newValue.id
+                          )[0];
+                          setSellPrice(inventory.price);
+                          setCostPrice(inventory.buying_price);
+                        } else {
+                          setSellPrice(0);
+                          setCostPrice(0);
+                        }
+                      }}
+                      options={inventories}
+                      getOptionLabel={(inventory) =>
+                        `${inventory.title} - ${app.currencySymbol} ${inventory.price}, ${inventory.date}`
+                      }
+                      renderInput={(params) => (
+                        <MaterialTextField
+                          {...params}
+                          label=""
+                          variant="outlined"
+                          size="small"
+                        />
+                      )}
+                    />
                   </Grid>
-                  <Grid item xs={12} md={2}>
+                  <Grid item xs={12} md={1}>
                     <MaterialTextField
                       fullWidth
                       placeholder="150"
@@ -484,6 +578,31 @@ export const ItemCreate = (props) => {
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">=</InputAdornment>
+                        ),
+                      }}
+                      style={{
+                        marginBottom: 20,
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={2}>
+                    <MaterialTextField
+                      fullWidth
+                      disabled
+                      placeholder="150"
+                      label="Cost Price"
+                      variant="outlined"
+                      size="small"
+                      type="number"
+                      required
+                      value={costPrice}
+                      readonly
+                      onChange={(event) => setCostPrice(event.target.value)}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            {app.currencySymbol}
+                          </InputAdornment>
                         ),
                       }}
                       style={{

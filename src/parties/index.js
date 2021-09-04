@@ -3,7 +3,6 @@ import {
   List,
   Datagrid,
   TextField,
-  SimpleList,
   EmailField,
   Edit,
   SimpleForm,
@@ -16,14 +15,16 @@ import {
   useRedirect,
   required,
   ImageField,
-  DeleteButton,
+  RadioButtonGroupInput,
   Toolbar,
   SaveButton,
   EditButton,
   NumberInput,
+  BooleanField,
+  Filter,
 } from "react-admin";
 import PersonIcon from "@material-ui/icons/Person";
-import { useMediaQuery } from "@material-ui/core";
+
 const PartyTitle = ({ record }) => {
   return <span>Parties {record ? ` - ${record.name}` : ""}</span>;
 };
@@ -32,17 +33,25 @@ const UserEditToolbar = (props) => (
     <SaveButton {...props} label="Update Party" />
   </Toolbar>
 );
+const PartyFilter = (props) => (
+  <Filter {...props}>
+    <TextInput
+      label="Search Paty Name"
+      source="name"
+      alwaysOn
+      variant="outlined"
+      fullWidth
+    />
+  </Filter>
+);
 const PartyList = (props) => {
-  const isSmall = useMediaQuery((theme) => theme.breakpoints.down("md"));
   return (
-    <List {...props} bulkActionButtons={false}>
-      {/* {isSmall ? (
-        <SimpleList
-          primaryText={(record) => record.name}
-          secondaryText={(record) => `${record.email}`}
-          rowClick="edit"
-        />
-      ) : ( */}
+    <List
+      filters={<PartyFilter />}
+      {...props}
+      bulkActionButtons={false}
+      sort={{ field: "id", order: "desc" }}
+    >
       <Datagrid rowClick="show">
         <ImageField
           source="avatar"
@@ -55,9 +64,9 @@ const PartyList = (props) => {
         <TextField source="business_name" />
         <TextField source="address" />
         <TextField source="contact_number" />
+        <BooleanField source="active_boolean" label="Active Party" />
         <EditButton />
       </Datagrid>
-      {/* )} */}
     </List>
   );
 };
@@ -120,6 +129,14 @@ const PartyEdit = (props) => {
           variant="outlined"
           validate={required()}
         />
+        <RadioButtonGroupInput
+          source="active"
+          label="Active Party"
+          choices={[
+            { id: "yes", name: "Yes" },
+            { id: "no", name: "No" },
+          ]}
+        />
       </SimpleForm>
     </Edit>
   );
@@ -171,7 +188,7 @@ const PartyCreate = (props) => {
           multiline
           rows={2}
         />
-        <NumberInput
+        <TextInput
           label="Contact Number"
           source="contact_number"
           fullWidth

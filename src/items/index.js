@@ -24,6 +24,7 @@ import {
   BooleanField,
   RadioButtonGroupInput,
   ImageInput,
+  Filter,
 } from "react-admin";
 import KitchenIcon from "@material-ui/icons/Kitchen";
 const ItemTitle = ({ record }) => {
@@ -34,14 +35,31 @@ const UserEditToolbar = (props) => (
     <SaveButton {...props} label="Update Item" />
   </Toolbar>
 );
+const ItemFilter = (props) => (
+  <Filter {...props}>
+    <TextInput
+      label="Search Item Name"
+      source="name"
+      alwaysOn
+      variant="outlined"
+      fullWidth
+    />
+  </Filter>
+);
 export const ItemList = (props) => {
   return (
-    <List {...props} bulkActionButtons={false}>
+    <List
+      {...props}
+      bulkActionButtons={false}
+      // pagination={false}
+      filters={<ItemFilter />}
+    >
       <Datagrid rowClick="show">
         <ImageField
-          source="image"
+          source="r_image"
           className="img-round img-50"
           title="Item image"
+          label="Image"
         />
         <TextField source="name" />
         <ReferenceField source="category_id" reference="categories">
@@ -181,7 +199,7 @@ export const ItemShow = (props) => (
       <ReferenceField source="category_id" reference="categories">
         <TextField source="name" />
       </ReferenceField>
-      <DateField source="added" showTime />
+      <TextField source="added" />
       <ImageField source="image" className="img-round" alt="item image" />
     </SimpleShowLayout>
   </Show>

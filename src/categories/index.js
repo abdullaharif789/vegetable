@@ -19,6 +19,7 @@ import {
   Toolbar,
   SaveButton,
   EditButton,
+  Filter,
 } from "react-admin";
 import CategoryIcon from "@material-ui/icons/Category";
 const CategoryTitle = ({ record }) => {
@@ -29,9 +30,20 @@ const UserEditToolbar = (props) => (
     <SaveButton {...props} label="Update Category" />
   </Toolbar>
 );
+const CategoryFilter = (props) => (
+  <Filter {...props}>
+    <TextInput
+      label="Search Category Name"
+      source="name"
+      alwaysOn
+      variant="outlined"
+      fullWidth
+    />
+  </Filter>
+);
 export const CategoryList = (props) => {
   return (
-    <List {...props} bulkActionButtons={false}>
+    <List {...props} bulkActionButtons={false} filters={<CategoryFilter />}>
       <Datagrid rowClick="show">
         {/* <TextField source="id" /> */}
         <TextField source="name" />

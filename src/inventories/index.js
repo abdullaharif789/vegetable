@@ -56,6 +56,7 @@ const InventoryFilter = (props) => (
       reference="items"
       alwaysOn
       variant="outlined"
+      perPage={10000000}
     >
       <SelectInput optionText="name" />
     </ReferenceInput>
@@ -64,7 +65,7 @@ const InventoryFilter = (props) => (
 const InventoryList = (props) => {
   return (
     <List
-      pagination={false}
+      // pagination={false}
       {...props}
       filters={<InventoryFilter />}
       bulkActionButtons={false}
@@ -240,6 +241,7 @@ const InventoryCreate = (props) => {
           validate={[required()]}
           variant="outlined"
           onChange={(event) => loadSellingPrice(event.target.value)}
+          perPage={10000000}
         >
           <SelectInput optionText="name" />
         </ReferenceInput>

@@ -15,13 +15,15 @@ const dataProvider = {
       filter: JSON.stringify(params.filter),
     };
     const url = `${apiUrl}${resource}?${stringify(query)}`;
-    return httpClient(url).then(({ headers, json }) => {
-      const total = headers.get("content-range")
-        ? parseInt(headers.get("content-range").split("/").pop(), 10)
-        : json.length;
+    console.log(url, query);
+    return zlFetch(url).then((response) => {
+      const { body, headers } = response;
+      const total = headers["content-language"]
+        ? parseInt(headers["content-language"])
+        : body.length;
       return {
-        data: json,
-        total,
+        data: body,
+        total: total,
       };
     });
   },

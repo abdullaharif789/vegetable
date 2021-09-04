@@ -6,6 +6,7 @@ export const app = {
   colorOne: "#f5881f",
   colorTwo: "#AE9EFD",
   vans: ["Van#1", "Van#2", "Van#3", "Van#4", "Van#5"],
+  payments: ["Paid", "Unpaid"],
   status: ["Progress", "Completed", "Canceled"],
 };
 export const passwordValidator = (password, extra = "") => {
