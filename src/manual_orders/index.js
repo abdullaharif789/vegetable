@@ -6,7 +6,7 @@ import {
   Datagrid,
   TextField,
   ReferenceField,
-  DateField,
+  ReferenceInput,
   Filter,
   TextInput,
   DateInput,
@@ -17,6 +17,7 @@ import {
   Link,
   Loading,
   Title,
+  AutocompleteInput,
 } from "react-admin";
 import Grid from "@material-ui/core/Grid";
 import SaveIcon from "@material-ui/icons/Save";
@@ -27,7 +28,7 @@ import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import { app } from "../contants";
 import { makeStyles } from "@material-ui/core/styles";
-import { AddShoppingCart, PlusOne, RemoveCircle } from "@material-ui/icons";
+import { AddShoppingCart, RemoveCircle } from "@material-ui/icons";
 import Button from "@material-ui/core/Button";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
@@ -47,7 +48,6 @@ import {
   InputAdornment,
   TextField as MaterialTextField,
 } from "@material-ui/core";
-import moment from "moment";
 import axios from "axios";
 const OrderFilter = (props) => (
   <Filter {...props}>
@@ -58,14 +58,29 @@ const OrderFilter = (props) => (
       variant="outlined"
       fullWidth
     />
-    <SelectInput
+    <ReferenceInput
+      source="party_id"
+      reference="parties"
       alwaysOn
+      variant="outlined"
+      perPage={10000000}
+      filterToQuery={(searchText) => ({ business_name: searchText })}
+    >
+      <AutocompleteInput optionText="business_name" />
+    </ReferenceInput>
+    <SelectInput
       choices={app.status.map((item) => ({ id: item, name: item }))}
       source="status"
       label="Status"
       variant="outlined"
     />
-    <DateInput source="created_at" label="Date" variant="outlined" alwaysOn />
+    <SelectInput
+      choices={app.vans.map((item) => ({ id: item, name: item }))}
+      source="van"
+      label="Van"
+      variant="outlined"
+    />
+    <DateInput source="created_at" label="Date" variant="outlined" />
   </Filter>
 );
 
@@ -384,38 +399,10 @@ export const ItemCreate = (props) => {
                 <FormLabel component="legend" className={classes.headings}>
                   Party
                 </FormLabel>
-                {/* <Select
-                  required
-                  value={party}
-                  onChange={(event) => {
-                    setParty(event.target.value);
-                  }}
-                  displayEmpty
-                  fullWidth
-                  variant="outlined"
-                  placeholder="Party"
-                >
-                  {parties.map((party, index) => (
-                    <MenuItem key={index} value={party.id}>
-                      {party.business_name}
-                    </MenuItem>
-                  ))}
-                </Select> */}
                 <Autocomplete
                   value={party}
                   onChange={(event, newValue) => {
                     if (newValue && newValue.id) setParty(newValue);
-                    // if (newValue && newValue.id) {
-                    //   setInventory(newValue);
-                    //   let inventory = inventories.filter(
-                    //     (item) => item.id == newValue.id
-                    //   )[0];
-                    //   setSellPrice(inventory.price);
-                    //   setCostPrice(inventory.buying_price);
-                    // } else {
-                    //   setSellPrice(0);
-                    //   setCostPrice(0);
-                    // }
                   }}
                   options={parties}
                   getOptionLabel={(party) => party.business_name}
@@ -513,28 +500,6 @@ export const ItemCreate = (props) => {
                 </FormLabel>
                 <Grid container spacing={2}>
                   <Grid item xs={12} md={5}>
-                    {/* <Select
-                      required
-                      value={inventory}
-                      onChange={(event) => {
-                        setInventory(event.target.value);
-                        let inventory = inventories.filter(
-                          (item) => item.id == event.target.value
-                        )[0];
-                        setSellPrice(inventory.price);
-                        setCostPrice(inventory.buying_price);
-                      }}
-                      displayEmpty
-                      fullWidth
-                      variant="outlined"
-                      placeholder="Party"
-                    >
-                      {inventories.map((inventory, index) => (
-                        <MenuItem key={index} value={inventory.id}>
-                          {`${inventory.title} - ${app.currencySymbol} ${inventory.price}, ${inventory.date}`}
-                        </MenuItem>
-                      ))}
-                    </Select> */}
                     <Autocomplete
                       value={inventory}
                       onChange={(event, newValue) => {
@@ -546,8 +511,8 @@ export const ItemCreate = (props) => {
                           setSellPrice(inventory.price);
                           setCostPrice(inventory.buying_price);
                         } else {
-                          setSellPrice(0);
-                          setCostPrice(0);
+                          // setSellPrice(0);
+                          // setCostPrice(0);
                         }
                       }}
                       options={inventories}

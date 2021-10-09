@@ -27,6 +27,7 @@ import {
   BooleanField,
   Toolbar,
   SaveButton,
+  AutocompleteInput,
 } from "react-admin";
 import {
   InputAdornment,
@@ -57,8 +58,9 @@ const InventoryFilter = (props) => (
       alwaysOn
       variant="outlined"
       perPage={10000000}
+      filterToQuery={(searchText) => ({ name: searchText })}
     >
-      <SelectInput optionText="name" />
+      <AutocompleteInput optionText="name" />
     </ReferenceInput>
   </Filter>
 );
@@ -240,10 +242,11 @@ const InventoryCreate = (props) => {
           fullWidth
           validate={[required()]}
           variant="outlined"
-          onChange={(event) => loadSellingPrice(event.target.value)}
+          onChange={(event) => loadSellingPrice(event)}
           perPage={10000000}
+          filterToQuery={(searchText) => ({ name: searchText })}
         >
-          <SelectInput optionText="name" />
+          <AutocompleteInput optionText="name" />
         </ReferenceInput>
         <NumberInput
           source="buying_price"

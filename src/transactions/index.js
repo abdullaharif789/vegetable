@@ -1,6 +1,7 @@
 import * as React from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import Icon from "@material-ui/core/Icon";
+import logo from "./logo.png";
 import {
   List,
   Datagrid,
@@ -23,11 +24,29 @@ import {
   Edit,
   Toolbar,
   SaveButton,
+  AutocompleteInput,
+  Show,
+  SimpleShowLayout,
+  ShowButton,
+  EditButton,
+  TopToolbar,
+  CreateButton,
+  ExportButton,
+  Pagination,
 } from "react-admin";
-
+import { cloneElement } from "react";
+import IconEvent from "@material-ui/icons/Event";
+import Typography from "@material-ui/core/Typography";
+import CardWithIcon from "./CardWithIcon";
+import ReactToPrint from "react-to-print";
 import { app } from "../contants";
-
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import Grid from "@material-ui/core/Grid";
 import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
+import Button from "@material-ui/core/Button";
+import Print from "@material-ui/icons/Print";
+import axios from "axios";
 
 const TransactionFilter = (props) => (
   <Filter {...props}>
@@ -35,43 +54,114 @@ const TransactionFilter = (props) => (
       alwaysOn
       choices={app.payments.map((item) => ({ id: item, name: item }))}
       source="paid"
-      label="Amount"
+      label="Amount Status"
       variant="outlined"
     />
     <ReferenceInput
       source="party_id"
       reference="parties"
-      fullWidth
       alwaysOn
       variant="outlined"
       perPage={10000000}
+      filterToQuery={(searchText) => ({ business_name: searchText })}
     >
-      <SelectInput optionText="business_name" />
+      <AutocompleteInput optionText="business_name" />
     </ReferenceInput>
     <DateInput source="date" label="Date" variant="outlined" alwaysOn />
   </Filter>
 );
-
-export const TransactionList = (props) => {
+const Total = (props) => {
+  const { data } = props;
+  const styles = {
+    flex: { display: "flex" },
+    leftCol: { flex: 1 },
+  };
+  const [revenue, setRevenue] = React.useState(0);
+  const loadRevenue = async () => {
+    if (props.filterValues.party_id) {
+      let tempData = Object.keys(data).map((item) => data[item]);
+      let sum = 0;
+      tempData.forEach((tran) => {
+        if (tran.paid == "Unpaid") sum += parseFloat(tran.amount);
+      });
+      setRevenue(sum.toFixed(2));
+    } else {
+      await axios
+        .get(app.api + "transactions?totalUnpaid=1")
+        .then((result) => setRevenue(result.data.toFixed(2)));
+    }
+  };
+  React.useEffect(loadRevenue, [data]);
   return (
-    <List
-      filters={<TransactionFilter />}
-      {...props}
-      bulkActionButtons={false}
-      sort={{ field: "id", order: "desc" }}
-    >
-      <Datagrid rowClick="edit">
-        <TextField source="id" />
+    <div style={styles.flex}>
+      <div style={styles.leftCol}>
+        <div style={styles.flex}>
+          <CardWithIcon
+            to="/orders"
+            icon={() => (
+              <h1
+                style={{
+                  padding: 0,
+                  margin: 0,
+                  marginTop: -10,
+                }}
+              >
+                {app.currencySymbol}
+              </h1>
+            )}
+            title={`Total Unpaid Amount(${app.currencySymbol})`}
+            subtitle={revenue.toString()}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+const ListResult = (props) => {
+  return (
+    <>
+      {props.print && <Logo />}
+      <Total {...props} />
+      <Datagrid rowClick="show">
         <ReferenceField source="party_id" reference="parties">
           <TextField source="business_name" />
         </ReferenceField>
-        <NumberField source="amount" label={`Amount(${app.currencySymbol})`} />
-        <TextField source="paid" label="Amount Paid" />
+        <TextField source="paid" label="Amount Status" />
         <DateField source="date" />
+        <NumberField source="amount" label={`Amount(${app.currencySymbol})`} />
+        {!props.print && <ShowButton />}
+        {!props.print && <EditButton />}
       </Datagrid>
-    </List>
+    </>
   );
 };
+const ListActions = (props) => (
+  <TopToolbar>
+    {cloneElement(props.filters, { context: "button" })}
+    <CreateButton />
+    <ExportButton />
+  </TopToolbar>
+);
+const TranPagination = (props) => (
+  <Pagination rowsPerPageOptions={[10, 25, 50, 100]} {...props} />
+);
+class TransactionList extends React.PureComponent {
+  render() {
+    return (
+      <List
+        filters={this.props.print ? null : <TransactionFilter />}
+        pagination={this.props.print ? null : <TranPagination />}
+        actions={this.props.print ? null : <ListActions />}
+        {...this.props}
+        bulkActionButtons={false}
+        sort={{ field: "date", order: "desc" }}
+      >
+        <ListResult {...this.props} print={this.props.print} />
+      </List>
+    );
+  }
+}
+
 const UserEditToolbar = (props) => (
   <Toolbar {...props}>
     <SaveButton {...props} label="Update Transaction" />
@@ -97,8 +187,9 @@ const TransactionUpdate = (props) => {
           fullWidth
           validate={[required()]}
           variant="outlined"
+          filterToQuery={(searchText) => ({ business_name: searchText })}
         >
-          <SelectInput optionText="business_name" />
+          <AutocompleteInput optionText="business_name" />
         </ReferenceInput>
         <NumberInput
           source="amount"
@@ -151,8 +242,9 @@ const TransactionCreate = (props) => {
           validate={[required()]}
           variant="outlined"
           perPage={10000000}
+          filterToQuery={(searchText) => ({ business_name: searchText })}
         >
-          <SelectInput optionText="business_name" />
+          <AutocompleteInput optionText="business_name" />
         </ReferenceInput>
         <NumberInput
           source="amount"
@@ -179,11 +271,162 @@ const TransactionCreate = (props) => {
     </Create>
   );
 };
+const Logo = () => {
+  const classes = {
+    root: { margin: "auto", border: "none" },
+    spacer: { height: 20 },
+    invoices: { margin: "10px 0" },
+    margin0: { margin: 0 },
+    margin1: { margin: 0, marginTop: 5 },
+  };
+  return (
+    <Card style={classes.root} variant="outlined">
+      <CardContent>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <div>
+            <img
+              src={logo}
+              style={{
+                width: 100,
+              }}
+            />
+            <h4 style={classes.margin0}>Everyday Fresh Food Ltd.</h4>
+            <p style={classes.margin0}>
+              Unite 5E Jaguar Point Manning Heath Road
+            </p>
+            <p style={classes.margin0}>Poole</p>
+            <p style={classes.margin0}>Bh12 4NQ</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+class TransactionShow extends React.PureComponent {
+  constructor() {
+    super();
+  }
+  render() {
+    return (
+      <div>
+        <Logo />
+        <Show {...this.props} actions={false}>
+          <SimpleShowLayout>
+            <ReferenceField source="party_id" reference="parties">
+              <TextField source="business_name" />
+            </ReferenceField>
+            <TextField
+              source="amount"
+              label={`Amount(${app.currencySymbol})`}
+            />
+            <TextField source="paid" />
+            <DateField source="date" />
+          </SimpleShowLayout>
+        </Show>
+      </div>
+    );
+  }
+}
+
+export class PartySingleTransaction extends React.PureComponent {
+  render() {
+    return (
+      <div>
+        <ReactToPrint
+          trigger={() => {
+            return (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  marginTop: 10,
+                  marginBottom: 10,
+                }}
+              >
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<Print fontSize="inherit" />}
+                >
+                  Print
+                </Button>
+              </div>
+            );
+          }}
+          content={() => this.componentRef}
+        />
+        <TransactionShow
+          ref={(el) => (this.componentRef = el)}
+          {...this.props}
+        />
+      </div>
+    );
+  }
+}
+const sleep = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
+class PartyTransactions extends React.PureComponent {
+  render() {
+    return (
+      <div>
+        <ReactToPrint
+          onAfterPrint={() => this.props.setPrint(false)}
+          trigger={() => {
+            return (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  marginTop: 10,
+                  marginBottom: 10,
+                }}
+              >
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<Print fontSize="inherit" />}
+                >
+                  Print
+                </Button>
+                <br />
+              </div>
+            );
+          }}
+          content={() => this.componentRef}
+          onBeforeGetContent={async () => {
+            this.props.setPrint(true);
+            await sleep(1);
+          }}
+          pageStyle={"padding:20px"}
+        />
+
+        <TransactionList
+          ref={(el) => (this.componentRef = el)}
+          {...this.props}
+          print={this.props.print}
+          setPrint={this.props.setPrint}
+        />
+      </div>
+    );
+  }
+}
+const PartyTransactionsWrapper = (props) => {
+  const [print, setPrint] = React.useState(false);
+  return <PartyTransactions {...props} print={print} setPrint={setPrint} />;
+};
 export default {
-  list: TransactionList,
+  list: PartyTransactionsWrapper,
   name: "transactions",
   icon: AttachMoneyIcon,
   create: TransactionCreate,
   options: { label: "Party Transactions" },
   edit: TransactionUpdate,
+  show: PartySingleTransaction,
 };

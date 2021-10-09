@@ -15,7 +15,6 @@ const dataProvider = {
       filter: JSON.stringify(params.filter),
     };
     const url = `${apiUrl}${resource}?${stringify(query)}`;
-    console.log(url, query);
     return zlFetch(url).then((response) => {
       const { body, headers } = response;
       const total = headers["content-language"]

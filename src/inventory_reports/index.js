@@ -89,9 +89,6 @@ const InventoryTable = (props) => {
             </TableCell>
           </TableRow>
         </TableHead>
-        {/* {"id":2,"item_id":1,"unit":27,"remaining_unit":22,"buying_price":100,"selling_price":120,
-        "tax":24,"date":"2021-06-26 16:18:20","image":"https://via.placeholder.com/800/000000/FFF?text=Potato",
-        "title":"Potato","active":true} */}
         <TableBody>
           {data.map((item, index) => {
             let stockPrice = item.unit * item.buying_price;

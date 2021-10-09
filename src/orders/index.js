@@ -7,6 +7,8 @@ import {
   Filter,
   TextInput,
   DateInput,
+  ReferenceInput,
+  AutocompleteInput,
   SelectInput,
 } from "react-admin";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
@@ -22,21 +24,29 @@ const OrderFilter = (props) => (
       variant="outlined"
       fullWidth
     />
-    <SelectInput
+    <ReferenceInput
+      source="party_id"
+      reference="parties"
       alwaysOn
+      variant="outlined"
+      perPage={10000000}
+      filterToQuery={(searchText) => ({ business_name: searchText })}
+    >
+      <AutocompleteInput optionText="business_name" />
+    </ReferenceInput>
+    <SelectInput
       choices={app.status.map((item) => ({ id: item, name: item }))}
       source="status"
       label="Status"
       variant="outlined"
     />
     <SelectInput
-      alwaysOn
       choices={app.vans.map((item) => ({ id: item, name: item }))}
       source="van"
       label="Van"
       variant="outlined"
     />
-    <DateInput source="created_at" label="Date" variant="outlined" alwaysOn />
+    <DateInput source="created_at" label="Date" variant="outlined" />
   </Filter>
 );
 export const OrderList = (props) => {
