@@ -8,7 +8,6 @@ import {
   useRedirect,
 } from "react-admin";
 import {
-  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -307,7 +306,6 @@ const OrderEdit = (props) => {
         item_id: item.item_id,
         inventory_id: item.inventory_id,
         title: item.title,
-        inventory_id: item.inventory_id,
         max: item.max,
       })),
       total: parseFloat(totalSum) + parseFloat(totalTax),

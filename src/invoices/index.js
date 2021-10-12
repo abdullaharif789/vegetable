@@ -79,9 +79,7 @@ export const InvoiceList = (props) => {
             fontWeight: "bold",
           }}
         />
-        <ReferenceField source="order_id" reference="orders" label="Order#">
-          <TextField source="id" />
-        </ReferenceField>
+        <TextField source="order.order_code" />
         <ReferenceField
           source="order.party_id"
           reference="parties"

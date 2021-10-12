@@ -368,9 +368,6 @@ export class PartySingleTransaction extends React.PureComponent {
     );
   }
 }
-const sleep = (ms) => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-};
 
 class PartyTransactions extends React.PureComponent {
   render() {
@@ -402,7 +399,7 @@ class PartyTransactions extends React.PureComponent {
           content={() => this.componentRef}
           onBeforeGetContent={async () => {
             this.props.setPrint(true);
-            await sleep(1);
+            await app.sleep(1);
           }}
           pageStyle={"padding:20px"}
         />

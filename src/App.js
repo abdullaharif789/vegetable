@@ -1,3 +1,4 @@
+/* eslint-disable */
 // in src/App.js
 import * as React from "react";
 import { Admin, Resource } from "react-admin";
@@ -18,8 +19,10 @@ import categories from "./categories";
 import orders from "./orders";
 import invoices from "./invoices";
 import order_reports from "./order_reports";
-import inventory_reports from "./inventory_reports";
+// import inventory_reports from "./inventory_reports";
 import van_reports from "./van_reports";
+import purchase_orders from "./purchase_orders";
+import purchase_items from "./purchase_items";
 import manual_orders from "./manual_orders";
 import transactions from "./transactions";
 import { app } from "./contants";
@@ -62,6 +65,8 @@ export default function App() {
       <Resource {...inventories} />
       <Resource {...orders} />
       <Resource {...manual_orders} />
+      <Resource {...purchase_orders} />
+      <Resource {...purchase_items} />
       <Resource {...transactions} />
       <Resource {...invoices} />
       <Resource {...order_reports} />

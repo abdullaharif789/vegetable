@@ -1,6 +1,5 @@
 import * as React from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import Icon from "@material-ui/core/Icon";
 import {
   List,
   Datagrid,
@@ -346,7 +345,6 @@ export const ItemCreate = (props) => {
         item_id: item.item_id,
         inventory_id: item.inventory_id,
         title: item.title,
-        inventory_id: item.inventory_id,
         max: item.max,
       })),
       total: parseFloat(totalSum) + parseFloat(totalTax),
@@ -370,7 +368,6 @@ export const ItemCreate = (props) => {
     await axios
       .post(url, temp)
       .then((response) => {
-        console.log(response);
         setLoading(false);
         notify(`Manual order added successfully.`);
         redirect("/manual_orders");

@@ -2,6 +2,7 @@ import * as React from "react";
 import { Layout, Sidebar } from "react-admin";
 import { app } from "../contants";
 import AppBar from "./AppBar";
+import Menu from "./Menu";
 
 const CustomSidebar = (props) => <Sidebar {...props} />;
 export default (props) => {
@@ -27,10 +28,10 @@ export default (props) => {
     overrides: {
       RaMenuItemLink: {
         root: {
-          borderLeft: "5px solid #fff",
+          // borderLeft: "5px solid #fff",
         },
         active: {
-          borderLeft: `5px solid ${app.colorOne}`,
+          // borderLeft: `5px solid ${app.colorOne}`,
         },
       },
       MuiPaper: {
@@ -109,6 +110,12 @@ export default (props) => {
   };
 
   return (
-    <Layout {...props} appBar={AppBar} sidebar={CustomSidebar} theme={theme} />
+    <Layout
+      {...props}
+      appBar={AppBar}
+      sidebar={CustomSidebar}
+      theme={theme}
+      menu={Menu}
+    />
   );
 };

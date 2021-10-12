@@ -35,6 +35,7 @@ import {
 } from "@material-ui/core";
 import DynamicFeedIcon from "@material-ui/icons/DynamicFeed";
 import { app } from "../contants";
+import { ListAlt } from "@material-ui/icons";
 const InventoryTitle = ({ record }) => {
   //return <span>Inventory {record ? ` - ${record.name}` : ""}</span>;
   return <span>Inventory</span>;
@@ -336,4 +337,5 @@ export default {
     label: "Inventory",
   },
   name: "inventories",
+  icon: ListAlt,
 };
