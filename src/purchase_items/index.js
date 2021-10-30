@@ -1,156 +1,127 @@
 import * as React from "react";
-import { List, Filter, DateInput, Pagination } from "react-admin";
+import { List, Filter, DateInput, SelectInput } from "react-admin";
 import ProductionQuantityLimitsIcon from "@material-ui/icons/PlusOne";
 
 import { app } from "../contants";
 import Button from "@material-ui/core/Button";
 import ReactToPrint from "react-to-print";
 import Print from "@material-ui/icons/Print";
-
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-} from "@material-ui/core";
+import DataTable from "react-data-table-component";
 
 const OrderFilter = (props) => (
   <Filter {...props}>
-    {/* <ReferenceInput
-      source="party_id"
-      reference="parties"
-      alwaysOn
-      variant="outlined"
-      perPage={10000000}
-      filterToQuery={(searchText) => ({ business_name: searchText })}
-    >
-      <AutocompleteInput optionText="business_name" />
-    </ReferenceInput>
     <SelectInput
       choices={app.vans.map((item) => ({ id: item, name: item }))}
       source="van"
       label="Van"
       variant="outlined"
       alwaysOn
-    /> */}
+    />
     <DateInput source="start_date" alwaysOn variant="outlined" />
     <DateInput source="end_date" alwaysOn variant="outlined" />
   </Filter>
 );
-const getBoxesOutput = (output) => {
-  return (
-    <>
-      <strong>{output[app.boxTypes[0]] ? output[app.boxTypes[0]] : 0} </strong>
-      {app.boxTypes[0]}
-      {", "}
-      <strong>{output[app.boxTypes[1]] ? output[app.boxTypes[1]] : 0} </strong>
-      {app.boxTypes[1]}
-      {", "}
-      <strong>{output[app.boxTypes[2]] ? output[app.boxTypes[2]] : 0} </strong>
-      {app.boxTypes[2]}
-    </>
-  );
-};
 
 class PrintItemWiseDetails extends React.Component {
+  normalize(output) {
+    var str = "";
+    str += `${output[app.boxTypes[0]] ? output[app.boxTypes[0]] : 0} ${
+      app.boxTypes[0]
+    }${", "}`;
+    str += `${output[app.boxTypes[1]] ? output[app.boxTypes[1]] : 0} ${
+      app.boxTypes[1]
+    }${", "}`;
+    str += `${output[app.boxTypes[2]] ? output[app.boxTypes[2]] : 0} ${
+      app.boxTypes[2]
+    }`;
+    return str;
+  }
   render() {
-    var totalData = {
-      [app.boxTypes[0]]: 0,
-      [app.boxTypes[1]]: 0,
-      [app.boxTypes[2]]: 0,
-    };
+    const newCart = app.sort(
+      this.props.allCart.map((item, index) => ({
+        ...item,
+        id: index,
+        total: this.normalize(item.total),
+      })),
+      "name"
+    );
     return (
-      this.props.data.length > 0 && (
-        <div
-          style={{
-            padding: "0px 10px",
-          }}
-        >
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>Item</TableCell>
-                <TableCell align="right">Total</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {Object.keys(this.props.allCart).map((key) => {
-                //get Total
-                if (this.props.allCart[key][app.boxTypes[0]]) {
-                  totalData[app.boxTypes[0]] +=
-                    this.props.allCart[key][app.boxTypes[0]];
-                }
-                if (this.props.allCart[key][app.boxTypes[1]]) {
-                  totalData[app.boxTypes[1]] +=
-                    this.props.allCart[key][app.boxTypes[1]];
-                }
-                if (this.props.allCart[key][app.boxTypes[2]]) {
-                  totalData[app.boxTypes[2]] +=
-                    this.props.allCart[key][app.boxTypes[2]];
-                }
-                return (
-                  <>
-                    <TableRow>
-                      <TableCell
-                        style={{
-                          color: "#f5881f",
-                        }}
-                      >
-                        {key}
-                      </TableCell>
-                      <TableCell align="right">
-                        {getBoxesOutput(this.props.allCart[key])}
-                      </TableCell>
-                    </TableRow>
-                  </>
-                );
-              })}
-              <TableRow>
-                <TableCell align="right"></TableCell>
-                <TableCell align="right">
-                  <strong>{getBoxesOutput(totalData)}</strong>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </div>
-      )
+      <DataTable
+        columns={[
+          {
+            name: "Item",
+            selector: (row) => row.name,
+            sortable: true,
+          },
+          {
+            name: "Van",
+            selector: (row) => row.van,
+            sortable: true,
+          },
+          {
+            name: "Total",
+            selector: (row) => row.total,
+          },
+        ]}
+        data={newCart}
+        pagination
+        paginationComponentOptions={{
+          selectAllRowsItem: true,
+          selectAllRowsItemText: "All Items",
+        }}
+      />
     );
   }
 }
 
 const OrderListRows = (props) => {
   const data = Object.keys(props.data).map((item) => props.data[item]);
-  var allCart = {};
-
+  const rawData = [];
+  const newData = [];
   data.forEach((order) => {
-    order.cart.forEach((cartItem) => {
-      const key = cartItem.name;
-      if (!allCart[key]) allCart[key] = [];
-      allCart[key].push({
-        type: cartItem.type,
-        quantity: cartItem.quantity,
+    order.cart.forEach((item) => {
+      rawData.push({
+        name: item.name,
+        type: item.type,
+        quantity: parseFloat(item.quantity),
+        van: order.van,
       });
     });
   });
-  Object.keys(allCart).map((key) => {
-    var tempData = {};
-    allCart[key].map((item) => {
-      const newKey = item.type;
-      if (tempData[newKey])
-        tempData[newKey] = tempData[newKey] + parseInt(item.quantity);
-      else tempData[newKey] = parseInt(item.quantity);
-    });
-    allCart[key] = tempData;
-  });
-  allCart = Object.keys(allCart)
-    .sort()
-    .reduce((obj, key) => {
-      obj[key] = allCart[key];
-      return obj;
-    }, {});
-  console.log(allCart);
+  for (let index = 0; index < rawData.length; index++) {
+    const element = {
+      ...rawData[index],
+      quantity: parseFloat(rawData[index].quantity),
+    };
+    let againElement = app.filter(newData, element);
+    if (againElement.length === 0) {
+      newData.push(element);
+    } else if (againElement.length === 1) {
+      againElement = againElement[0];
+      againElement.quantity =
+        parseFloat(againElement.quantity) + parseFloat(element.quantity);
+    }
+  }
+  const finalOutput = [];
+  for (let index = 0; index < newData.length; index++) {
+    const element = newData[index];
+    let againElement = app.filter(finalOutput, element, false);
+    if (againElement.length === 0) {
+      finalOutput.push({
+        name: element.name,
+        van: element.van,
+        total: {
+          [element["type"]]: `${element.quantity}`,
+        },
+      });
+    } else {
+      againElement = againElement[0];
+      againElement.total = {
+        ...againElement.total,
+        [element["type"]]: `${element.quantity}`,
+      };
+    }
+  }
   var summaryRef;
   return (
     <>
@@ -187,24 +158,16 @@ const OrderListRows = (props) => {
           <PrintItemWiseDetails
             ref={(el) => (summaryRef = el)}
             data={data}
-            allCart={allCart}
+            allCart={finalOutput}
           />
         </div>
       )}
     </>
   );
 };
-const OrderPagination = (props) => (
-  <Pagination rowsPerPageOptions={[5, 10, 25, 50, 100]} {...props} />
-);
 export const OrderList = (props) => {
   return (
-    <List
-      pagination={<OrderPagination />}
-      {...props}
-      filters={<OrderFilter />}
-      sort={{ field: "id", order: "desc" }}
-    >
+    <List pagination={false} {...props} filters={<OrderFilter />}>
       <OrderListRows />
     </List>
   );

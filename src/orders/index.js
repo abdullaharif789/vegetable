@@ -14,6 +14,7 @@ import {
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import { app } from "../contants";
 import OrderEdit from "./OrderEdit";
+import CustomPagination from "../components/PaginationCustom";
 
 const OrderFilter = (props) => (
   <Filter {...props}>
@@ -52,11 +53,11 @@ const OrderFilter = (props) => (
 export const OrderList = (props) => {
   return (
     <List
-      // pagination={false}
       {...props}
       bulkActionButtons={false}
       filters={<OrderFilter />}
       sort={{ field: "id", order: "desc" }}
+      pagination={<CustomPagination />}
     >
       <Datagrid rowClick="edit">
         <TextField

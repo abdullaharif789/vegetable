@@ -18,10 +18,14 @@ import {
   AutocompleteInput,
   DeleteButton,
   ArrayField,
-  EditButton,
-  NumberField,
   Pagination,
+  SimpleShowLayout,
+  NumberField,
+  Show,
+  DateField,
 } from "react-admin";
+import VisibilityIcon from "@material-ui/icons/VisibilitySharp";
+import DeleteIcon from "@material-ui/icons/Delete";
 import Grid from "@material-ui/core/Grid";
 import SaveIcon from "@material-ui/icons/Save";
 import Card from "@material-ui/core/Card";
@@ -33,6 +37,8 @@ import { app } from "../contants";
 import { makeStyles } from "@material-ui/core/styles";
 import { RemoveCircle, Money } from "@material-ui/icons";
 import Button from "@material-ui/core/Button";
+import { Button as RAButton } from "react-admin";
+
 import ReactToPrint from "react-to-print";
 import Print from "@material-ui/icons/Print";
 
@@ -51,6 +57,8 @@ import {
   TextField as MaterialTextField,
 } from "@material-ui/core";
 import axios from "axios";
+import CustomDelete from "./CustomDelete";
+import CustomPagination from "../components/PaginationCustom";
 const OrderFilter = (props) => (
   <Filter {...props}>
     <ReferenceInput
@@ -75,74 +83,157 @@ const OrderFilter = (props) => (
   </Filter>
 );
 
-const DeleteCustomButton = (props) => {
-  return <DeleteButton {...props} />;
+// const DeleteCustomButton = (props) => {
+//   return <DeleteButton {...props} />;
+// };
+const PrintUpperTableFun = (props) => {
+  const [data, setData] = React.useState([]);
+  React.useEffect(() => {
+    setData(
+      Object.keys(props.data)
+        .map((item) => props.data[item])
+        .sort((a, b) => a.sr - b.sr)
+    );
+  }, [props.data]);
+  console.log(data);
+  var total = 0;
+  return (
+    <Table size="small">
+      <TableBody>
+        {data.map((order) => {
+          total = 0;
+          return (
+            <>
+              <TableRow>
+                <TableCell>
+                  <div style={{ paddingLeft: 15 }}>
+                    <strong>Sr# </strong>
+                    {order.sr}
+                  </div>
+                </TableCell>
+                <TableCell align="right">
+                  <RAButton
+                    onClick={() => {
+                      window.location = `#/purchase_orders/${order.id}/show`;
+                    }}
+                    key="button"
+                    label="Show"
+                  >
+                    <VisibilityIcon />
+                  </RAButton>
+                  <CustomDelete
+                    dispatchCrudDelete={false}
+                    startUndoable={false}
+                    resource={"purchase_orders"}
+                    record={order}
+                    undoable={false}
+                  />
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={2}>
+                  <div style={{ paddingLeft: 15 }}>
+                    <strong>
+                      Party Name :{" "}
+                      <span style={{ color: "#f5881f" }}>
+                        {order.party.business_name}
+                      </span>
+                    </strong>
+                  </div>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={2}>
+                  <div style={{ paddingLeft: 15 }}>
+                    <strong>Date : </strong>
+                    {order.created_at}
+                  </div>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={2}>
+                  <div style={{ paddingLeft: 15 }}>
+                    <strong>Van : </strong>
+                    {order.van}
+                  </div>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={3}>
+                  <Table
+                    size="small"
+                    style={{
+                      marginBottom: 20,
+                    }}
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Name </TableCell>
+                        <TableCell>Type</TableCell>
+                        <TableCell>Quantity</TableCell>
+                        <TableCell align="right">
+                          Price({app.currencySymbol})
+                        </TableCell>
+                        <TableCell align="right">
+                          Total({app.currencySymbol})
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {order.cart.map((cart) => {
+                        total += parseFloat(cart.total);
+                        return (
+                          <TableRow>
+                            <TableCell style={{ width: "40%" }}>
+                              {cart.name}
+                            </TableCell>
+                            <TableCell style={{ width: "20%" }}>
+                              {cart.type}
+                            </TableCell>
+                            <TableCell style={{ width: "5%" }}>
+                              {cart.quantity}
+                            </TableCell>
+                            <TableCell align="right" style={{ width: "20%" }}>
+                              {cart.price}
+                            </TableCell>
+                            <TableCell align="right" style={{ width: "20%" }}>
+                              {cart.total}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                      <TableRow>
+                        <TableCell align="right" colSpan={4}>
+                          <strong>Total({app.currencySymbol})</strong>
+                        </TableCell>
+                        <TableCell align="right">
+                          <strong>{total.toFixed(2)}</strong>
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </TableCell>
+              </TableRow>
+            </>
+          );
+        })}
+      </TableBody>
+    </Table>
+  );
 };
 class PrintUpperTable extends React.Component {
   render() {
-    return (
-      <Datagrid>
-        <NumberField source="sr" label="Sr#" />
-        <ReferenceField source="party_id" reference="parties">
-          <TextField source="business_name" />
-        </ReferenceField>
-        <ArrayField source="cart">
-          <Datagrid>
-            <TextField source="name" />
-            <TextField source="type" />
-            <TextField source="quantity" />
-            <TextField source="price" label={`Price(${app.currencySymbol})`} />
-            <TextField
-              source="total"
-              label={`Total(${app.currencySymbol})`}
-              style={{
-                fontWeight: "900",
-              }}
-            />
-          </Datagrid>
-        </ArrayField>
-        <TextField
-          source="total"
-          label={`Total Amount(${app.currencySymbol})`}
-        />
-        <TextField source="van" />
-        <TextField source="created_at" label="Date" />
-        {!this.props.print && <EditButton />}
-        {!this.props.print && <DeleteCustomButton {...this.props} />}
-      </Datagrid>
-    );
+    return <PrintUpperTableFun {...this.props} />;
   }
 }
 
 const OrderListRows = (props) => {
   const [print, setPrint] = React.useState(false);
-  const data = Object.keys(props.data).map((item) => props.data[item]);
-  var allCart = {};
-
-  data.forEach((order) => {
-    order.cart.forEach((cartItem) => {
-      const key = cartItem.name;
-      if (!allCart[key]) allCart[key] = [];
-      allCart[key].push({
-        type: cartItem.type,
-        quantity: cartItem.quantity,
-      });
-    });
-  });
-  Object.keys(allCart).map((key) => {
-    var tempData = {};
-    allCart[key].map((item) => {
-      const newKey = item.type;
-      if (tempData[newKey])
-        tempData[newKey] = tempData[newKey] + parseInt(item.quantity);
-      else tempData[newKey] = parseInt(item.quantity);
-    });
-    allCart[key] = tempData;
-  });
+  console.log(props.data);
   var tableRef;
   return (
     <>
-      {data.length > 0 && (
+      {Object.keys(props.data).length > 0 && (
         <div
           style={{
             marginRight: 10,
@@ -177,19 +268,20 @@ const OrderListRows = (props) => {
             pageStyle={"padding:20px"}
             content={() => tableRef}
           />
-          <PrintUpperTable ref={(el) => (tableRef = el)} print={print} />
+          <PrintUpperTable
+            ref={(el) => (tableRef = el)}
+            print={print}
+            {...props}
+          />
         </div>
       )}
     </>
   );
 };
-const OrderPagination = (props) => (
-  <Pagination rowsPerPageOptions={[5, 10, 25, 50, 100]} {...props} />
-);
 export const OrderList = (props) => {
   return (
     <List
-      pagination={<OrderPagination />}
+      pagination={<CustomPagination />}
       {...props}
       filters={<OrderFilter />}
       sort={{ field: "id", order: "desc" }}
@@ -201,7 +293,7 @@ export const OrderList = (props) => {
 const getTotalCount = (data, typeIndex) => {
   return data.cart
     .filter((i) => i.type === app.boxTypes[typeIndex])
-    .reduce((a, b) => a + parseInt(b["quantity"]), 0);
+    .reduce((a, b) => a + parseFloat(b["quantity"]), 0);
 };
 const Cart = ({ data, submitOrder, setData, add }) => {
   if (data.cart.length === 0) return <p>There is no item in cart.</p>;
@@ -209,7 +301,7 @@ const Cart = ({ data, submitOrder, setData, add }) => {
     var newData = { ...data };
     newData.cart = newData.cart.filter((item) => item.id !== id);
     const total = newData.cart.reduce(
-      (a, b) => a + parseFloat(b["price"]) * parseInt(b["quantity"]),
+      (a, b) => a + parseFloat(b["price"]) * parseFloat(b["quantity"]),
       0
     );
     newData.total = total;
@@ -252,6 +344,7 @@ const Cart = ({ data, submitOrder, setData, add }) => {
                   {item.name}
                 </Link>
               </TableCell>
+
               <TableCell align="right">{item.type}</TableCell>
               <TableCell align="right">{item.quantity}</TableCell>
               <TableCell align="right">
@@ -259,7 +352,9 @@ const Cart = ({ data, submitOrder, setData, add }) => {
               </TableCell>
               <TableCell align="right">
                 <strong>
-                  {parseFloat(item.price * item.quantity).toFixed(2)}
+                  {parseFloat(item.price * parseFloat(item.quantity)).toFixed(
+                    2
+                  )}
                 </strong>
               </TableCell>
             </TableRow>
@@ -350,11 +445,21 @@ const PurchaseOrdersCreate = (props) => {
   }, []);
   const addItemInCart = () => {
     if (quantity === "" || parseInt(quantity) <= 0) {
-      notify(`Sorry, please enter any valid quantity.`, "error");
-      setQuantity(1);
-      return;
+      if (boxType !== app.boxTypes[2]) {
+        notify(`Sorry, please enter any valid integral quantity.`, "error");
+        return;
+      }
     }
-    if (price === "" || parseFloat(price) <= 0) {
+    if (quantity === "" || parseFloat(quantity) % 0.5 !== 0) {
+      if (boxType === app.boxTypes[2]) {
+        notify(
+          `Sorry, please enter any valid float quantity for Loose Items.`,
+          "error"
+        );
+        return;
+      }
+    }
+    if (price === "" || parseFloat(price) < 0) {
       notify(`Sorry, please enter any valid price.`, "error");
       return;
     }
@@ -365,7 +470,7 @@ const PurchaseOrdersCreate = (props) => {
     )[0];
     if (tempItemValidate) {
       tempItemValidate.quantity =
-        parseInt(tempItemValidate.quantity) + parseInt(quantity);
+        parseFloat(tempItemValidate.quantity) + parseFloat(quantity);
       tempItemValidate.price = parseFloat(price);
     } else {
       const newId =
@@ -380,7 +485,7 @@ const PurchaseOrdersCreate = (props) => {
       });
     }
     const total = newCart.reduce(
-      (a, b) => a + parseFloat(b["price"]) * parseInt(b["quantity"]),
+      (a, b) => a + parseFloat(b["price"]) * parseFloat(b["quantity"]),
       0
     );
     var temp = {
@@ -389,18 +494,19 @@ const PurchaseOrdersCreate = (props) => {
       total,
     };
     setData(temp);
-    setQuantity("1");
+    // setQuantity("0.5");
   };
   const submitOrder = async () => {
     var temp = { ...data };
     temp.cart = temp.cart.map((item) => ({
       ...item,
       total: parseFloat(
-        parseFloat(item.price) * parseInt(item.quantity)
+        parseFloat(item.price) * parseFloat(item.quantity)
       ).toFixed(2),
       price: parseFloat(item.price).toFixed(2),
     }));
     temp.van_id = van;
+    console.log(temp);
     setLoading(true);
     const url = app.api + "purchase_orders";
     await axios
@@ -503,7 +609,7 @@ const PurchaseOrdersCreate = (props) => {
                       onChange={(event, newValue) => {
                         if (newValue && newValue.id) {
                           setItem(newValue);
-                          setQuantity(1);
+                          setQuantity("0.5");
                         }
                       }}
                       options={items}
@@ -550,7 +656,13 @@ const PurchaseOrdersCreate = (props) => {
                       type="number"
                       required
                       value={quantity}
-                      onChange={(event) => setQuantity(event.target.value)}
+                      onChange={(event) => {
+                        if (boxType === app.boxTypes[2]) {
+                          setQuantity(parseFloat(event.target.value));
+                        } else {
+                          setQuantity(parseInt(event.target.value));
+                        }
+                      }}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">=</InputAdornment>
@@ -668,12 +780,23 @@ const PurchaseOrdersEdit = (props) => {
     loadData();
   }, []);
   const addItemInCart = () => {
+    console.log(quantity, boxType);
     if (quantity === "" || parseInt(quantity) <= 0) {
-      notify(`Sorry, please enter any valid quantity.`, "error");
-      setQuantity(1);
-      return;
+      if (boxType !== app.boxTypes[2]) {
+        notify(`Sorry, please enter any valid integral quantity.`, "error");
+        return;
+      }
     }
-    if (price === "" || parseFloat(price) <= 0) {
+    if (quantity === "" || parseFloat(quantity) % 0.5 !== 0) {
+      if (boxType === app.boxTypes[2]) {
+        notify(
+          `Sorry, please enter any valid float quantity for Loose Items.`,
+          "error"
+        );
+        return;
+      }
+    }
+    if (price === "" || parseFloat(price) < 0) {
       notify(`Sorry, please enter any valid price.`, "error");
       return;
     }
@@ -684,7 +807,7 @@ const PurchaseOrdersEdit = (props) => {
     )[0];
     if (tempItemValidate) {
       tempItemValidate.quantity =
-        parseInt(tempItemValidate.quantity) + parseInt(quantity);
+        parseFloat(tempItemValidate.quantity) + parseFloat(quantity);
       tempItemValidate.price = parseFloat(price);
     } else {
       const newId =
@@ -699,7 +822,7 @@ const PurchaseOrdersEdit = (props) => {
       });
     }
     const total = newCart.reduce(
-      (a, b) => a + parseFloat(b["price"]) * parseInt(b["quantity"]),
+      (a, b) => a + parseFloat(b["price"]) * parseFloat(b["quantity"]),
       0
     );
     var temp = {
@@ -708,19 +831,18 @@ const PurchaseOrdersEdit = (props) => {
       total,
     };
     setData(temp);
-    setQuantity("1");
   };
   const submitOrder = async () => {
     var temp = { ...data };
     temp.cart = temp.cart.map((item) => ({
       ...item,
       total: parseFloat(
-        parseFloat(item.price) * parseInt(item.quantity)
+        parseFloat(item.price) * parseFloat(item.quantity)
       ).toFixed(2),
       price: parseFloat(item.price).toFixed(2),
     }));
     const total = temp.cart.reduce(
-      (a, b) => a + parseFloat(b["price"]) * parseInt(b["quantity"]),
+      (a, b) => a + parseFloat(b["price"]) * parseFloat(b["quantity"]),
       0
     );
     let updatedData = {
@@ -804,7 +926,7 @@ const PurchaseOrdersEdit = (props) => {
                       onChange={(event, newValue) => {
                         if (newValue && newValue.id) {
                           setItem(newValue);
-                          setQuantity(1);
+                          setQuantity(0.5);
                         }
                       }}
                       options={items}
@@ -851,7 +973,13 @@ const PurchaseOrdersEdit = (props) => {
                       type="number"
                       required
                       value={quantity}
-                      onChange={(event) => setQuantity(event.target.value)}
+                      onChange={(event) => {
+                        if (boxType === app.boxTypes[2]) {
+                          setQuantity(parseFloat(event.target.value));
+                        } else {
+                          setQuantity(parseInt(event.target.value));
+                        }
+                      }}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">=</InputAdornment>
@@ -910,6 +1038,33 @@ const PurchaseOrdersEdit = (props) => {
       </Card>
     );
 };
+export const Purchase_orderShow = (props) => (
+  <Show {...props}>
+    <SimpleShowLayout>
+      <TextField source="id" />
+      <ReferenceField source="party_id" reference="parties">
+        <TextField source="business_name" />
+      </ReferenceField>
+      <ArrayField source="cart">
+        <Datagrid>
+          <TextField source="id" />
+          <ReferenceField source="item_id" reference="items">
+            <TextField source="name" />
+          </ReferenceField>
+          <TextField source="name" />
+          <TextField source="type" />
+          <NumberField source="quantity" />
+          <TextField source="price" />
+          <TextField source="total" />
+        </Datagrid>
+      </ArrayField>
+      <TextField source="van" />
+      <TextField source="total" />
+      <TextField source="created_at" />
+    </SimpleShowLayout>
+  </Show>
+);
+
 export default {
   list: OrderList,
   name: "purchase_orders",
@@ -917,4 +1072,5 @@ export default {
   create: PurchaseOrdersCreate,
   edit: PurchaseOrdersEdit,
   options: { label: "Purchase Orders" },
+  show: Purchase_orderShow,
 };

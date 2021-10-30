@@ -48,6 +48,7 @@ import {
   TextField as MaterialTextField,
 } from "@material-ui/core";
 import axios from "axios";
+import CustomPagination from "../components/PaginationCustom";
 const OrderFilter = (props) => (
   <Filter {...props}>
     <TextInput
@@ -86,11 +87,11 @@ const OrderFilter = (props) => (
 export const OrderList = (props) => {
   return (
     <List
-      // pagination={false}
       {...props}
       bulkActionButtons={false}
       filters={<OrderFilter />}
       sort={{ field: "id", order: "desc" }}
+      pagination={<CustomPagination />}
     >
       <Datagrid rowClick={(id) => `/orders/${id}`}>
         <TextField

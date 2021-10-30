@@ -23,7 +23,13 @@ import {
   BooleanField,
   Filter,
 } from "react-admin";
+import Button from "@material-ui/core/Button";
+
 import PersonIcon from "@material-ui/icons/Person";
+
+import ReactToPrint from "react-to-print";
+import Print from "@material-ui/icons/Print";
+import CustomPagination from "../components/PaginationCustom";
 
 const PartyTitle = ({ record }) => {
   return <span>Parties {record ? ` - ${record.name}` : ""}</span>;
@@ -44,14 +50,9 @@ const PartyFilter = (props) => (
     />
   </Filter>
 );
-const PartyList = (props) => {
-  return (
-    <List
-      filters={<PartyFilter />}
-      {...props}
-      bulkActionButtons={false}
-      sort={{ field: "id", order: "desc" }}
-    >
+class PartyListPrint extends React.Component {
+  render() {
+    return (
       <Datagrid rowClick="show">
         <ImageField
           source="avatar"
@@ -65,12 +66,62 @@ const PartyList = (props) => {
         <TextField source="address" />
         <TextField source="contact_number" />
         <BooleanField source="active_boolean" label="Active Party" />
-        <EditButton />
+        <EditButton label="" />
       </Datagrid>
+    );
+  }
+}
+
+const PartyList = (props) => {
+  var tableRef;
+  return (
+    <>
+      <div
+        style={{
+          marginRight: 10,
+        }}
+      >
+        <ReactToPrint
+          trigger={() => {
+            return (
+              <div
+                style={{
+                  marginTop: 10,
+                  marginBottom: 10,
+                  float: "right",
+                }}
+              >
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<Print fontSize="inherit" />}
+                >
+                  Print
+                </Button>
+              </div>
+            );
+          }}
+          pageStyle={"padding:20px"}
+          content={() => tableRef}
+        />
+        <PartyListPrint ref={(el) => (tableRef = el)} {...props} />
+      </div>
+    </>
+  );
+};
+const PartyListParent = (props) => {
+  return (
+    <List
+      filters={<PartyFilter />}
+      {...props}
+      bulkActionButtons={false}
+      sort={{ field: "id", order: "desc" }}
+      pagination={<CustomPagination />}
+    >
+      <PartyList {...props} />
     </List>
   );
 };
-
 const PartyShow = (props) => (
   <Show {...props} title={<PartyTitle />}>
     <SimpleShowLayout>
@@ -200,7 +251,7 @@ const PartyCreate = (props) => {
   );
 };
 export default {
-  list: PartyList,
+  list: PartyListParent,
   show: PartyShow,
   create: PartyCreate,
   edit: PartyEdit,

@@ -47,6 +47,7 @@ import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
 import Button from "@material-ui/core/Button";
 import Print from "@material-ui/icons/Print";
 import axios from "axios";
+import CustomPagination from "../components/PaginationCustom";
 
 const TransactionFilter = (props) => (
   <Filter {...props}>
@@ -77,18 +78,23 @@ const Total = (props) => {
     leftCol: { flex: 1 },
   };
   const [revenue, setRevenue] = React.useState(0);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadRevenue = async () => {
-    if (props.filterValues.party_id) {
-      let tempData = Object.keys(data).map((item) => data[item]);
-      let sum = 0;
-      tempData.forEach((tran) => {
-        if (tran.paid == "Unpaid") sum += parseFloat(tran.amount);
-      });
-      setRevenue(sum.toFixed(2));
-    } else {
-      await axios
-        .get(app.api + "transactions?totalUnpaid=1")
-        .then((result) => setRevenue(result.data.toFixed(2)));
+    try {
+      if (props.filterValues.party_id) {
+        let tempData = Object.keys(data).map((item) => data[item]);
+        let sum = 0;
+        tempData.forEach((tran) => {
+          if (tran.paid == "Unpaid") sum += parseFloat(tran.amount);
+        });
+        setRevenue(sum.toFixed(2));
+      } else {
+        await axios
+          .get(app.api + "transactions?totalUnpaid=1")
+          .then((result) => setRevenue(result.data.toFixed(2)));
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
   React.useEffect(loadRevenue, [data]);
@@ -142,15 +148,12 @@ const ListActions = (props) => (
     <ExportButton />
   </TopToolbar>
 );
-const TranPagination = (props) => (
-  <Pagination rowsPerPageOptions={[10, 25, 50, 100]} {...props} />
-);
 class TransactionList extends React.PureComponent {
   render() {
     return (
       <List
         filters={this.props.print ? null : <TransactionFilter />}
-        pagination={this.props.print ? null : <TranPagination />}
+        pagination={this.props.print ? null : <CustomPagination />}
         actions={this.props.print ? null : <ListActions />}
         {...this.props}
         bulkActionButtons={false}
@@ -181,16 +184,16 @@ const TransactionUpdate = (props) => {
       undoable={false}
     >
       <SimpleForm toolbar={<UserEditToolbar />}>
-        <ReferenceInput
+        {/* <ReferenceInput
           source="party_id"
           reference="parties"
           fullWidth
           validate={[required()]}
           variant="outlined"
-          filterToQuery={(searchText) => ({ business_name: searchText })}
+          // filterToQuery={(searchText) => ({ business_name: searchText })}
         >
           <AutocompleteInput optionText="business_name" />
-        </ReferenceInput>
+        </ReferenceInput> */}
         <NumberInput
           source="amount"
           variant="outlined"

@@ -1,5 +1,5 @@
-/* eslint-disable */
-// in src/App.js
+// /* eslint-disable */
+// // in src/App.js
 import * as React from "react";
 import { Admin, Resource } from "react-admin";
 import axios from "axios";

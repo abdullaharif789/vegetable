@@ -17,7 +17,6 @@ import {
   useNotify,
   useRefresh,
   useRedirect,
-  DateField,
   Toolbar,
   SaveButton,
   EditButton,
@@ -27,6 +26,7 @@ import {
   Filter,
 } from "react-admin";
 import KitchenIcon from "@material-ui/icons/Kitchen";
+import CustomPagination from "../components/PaginationCustom";
 const ItemTitle = ({ record }) => {
   return <span>Item {record ? ` - ${record.name}` : ""}</span>;
 };
@@ -53,6 +53,7 @@ export const ItemList = (props) => {
       bulkActionButtons={false}
       // pagination={false}
       filters={<ItemFilter />}
+      pagination={<CustomPagination />}
     >
       <Datagrid rowClick="show">
         <ImageField

@@ -36,6 +36,7 @@ import {
 import DynamicFeedIcon from "@material-ui/icons/DynamicFeed";
 import { app } from "../contants";
 import { ListAlt } from "@material-ui/icons";
+import CustomPagination from "../components/PaginationCustom";
 const InventoryTitle = ({ record }) => {
   //return <span>Inventory {record ? ` - ${record.name}` : ""}</span>;
   return <span>Inventory</span>;
@@ -68,11 +69,11 @@ const InventoryFilter = (props) => (
 const InventoryList = (props) => {
   return (
     <List
-      // pagination={false}
       {...props}
       filters={<InventoryFilter />}
       bulkActionButtons={false}
       sort={{ field: "id", order: "desc" }}
+      pagination={<CustomPagination />}
     >
       <Datagrid rowClick="edit">
         <ReferenceField source="item_id" reference="items">
