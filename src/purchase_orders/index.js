@@ -609,7 +609,7 @@ const PurchaseOrdersCreate = (props) => {
                       onChange={(event, newValue) => {
                         if (newValue && newValue.id) {
                           setItem(newValue);
-                          setQuantity("0.5");
+                          setQuantity(1);
                         }
                       }}
                       options={items}
@@ -632,6 +632,7 @@ const PurchaseOrdersCreate = (props) => {
                         value={boxType}
                         onChange={(event) => {
                           setBoxType(event.target.value);
+                          setQuantity(1);
                         }}
                         displayEmpty
                         fullWidth
@@ -926,7 +927,7 @@ const PurchaseOrdersEdit = (props) => {
                       onChange={(event, newValue) => {
                         if (newValue && newValue.id) {
                           setItem(newValue);
-                          setQuantity(0.5);
+                          setQuantity(1);
                         }
                       }}
                       options={items}
@@ -949,6 +950,7 @@ const PurchaseOrdersEdit = (props) => {
                         value={boxType}
                         onChange={(event) => {
                           setBoxType(event.target.value);
+                          setQuantity(1);
                         }}
                         displayEmpty
                         fullWidth
