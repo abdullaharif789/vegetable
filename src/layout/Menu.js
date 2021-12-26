@@ -13,6 +13,7 @@ import manual_orders from "../manual_orders";
 import purchase_orders from "../purchase_orders";
 import purchase_items from "../purchase_items";
 import order_reports from "../order_reports";
+import purchase_order_reports from "../purchase_order_reports";
 import van_reports from "../van_reports";
 import invoices from "../invoices";
 import purchase_invoices from "../purchase_invoices";
@@ -114,6 +115,12 @@ const Menu = ({ dense = true }) => {
         icon={<order_reports.icon />}
         dense={dense}
       >
+        <MenuItemLink
+          to={`/purchase_order_reports`}
+          primaryText={"Puchase Order Reportings"}
+          leftIcon={<purchase_order_reports.icon />}
+          dense={dense}
+        />
         <MenuItemLink
           to={`/order_reports`}
           primaryText={"Order Reportings"}

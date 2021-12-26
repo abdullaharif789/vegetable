@@ -20,6 +20,7 @@ import orders from "./orders";
 import invoices from "./invoices";
 import purchase_invoices from "./purchase_invoices";
 import order_reports from "./order_reports";
+import purchase_order_reports from "./purchase_order_reports";
 // import inventory_reports from "./inventory_reports";
 import van_reports from "./van_reports";
 import purchase_orders from "./purchase_orders";
@@ -72,6 +73,7 @@ export default function App() {
       <Resource {...invoices} />
       <Resource {...purchase_invoices} />
       <Resource {...order_reports} />
+      <Resource {...purchase_order_reports} />
       <Resource {...van_reports} />
       {/* <Resource {...inventory_reports} /> */}
     </Admin>
