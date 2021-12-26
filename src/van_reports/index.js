@@ -84,9 +84,10 @@ const Report = (props) => {
     let tempData = neutralData(
       Object.keys(props.data)
         .map((item) => props.data[item])
-        .filter((item) => item.status == "Progress")
+        .filter((item) => item.status === "Progress")
         .sort((a, b) => b.id - a.id)
     );
+    console.log(tempData);
     setData(tempData);
   }, [props]);
 

@@ -18,6 +18,7 @@ import parties from "./parties";
 import categories from "./categories";
 import orders from "./orders";
 import invoices from "./invoices";
+import purchase_invoices from "./purchase_invoices";
 import order_reports from "./order_reports";
 // import inventory_reports from "./inventory_reports";
 import van_reports from "./van_reports";
@@ -69,6 +70,7 @@ export default function App() {
       <Resource {...purchase_items} />
       <Resource {...transactions} />
       <Resource {...invoices} />
+      <Resource {...purchase_invoices} />
       <Resource {...order_reports} />
       <Resource {...van_reports} />
       {/* <Resource {...inventory_reports} /> */}

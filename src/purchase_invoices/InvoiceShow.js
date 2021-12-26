@@ -34,7 +34,7 @@ export class InvoiceShow extends React.PureComponent {
       margin0: { margin: 0 },
       margin1: { margin: 0, marginTop: 5 },
     };
-    if (!this.props.record) return null;
+    if (!this.props.record) return "Sorry, Invalid Invioce.";
 
     return (
       <Card style={this.classes.root}>
@@ -104,7 +104,7 @@ export class InvoiceShow extends React.PureComponent {
           </div>
           <div style={this.classes.spacer}>&nbsp;</div>
           <Grid container spacing={2}>
-            <Grid item xs={6}>
+            <Grid item xs={12}>
               <Typography variant="h6" gutterBottom align="center">
                 Date
               </Typography>
@@ -113,20 +113,21 @@ export class InvoiceShow extends React.PureComponent {
               </Typography>
             </Grid>
 
-            <Grid item xs={5}>
+            {/* <Grid item xs={5}>
               <Typography variant="h6" gutterBottom align="center">
                 Order
               </Typography>
               <Typography gutterBottom align="center">
                 {this.props.record.order.order_code}
               </Typography>
-            </Grid>
+            </Grid> */}
           </Grid>
           <div style={this.classes.invoices}>
             <Table size="small">
               <TableHead>
                 <TableRow>
                   <TableCell>Item</TableCell>
+                  <TableCell>Type</TableCell>
                   <TableCell
                     style={this.classes.rightAlignedCell}
                     align="right"
@@ -137,7 +138,7 @@ export class InvoiceShow extends React.PureComponent {
                     style={this.classes.rightAlignedCell}
                     align="right"
                   >
-                    Unit Price({app.currencySymbol})
+                    Sale Price({app.currencySymbol})
                   </TableCell>
                   <TableCell
                     style={this.classes.rightAlignedCell}
@@ -148,13 +149,14 @@ export class InvoiceShow extends React.PureComponent {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {this.props.record.order.cart.map((item, index) => (
+                {this.props.record.cart.map((item, index) => (
                   <TableRow key={index}>
                     <TableCell>
                       <Link to={`/items/${item.item_id}/show`} target="_blank">
-                        {item.title}
+                        {item.name}
                       </Link>
                     </TableCell>
+                    <TableCell>{item.type}</TableCell>
                     <TableCell align="right">{item.quantity}</TableCell>
                     <TableCell align="right">{item.price}</TableCell>
                     <TableCell align="right">
@@ -163,23 +165,11 @@ export class InvoiceShow extends React.PureComponent {
                   </TableRow>
                 ))}
                 <TableRow>
-                  <TableCell></TableCell>
-                  <TableCell align="right"></TableCell>
-                  <TableCell align="right">
-                    <strong>20% VAT({app.currencySymbol})</strong>
-                  </TableCell>
-                  <TableCell align="right">
-                    <strong>{this.props.record.order.total_tax}</strong>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell></TableCell>
-                  <TableCell align="right"></TableCell>
-                  <TableCell align="right">
+                  <TableCell align="right" colSpan={4}>
                     <strong>Total({app.currencySymbol})</strong>
                   </TableCell>
                   <TableCell align="right">
-                    <strong>{this.props.record.order.total}</strong>
+                    <strong>{this.props.record.total}</strong>
                   </TableCell>
                 </TableRow>
               </TableBody>

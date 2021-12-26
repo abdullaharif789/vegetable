@@ -25,6 +25,8 @@ import {
   DateField,
 } from "react-admin";
 import VisibilityIcon from "@material-ui/icons/VisibilitySharp";
+import EditIcon from "@material-ui/icons/Edit";
+import ReceiptIcon from "@material-ui/icons/Receipt";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Grid from "@material-ui/core/Grid";
 import SaveIcon from "@material-ui/icons/Save";
@@ -114,12 +116,24 @@ const PrintUpperTableFun = (props) => {
                 <TableCell align="right">
                   <RAButton
                     onClick={() => {
-                      window.location = `#/purchase_orders/${order.id}/show`;
+                      window.open(
+                        `#/purchase_invoices/create/${order.id}`,
+                        "_blank"
+                      );
                     }}
                     key="button"
-                    label="Show"
+                    label="generate Invoice"
                   >
-                    <VisibilityIcon />
+                    <ReceiptIcon />
+                  </RAButton>
+                  <RAButton
+                    onClick={() => {
+                      window.location = `#/purchase_orders/${order.id}`;
+                    }}
+                    key="button"
+                    label="Edit"
+                  >
+                    <EditIcon />
                   </RAButton>
                   <CustomDelete
                     dispatchCrudDelete={false}

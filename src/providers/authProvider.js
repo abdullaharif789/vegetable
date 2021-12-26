@@ -1,5 +1,6 @@
 import { app } from "../contants";
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
   // called when the user attempts to log in
   login: ({ username, password }) => {

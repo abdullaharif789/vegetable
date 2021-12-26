@@ -15,15 +15,18 @@ import purchase_items from "../purchase_items";
 import order_reports from "../order_reports";
 import van_reports from "../van_reports";
 import invoices from "../invoices";
+import purchase_invoices from "../purchase_invoices";
 import transactions from "../transactions";
 
 import { DashboardSharp } from "@material-ui/icons";
+import ReceiptIcon from "@material-ui/icons/Receipt";
 const Menu = ({ dense = true }) => {
   const [state, setState] = useState({
     orders: true,
     products: true,
     reportings: true,
     payments: true,
+    invoices: true,
   });
   const classes = useStyles();
 
@@ -125,18 +128,32 @@ const Menu = ({ dense = true }) => {
         />
       </SubMenu>
       <SubMenu
+        handleToggle={() => handleToggle("invoices")}
+        isOpen={state.invoices}
+        name="Invoices"
+        icon={<ReceiptIcon />}
+        dense={dense}
+      >
+        <MenuItemLink
+          to={`/purchase_invoices`}
+          primaryText={"Purchase Invoices"}
+          leftIcon={<purchase_invoices.icon />}
+          dense={dense}
+        />
+        <MenuItemLink
+          to={`/invoices`}
+          primaryText={"Order Invoices"}
+          leftIcon={<invoices.icon />}
+          dense={dense}
+        />
+      </SubMenu>
+      <SubMenu
         handleToggle={() => handleToggle("payments")}
         isOpen={state.payments}
         name="Payments"
         icon={<transactions.icon />}
         dense={dense}
       >
-        <MenuItemLink
-          to={`/invoices`}
-          primaryText={"Invoices"}
-          leftIcon={<invoices.icon />}
-          dense={dense}
-        />
         <MenuItemLink
           to={`/transactions`}
           primaryText={"Party Transactions"}
