@@ -17,7 +17,7 @@ import { app } from "../contants";
 
 const CustomerField = ({ record }) =>
   record ? (
-    <Typography>
+    <Typography align="right">
       <strong>{record.business_name}</strong>
       <br />
       {record.address}
@@ -95,6 +95,7 @@ export class InvoiceShow extends React.PureComponent {
               <h4
                 style={{
                   margin: 0,
+                  textAlign: "right",
                 }}
               >
                 Invoice# {this.props.record.id}
@@ -138,7 +139,7 @@ export class InvoiceShow extends React.PureComponent {
                     style={this.classes.rightAlignedCell}
                     align="right"
                   >
-                    Sale Price({app.currencySymbol})
+                    Price({app.currencySymbol})
                   </TableCell>
                   <TableCell
                     style={this.classes.rightAlignedCell}

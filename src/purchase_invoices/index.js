@@ -15,6 +15,8 @@ import ReactToPrint from "react-to-print";
 import Receipt from "@material-ui/icons/Receipt";
 import Button from "@material-ui/core/Button";
 import Print from "@material-ui/icons/Print";
+import FormControl from "@material-ui/core/FormControl";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { app } from "../contants";
 import InvoiceShow from "./InvoiceShow";
 import { useNotify, useRefresh, useRedirect, Link, Title } from "react-admin";
@@ -23,7 +25,8 @@ import SaveIcon from "@material-ui/icons/Save";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import { makeStyles } from "@material-ui/core/styles";
-
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
 import FormLabel from "@material-ui/core/FormLabel";
 import {
   Table,
@@ -125,6 +128,7 @@ const InvoiceList = (props) => {
           label={`Total Amount(${app.currencySymbol})`}
         />
         <TextField source="created_at" label="Date" />
+        <TextField source="status" />
       </Datagrid>
     </List>
   );
@@ -136,16 +140,6 @@ const getTotalCount = (data, typeIndex) => {
 };
 const Cart = ({ data, submitOrder, setData, add }) => {
   if (data.cart.length === 0) return <p>There is no item in cart.</p>;
-  // const handleRemoveCartItem = (id) => {
-  //   var newData = { ...data };
-  //   newData.cart = newData.cart.filter((item) => item.id !== id);
-  //   const total = newData.cart.reduce(
-  //     (a, b) => a + parseFloat(b["price"]) * parseFloat(b["quantity"]),
-  //     0
-  //   );
-  //   newData.total = total;
-  //   setData(newData);
-  // };
   var t1 = getTotalCount(data, 0);
   var t2 = getTotalCount(data, 1);
   var t3 = getTotalCount(data, 2);
@@ -292,7 +286,12 @@ const PurchaseOrdersCreate = (props) => {
           if (out) setPurchase_order(out);
           else setPurchase_order([]);
           if (out) {
-            setData({ ...data, cart: out.cart, total: out.total });
+            setData({
+              ...data,
+              cart: out.cart,
+              total: out.total,
+              purchase_order_id: out.id,
+            });
           }
         })
         .catch(() => {
@@ -321,6 +320,7 @@ const PurchaseOrdersCreate = (props) => {
     }));
     temp.van_id = purchase_order.van;
     temp.party_id = purchase_order.party.id;
+    temp.bank = value;
     setLoading(true);
     const url = app.api + "purchase_invoices";
     await axios
@@ -337,7 +337,10 @@ const PurchaseOrdersCreate = (props) => {
       });
     setLoading(false);
   };
-
+  const [value, setValue] = React.useState("No");
+  const handleChange = (event) => {
+    setValue(event.target.value);
+  };
   if (loading) return <Loading loadingPrimary="" loadingSecondary="" />;
   else if (purchase_order.length == 0)
     return (
@@ -372,6 +375,17 @@ const PurchaseOrdersCreate = (props) => {
               </TableRow>
             </TableBody>
           </Table>
+          <Grid item xs={12}>
+            <FormControl className={classes.form} size="small">
+              <FormLabel component="legend" className={classes.headings}>
+                Add Bank Information to Invioce
+              </FormLabel>
+              <RadioGroup value={value} onChange={handleChange}>
+                <FormControlLabel value="Yes" control={<Radio />} label="Yes" />
+                <FormControlLabel value="No" control={<Radio />} label="No" />
+              </RadioGroup>
+            </FormControl>
+          </Grid>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <FormLabel component="legend" className={classes.headings}>

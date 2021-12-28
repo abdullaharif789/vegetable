@@ -81,13 +81,18 @@ const neutralData = (data) => {
 const Report = (props) => {
   const [data, setData] = React.useState([]);
   React.useEffect(() => {
+    console.log(
+      Object.keys(props.data)
+        .map((item) => props.data[item])
+        .filter((item) => item.status === "Progress")
+        .sort((a, b) => b.id - a.id)
+    );
     let tempData = neutralData(
       Object.keys(props.data)
         .map((item) => props.data[item])
         .filter((item) => item.status === "Progress")
         .sort((a, b) => b.id - a.id)
     );
-    console.log(tempData);
     setData(tempData);
   }, [props]);
 
@@ -124,7 +129,7 @@ const Report = (props) => {
                     color: app.colorOne,
                   }}
                 >
-                  {key}
+                  {key == "null" ? "Unspecified Van" : key}
                 </h4>
                 <Table size="small">
                   <TableHead>
