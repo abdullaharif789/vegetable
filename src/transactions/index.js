@@ -48,6 +48,7 @@ import Button from "@material-ui/core/Button";
 import Print from "@material-ui/icons/Print";
 import axios from "axios";
 import CustomPagination from "../components/PaginationCustom";
+import CustomDelete from "../components/CustomDelete";
 
 const TransactionFilter = (props) => (
   <Filter {...props}>
@@ -123,12 +124,23 @@ const Total = (props) => {
     </div>
   );
 };
+const CustomDeleteWrapper = ({ record }) => {
+  return (
+    <CustomDelete
+      dispatchCrudDelete={false}
+      startUndoable={false}
+      resource={"transactions"}
+      record={record}
+      undoable={false}
+    />
+  );
+};
 const ListResult = (props) => {
   return (
     <>
       {props.print && <Logo />}
       <Total {...props} />
-      <Datagrid rowClick="show">
+      <Datagrid>
         <ReferenceField source="party_id" reference="parties">
           <TextField source="business_name" />
         </ReferenceField>
@@ -137,6 +149,7 @@ const ListResult = (props) => {
         <NumberField source="amount" label={`Amount(${app.currencySymbol})`} />
         {!props.print && <ShowButton />}
         {!props.print && <EditButton />}
+        {!props.print && <CustomDeleteWrapper />}
       </Datagrid>
     </>
   );

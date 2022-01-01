@@ -40,7 +40,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { RemoveCircle, Money } from "@material-ui/icons";
 import Button from "@material-ui/core/Button";
 import { Button as RAButton } from "react-admin";
-
+import CustomDelete from "../components/CustomDelete";
 import ReactToPrint from "react-to-print";
 import Print from "@material-ui/icons/Print";
 
@@ -59,7 +59,6 @@ import {
   TextField as MaterialTextField,
 } from "@material-ui/core";
 import axios from "axios";
-import CustomDelete from "./CustomDelete";
 import CustomPagination from "../components/PaginationCustom";
 const OrderFilter = (props) => (
   <Filter {...props}>
@@ -259,8 +258,7 @@ const OrderListRows = (props) => {
               return (
                 <div
                   style={{
-                    display: "flex",
-                    justifyContent: "flex-end",
+                    float: "right",
                     marginTop: 10,
                     marginBottom: 10,
                   }}

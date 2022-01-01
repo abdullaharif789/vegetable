@@ -5,7 +5,7 @@ import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { Link } from "react-admin";
-import logo from "./logo.png";
+import logo from "./logo.jpeg";
 import {
   Table,
   TableBody,
@@ -49,7 +49,7 @@ export class InvoiceShow extends React.PureComponent {
               <img
                 src={logo}
                 style={{
-                  width: 100,
+                  width: 150,
                 }}
                 alt="logo"
               />
@@ -64,7 +64,7 @@ export class InvoiceShow extends React.PureComponent {
               </p>
               <h4 style={this.classes.margin1}>Banking Information</h4>
               <p style={this.classes.margin0}>
-                Check payable to <strong>Everyday Fresh Food Ltd.</strong>
+                Cheque payable to <strong>Everyday Fresh Food Ltd.</strong>
               </p>
               {this.props.record.bank_visible == 1 && (
                 <>
@@ -87,7 +87,7 @@ export class InvoiceShow extends React.PureComponent {
               <img
                 src={logo}
                 style={{
-                  width: 100,
+                  width: 150,
                   opacity: 0,
                 }}
                 alt="logo"
@@ -113,15 +113,6 @@ export class InvoiceShow extends React.PureComponent {
                 {this.props.record.created_at}
               </Typography>
             </Grid>
-
-            {/* <Grid item xs={5}>
-              <Typography variant="h6" gutterBottom align="center">
-                Order
-              </Typography>
-              <Typography gutterBottom align="center">
-                {this.props.record.order.order_code}
-              </Typography>
-            </Grid> */}
           </Grid>
           <div style={this.classes.invoices}>
             <Table size="small">
@@ -153,9 +144,7 @@ export class InvoiceShow extends React.PureComponent {
                 {this.props.record.cart.map((item, index) => (
                   <TableRow key={index}>
                     <TableCell>
-                      <Link to={`/items/${item.item_id}/show`} target="_blank">
-                        {item.name}
-                      </Link>
+                      <strong>{item.name}</strong>
                     </TableCell>
                     <TableCell>{item.type}</TableCell>
                     <TableCell align="right">{item.quantity}</TableCell>

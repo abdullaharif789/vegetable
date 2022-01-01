@@ -10,6 +10,7 @@ import {
   AutocompleteInput,
   ReferenceInput,
   SelectInput,
+  DeleteButton,
 } from "react-admin";
 import ReactToPrint from "react-to-print";
 import Receipt from "@material-ui/icons/Receipt";
@@ -24,6 +25,8 @@ import Grid from "@material-ui/core/Grid";
 import SaveIcon from "@material-ui/icons/Save";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
+import CustomDelete from "../components/CustomDelete";
+import CustomPagination from "../components/PaginationCustom";
 import { makeStyles } from "@material-ui/core/styles";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
@@ -97,12 +100,24 @@ export class InvoicePrint extends React.PureComponent {
     );
   }
 }
+const CustomDeleteWrapper = ({ record }) => {
+  return (
+    <CustomDelete
+      dispatchCrudDelete={false}
+      startUndoable={false}
+      resource={"purchase_invoices"}
+      record={record}
+      undoable={false}
+    />
+  );
+};
 const InvoiceList = (props) => {
   return (
     <List
       {...props}
       bulkActionButtons={false}
       filters={<OrderFilter />}
+      pagination={<CustomPagination />}
       sort={{ field: "id", order: "desc" }}
       hasCreate={false}
     >
@@ -129,6 +144,7 @@ const InvoiceList = (props) => {
         />
         <TextField source="created_at" label="Date" />
         <TextField source="status" />
+        <CustomDeleteWrapper />
       </Datagrid>
     </List>
   );
@@ -303,13 +319,13 @@ const PurchaseOrdersCreate = (props) => {
   }, []);
   const submitOrder = async () => {
     var temp = { ...data };
-    const zeroFound = temp.cart.filter(
-      (item) => parseFloat(item.cost_price) == 0 || parseFloat(item.price) == 0
-    );
-    if (zeroFound.length != 0) {
-      notify(`Please provide all cost and sell prices.`, "error");
-      return;
-    }
+    // const zeroFound = temp.cart.filter(
+    //   (item) => parseFloat(item.cost_price) == 0 || parseFloat(item.price) == 0
+    // );
+    // if (zeroFound.length != 0) {
+    //   notify(`Please provide all cost and sell prices.`, "error");
+    //   return;
+    // }
     temp.cart = temp.cart.map((item) => ({
       ...item,
       total: parseFloat(

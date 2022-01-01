@@ -81,7 +81,7 @@ class CustomDeleteButton extends Component {
             <DialogTitle>Delete Purcahse Order</DialogTitle>
             <DialogContent>
               <DialogContentText>
-                Are you sure You want to delete purcahse order?
+                Are you sure you want to delete?
               </DialogContentText>
             </DialogContent>
             <DialogActions>

@@ -64,7 +64,7 @@ export class InvoiceShow extends React.PureComponent {
               </p>
               <h4 style={this.classes.margin1}>Banking Information</h4>
               <p style={this.classes.margin0}>
-                Check payable to <strong>Everyday Fresh Food Ltd.</strong>
+                Cheque payable to <strong>Everyday Fresh Food Ltd.</strong>
               </p>
               {this.props.record.bank_visible == 1 && (
                 <>

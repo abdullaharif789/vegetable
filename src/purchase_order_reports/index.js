@@ -25,6 +25,7 @@ import Print from "@material-ui/icons/Print";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import { app } from "../contants";
 import CardWithIcon from "../dashboard/CardWithIcon";
+import CustomPagination from "../components/PaginationCustom";
 const ReportFilter = (props) => (
   <Filter {...props}>
     <DateInput source="start_date" alwaysOn variant="outlined" />
@@ -125,7 +126,6 @@ const Report = (props) => {
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Order Code</TableCell>
               <TableCell>Party</TableCell>
               <TableCell>Cart</TableCell>
             </TableRow>
@@ -135,12 +135,11 @@ const Report = (props) => {
               data.map((item, index) => {
                 return (
                   <TableRow key={index}>
-                    <TableCell>
-                      <Link to={`/orders/${item.id}`} target="_blank">
-                        {item.order_code}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
+                    <TableCell
+                      style={{
+                        width: "10%",
+                      }}
+                    >
                       <Link to={`/parties/${item.party_id}`} target="_blank">
                         {item.party_business_name}
                       </Link>
@@ -150,6 +149,7 @@ const Report = (props) => {
                         <TableHead>
                           <TableRow>
                             <TableCell>Item</TableCell>
+                            <TableCell>Type</TableCell>
                             <TableCell align="right">
                               Cost Price({app.currencySymbol})
                             </TableCell>
@@ -157,9 +157,9 @@ const Report = (props) => {
                               Sell Price({app.currencySymbol})
                             </TableCell>
                             <TableCell align="right">Quantity</TableCell>
-                            <TableCell align="right">
+                            {/* <TableCell align="right">
                               Sub Total({app.currencySymbol})
-                            </TableCell>
+                            </TableCell> */}
                             <TableCell align="right">
                               20% VAT({app.currencySymbol})
                             </TableCell>
@@ -183,6 +183,7 @@ const Report = (props) => {
                                     {cartItem.name}
                                   </Link>
                                 </TableCell>
+                                <TableCell>{cartItem.type}</TableCell>
                                 <TableCell align="right">
                                   {cartItem.cost_price}
                                 </TableCell>
@@ -192,14 +193,14 @@ const Report = (props) => {
                                 <TableCell align="right">
                                   {cartItem.quantity}
                                 </TableCell>
-                                <TableCell align="right">
+                                {/* <TableCell align="right">
                                   <strong>{cartItem.total}</strong>
-                                </TableCell>
+                                </TableCell> */}
                                 <TableCell align="right">
                                   {cartItem.tax}
                                 </TableCell>
                                 <TableCell align="right">
-                                  <strong>{cartItem.total_with_tax}</strong>
+                                  <strong>{cartItem.total}</strong>
                                 </TableCell>
                                 <TableCell
                                   align="right"
@@ -250,7 +251,7 @@ export class ReportList extends React.PureComponent {
     return (
       <div>
         <List
-          pagination={false}
+          pagination={<CustomPagination />}
           {...this.props}
           bulkActionButtons={false}
           filters={<ReportFilter />}
