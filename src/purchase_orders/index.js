@@ -16,15 +16,12 @@ import {
   Loading,
   Title,
   AutocompleteInput,
-  DeleteButton,
   ArrayField,
-  Pagination,
   SimpleShowLayout,
   NumberField,
   Show,
   DateField,
 } from "react-admin";
-import VisibilityIcon from "@material-ui/icons/VisibilitySharp";
 import EditIcon from "@material-ui/icons/Edit";
 import ReceiptIcon from "@material-ui/icons/Receipt";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -96,7 +93,6 @@ const PrintUpperTableFun = (props) => {
         .sort((a, b) => a.sr - b.sr)
     );
   }, [props.data]);
-  console.log(data);
   var total = 0;
   return (
     <Table size="small">
@@ -242,7 +238,6 @@ class PrintUpperTable extends React.Component {
 
 const OrderListRows = (props) => {
   const [print, setPrint] = React.useState(false);
-  console.log(props.data);
   var tableRef;
   return (
     <>

@@ -60,7 +60,7 @@ export class InvoiceShow extends React.PureComponent {
               <p style={this.classes.margin0}>Parkstone, Poole</p>
               <p style={this.classes.margin0}>BH12 4PE</p>
               <p style={this.classes.margin0}>
-                <strong>Tel : 01202-131924</strong>
+                <strong>Tel : 01202 801167</strong>
               </p>
               <h4 style={this.classes.margin1}>Banking Information</h4>
               <p style={this.classes.margin0}>

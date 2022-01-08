@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { MenuItemLink } from "react-admin";
+import { MenuItemLink, usePermissions } from "react-admin";
 import SubMenu from "./SubMenu";
 
 import parties from "../parties";
@@ -15,13 +15,16 @@ import purchase_items from "../purchase_items";
 import order_reports from "../order_reports";
 import purchase_order_reports from "../purchase_order_reports";
 import van_reports from "../van_reports";
+import daily_invoice_reports from "../daily_invoice_reports";
 import invoices from "../invoices";
 import purchase_invoices from "../purchase_invoices";
 import transactions from "../transactions";
 
 import { DashboardSharp } from "@material-ui/icons";
 import ReceiptIcon from "@material-ui/icons/Receipt";
+import { app } from "../contants";
 const Menu = ({ dense = true }) => {
+  const { permissions } = usePermissions();
   const [state, setState] = useState({
     orders: true,
     products: true,
@@ -34,7 +37,6 @@ const Menu = ({ dense = true }) => {
   const handleToggle = (menu) => {
     setState((state) => ({ ...state, [menu]: !state[menu] }));
   };
-
   return (
     <div className={classes.root}>
       {" "}
@@ -115,18 +117,28 @@ const Menu = ({ dense = true }) => {
         icon={<order_reports.icon />}
         dense={dense}
       >
+        {permissions === app.superAdminRole && (
+          <MenuItemLink
+            to={`/purchase_order_reports`}
+            primaryText={"Puchase Order Reportings"}
+            leftIcon={<purchase_order_reports.icon />}
+            dense={dense}
+          />
+        )}
         <MenuItemLink
-          to={`/purchase_order_reports`}
-          primaryText={"Puchase Order Reportings"}
-          leftIcon={<purchase_order_reports.icon />}
+          to={`daily_invoice_reports`}
+          primaryText={"Daily Invoice Reportings"}
+          leftIcon={<daily_invoice_reports.icon />}
           dense={dense}
         />
-        <MenuItemLink
-          to={`/order_reports`}
-          primaryText={"Order Reportings"}
-          leftIcon={<order_reports.icon />}
-          dense={dense}
-        />
+        {permissions === app.superAdminRole && (
+          <MenuItemLink
+            to={`/order_reports`}
+            primaryText={"Order Reportings"}
+            leftIcon={<order_reports.icon />}
+            dense={dense}
+          />
+        )}
         <MenuItemLink
           to={`/van_reports`}
           primaryText={"Van Reportings"}

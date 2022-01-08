@@ -11,6 +11,7 @@ import {
   SelectInput,
   TextInput,
   Link,
+  AutocompleteInput,
 } from "react-admin";
 import {
   Table,
@@ -35,8 +36,10 @@ const ReportFilter = (props) => (
       reference="parties"
       alwaysOn
       variant="outlined"
+      perPage={10000000}
+      filterToQuery={(searchText) => ({ business_name: searchText })}
     >
-      <SelectInput optionText="business_name" />
+      <AutocompleteInput optionText="business_name" />
     </ReferenceInput>
   </Filter>
 );
@@ -272,10 +275,9 @@ export class ReportPrint extends React.PureComponent {
             return (
               <div
                 style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  marginTop: 10,
-                  marginBottom: 10,
+                  margin: 10,
+                  display: "block",
+                  textAlign: "right",
                 }}
               >
                 <Button

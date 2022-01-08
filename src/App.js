@@ -19,6 +19,7 @@ import categories from "./categories";
 import orders from "./orders";
 import invoices from "./invoices";
 import purchase_invoices from "./purchase_invoices";
+import daily_invoice_reports from "./daily_invoice_reports";
 import order_reports from "./order_reports";
 import purchase_order_reports from "./purchase_order_reports";
 // import inventory_reports from "./inventory_reports";
@@ -61,20 +62,27 @@ export default function App() {
       loginPage={LoginPage}
       customRoutes={customRoutes}
     >
-      <Resource {...parties} />
-      <Resource {...categories} />
-      <Resource {...items} />
-      <Resource {...inventories} />
-      <Resource {...orders} />
-      <Resource {...manual_orders} />
-      <Resource {...purchase_orders} />
-      <Resource {...purchase_items} />
-      <Resource {...transactions} />
-      <Resource {...invoices} />
-      <Resource {...purchase_invoices} />
-      <Resource {...order_reports} />
-      <Resource {...purchase_order_reports} />
-      <Resource {...van_reports} />
+      {(permissions) => [
+        <Resource {...parties} />,
+        <Resource {...categories} />,
+        <Resource {...items} />,
+        <Resource {...inventories} />,
+        <Resource {...orders} />,
+        <Resource {...manual_orders} />,
+        <Resource {...purchase_orders} />,
+        <Resource {...purchase_items} />,
+        <Resource {...transactions} />,
+        <Resource {...invoices} />,
+        <Resource {...purchase_invoices} />,
+        <Resource {...daily_invoice_reports} />,
+        permissions === app.superAdminRole ? (
+          <Resource {...order_reports} />
+        ) : null,
+        permissions === app.superAdminRole ? (
+          <Resource {...purchase_order_reports} />
+        ) : null,
+        <Resource {...van_reports} />,
+      ]}
       {/* <Resource {...inventory_reports} /> */}
     </Admin>
   );

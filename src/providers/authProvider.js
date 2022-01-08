@@ -63,7 +63,13 @@ export default {
     return localStorage.getItem("auth") ? Promise.resolve() : Promise.reject();
   },
   // called when the user navigates to a new location, to check for permissions / roles
-  getPermissions: () => Promise.resolve(),
+  getPermissions: () => {
+    const auth = JSON.parse(localStorage.getItem("auth"));
+    if (auth) {
+      return Promise.resolve(auth.role);
+    }
+    return Promise.reject();
+  },
   getIdentity: () => {
     var token = {
       id: JSON.stringify(Date()),

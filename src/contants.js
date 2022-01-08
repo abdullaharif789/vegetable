@@ -6,10 +6,30 @@ export const app = {
   colorOne: "#f5881f",
   colorTwo: "#AE9EFD",
   vans: ["Van#1", "Van#2", "Van#3", "Van#4", "Van#5"],
+  discounts: [
+    {
+      label: "0%",
+      value: 0.0,
+    },
+    {
+      label: "5%",
+      value: 0.05,
+    },
+    {
+      label: "10%",
+      value: 0.1,
+    },
+    {
+      label: "15%",
+      value: 0.15,
+    },
+  ],
   boxTypes: ["Full Box", "Half Box", "Loose Item"],
   payments: ["Paid", "Unpaid"],
   status: ["Progress", "Completed", "Canceled"],
   tax: 20,
+  adminRole: "admin",
+  superAdminRole: "superadmin",
   sleep: (ms) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
   },

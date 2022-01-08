@@ -22,6 +22,7 @@ import {
   NumberInput,
   BooleanField,
   Filter,
+  usePermissions,
 } from "react-admin";
 import Button from "@material-ui/core/Button";
 
@@ -110,6 +111,8 @@ const PartyList = (props) => {
   );
 };
 const PartyListParent = (props) => {
+  const { permissions } = usePermissions();
+  console.log("permissions", permissions);
   return (
     <List
       filters={<PartyFilter />}

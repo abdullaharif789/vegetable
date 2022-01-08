@@ -60,7 +60,7 @@ export class InvoiceShow extends React.PureComponent {
               <p style={this.classes.margin0}>Parkstone, Poole</p>
               <p style={this.classes.margin0}>BH12 4PE</p>
               <p style={this.classes.margin0}>
-                <strong>Tel : 01202-131924</strong>
+                <strong>Tel : 01202 801167</strong>
               </p>
               <h4 style={this.classes.margin1}>Banking Information</h4>
               <p style={this.classes.margin0}>
@@ -82,6 +82,10 @@ export class InvoiceShow extends React.PureComponent {
                   </p>
                 </>
               )}
+              <p style={this.classes.margin1}>
+                <strong>Date : </strong>
+                <i>{this.props.record.created_at}</i>
+              </p>
             </div>
             <div>
               <img
@@ -104,16 +108,6 @@ export class InvoiceShow extends React.PureComponent {
             </div>
           </div>
           <div style={this.classes.spacer}>&nbsp;</div>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Typography variant="h6" gutterBottom align="center">
-                Date
-              </Typography>
-              <Typography gutterBottom align="center">
-                {this.props.record.created_at}
-              </Typography>
-            </Grid>
-          </Grid>
           <div style={this.classes.invoices}>
             <Table size="small">
               <TableHead>
@@ -156,10 +150,26 @@ export class InvoiceShow extends React.PureComponent {
                 ))}
                 <TableRow>
                   <TableCell align="right" colSpan={4}>
-                    <strong>Total({app.currencySymbol})</strong>
+                    <strong>Amount({app.currencySymbol})</strong>
                   </TableCell>
                   <TableCell align="right">
                     <strong>{this.props.record.total}</strong>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell align="right" colSpan={4}>
+                    <strong>Discount({app.currencySymbol})</strong>
+                  </TableCell>
+                  <TableCell align="right">
+                    <strong>{this.props.record.discount_amount}</strong>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell align="right" colSpan={4}>
+                    <strong>Total Amount({app.currencySymbol})</strong>
+                  </TableCell>
+                  <TableCell align="right">
+                    <strong>{this.props.record.total_with_discount}</strong>
                   </TableCell>
                 </TableRow>
               </TableBody>

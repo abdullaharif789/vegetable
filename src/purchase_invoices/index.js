@@ -10,9 +10,12 @@ import {
   AutocompleteInput,
   ReferenceInput,
   SelectInput,
-  DeleteButton,
+  Show,
+  ShowButton,
+  NumberField,
 } from "react-admin";
 import ReactToPrint from "react-to-print";
+import FormLabel from "@material-ui/core/FormLabel";
 import Receipt from "@material-ui/icons/Receipt";
 import Button from "@material-ui/core/Button";
 import Print from "@material-ui/icons/Print";
@@ -30,19 +33,17 @@ import CustomPagination from "../components/PaginationCustom";
 import { makeStyles } from "@material-ui/core/styles";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
-import FormLabel from "@material-ui/core/FormLabel";
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
+  Select,
+  MenuItem,
 } from "@material-ui/core";
 import dataProvider from "../providers/dataProvider";
-import {
-  InputAdornment,
-  TextField as MaterialTextField,
-} from "@material-ui/core";
+import { TextField as MaterialTextField } from "@material-ui/core";
 import axios from "axios";
 
 const OrderFilter = (props) => (
@@ -77,19 +78,20 @@ export class InvoicePrint extends React.PureComponent {
             return (
               <div
                 style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  marginTop: 10,
-                  marginBottom: 10,
+                  margin: 10,
+                  display: "block",
+                  textAlign: "right",
                 }}
               >
-                <Button
-                  variant="contained"
-                  color="primary"
-                  startIcon={<Print fontSize="inherit" />}
-                >
-                  Print
-                </Button>
+                <div>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<Print fontSize="inherit" />}
+                  >
+                    Print
+                  </Button>
+                </div>
               </div>
             );
           }}
@@ -100,6 +102,13 @@ export class InvoicePrint extends React.PureComponent {
     );
   }
 }
+const InvoiceShowParent = (props) => {
+  return (
+    <Show {...props}>
+      <InvoicePrint {...props} />
+    </Show>
+  );
+};
 const CustomDeleteWrapper = ({ record }) => {
   return (
     <CustomDelete
@@ -121,7 +130,7 @@ const InvoiceList = (props) => {
       sort={{ field: "id", order: "desc" }}
       hasCreate={false}
     >
-      <Datagrid rowClick="expand" expand={<InvoicePrint />}>
+      <Datagrid>
         <TextField
           source="id"
           label="Invoice#"
@@ -137,13 +146,29 @@ const InvoiceList = (props) => {
         >
           <TextField source="business_name" />
         </ReferenceField>
-        <TextField
+        <NumberField
           sortable={false}
           source="total"
-          label={`Total Amount(${app.currencySymbol})`}
+          label={`Amount(${app.currencySymbol})`}
         />
+        <NumberField
+          sortable={false}
+          source="discount_amount"
+          label={`Discount(${app.currencySymbol})`}
+        />
+        <NumberField
+          sortable={false}
+          source="total_with_discount"
+          label={`Total Amount(${app.currencySymbol})`}
+          style={{
+            fontWeight: "bold",
+            textAlign: "right",
+          }}
+        />
+        <TextField source="van" sortable={false} />
         <TextField source="created_at" label="Date" />
-        <TextField source="status" />
+        <TextField source="status" sortable={false} />
+        <ShowButton />
         <CustomDeleteWrapper />
       </Datagrid>
     </List>
@@ -288,6 +313,7 @@ const PurchaseOrdersCreate = (props) => {
     total: 0,
   });
   const [loading, setLoading] = React.useState(false);
+  const [discount, setDiscount] = React.useState(app.discounts[0]);
   const [purchase_order, setPurchase_order] = React.useState([]);
   React.useEffect(() => {
     const loadData = async () => {
@@ -337,6 +363,7 @@ const PurchaseOrdersCreate = (props) => {
     temp.van_id = purchase_order.van;
     temp.party_id = purchase_order.party.id;
     temp.bank = value;
+    temp.discount = discount.value;
     setLoading(true);
     const url = app.api + "purchase_invoices";
     await axios
@@ -391,18 +418,49 @@ const PurchaseOrdersCreate = (props) => {
               </TableRow>
             </TableBody>
           </Table>
-          <Grid item xs={12}>
-            <FormControl className={classes.form} size="small">
-              <FormLabel component="legend" className={classes.headings}>
-                Add Bank Information to Invioce
-              </FormLabel>
-              <RadioGroup value={value} onChange={handleChange}>
-                <FormControlLabel value="Yes" control={<Radio />} label="Yes" />
-                <FormControlLabel value="No" control={<Radio />} label="No" />
-              </RadioGroup>
-            </FormControl>
-          </Grid>
           <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <FormControl className={classes.form} size="small">
+                <FormLabel component="legend" className={classes.headings}>
+                  Discount
+                </FormLabel>
+                <Select
+                  required
+                  value={discount.value}
+                  onChange={(event) => {
+                    setDiscount({
+                      value: event.target.value,
+                      label: event.target.value * 100 + "%",
+                    });
+                  }}
+                  displayEmpty
+                  fullWidth
+                  variant="outlined"
+                  placeholder="Discount"
+                >
+                  {app.discounts.map((discount, index) => (
+                    <MenuItem key={index} value={discount.value}>
+                      {discount.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl className={classes.form} size="small">
+                <FormLabel component="legend" className={classes.headings}>
+                  Add Bank Information to Invioce
+                </FormLabel>
+                <RadioGroup value={value} onChange={handleChange} row>
+                  <FormControlLabel
+                    value="Yes"
+                    control={<Radio />}
+                    label="Yes"
+                  />
+                  <FormControlLabel value="No" control={<Radio />} label="No" />
+                </RadioGroup>
+              </FormControl>
+            </Grid>
             <Grid item xs={12}>
               <FormLabel component="legend" className={classes.headings}>
                 Cart
@@ -419,12 +477,14 @@ const PurchaseOrdersCreate = (props) => {
       </Card>
     );
 };
-
+const Test = () => {
+  return <div>Test</div>;
+};
 export default {
   options: { label: "Purchase Invoices" },
   create: PurchaseOrdersCreate,
   list: InvoiceList,
   name: "purchase_invoices",
   icon: Receipt,
-  show: InvoicePrint,
+  show: InvoiceShowParent,
 };
