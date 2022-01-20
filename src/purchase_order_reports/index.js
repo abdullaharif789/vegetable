@@ -129,6 +129,7 @@ const Report = (props) => {
         <Table size="small">
           <TableHead>
             <TableRow>
+              <TableCell>Date</TableCell>
               <TableCell>Party</TableCell>
               <TableCell>Cart</TableCell>
             </TableRow>
@@ -138,6 +139,7 @@ const Report = (props) => {
               data.map((item, index) => {
                 return (
                   <TableRow key={index}>
+                    <TableCell>{item.created_at}</TableCell>
                     <TableCell
                       style={{
                         width: "10%",

@@ -1,4 +1,5 @@
 import * as React from "react";
+import "./style.css";
 import { List, DateInput, Filter, SelectInput } from "react-admin";
 import Receipt from "@material-ui/icons/Receipt";
 import { app } from "../contants";
@@ -39,12 +40,21 @@ const Content = (props) => {
             parseFloat(item.total) +
             parseFloat(daily_reports[item.party.business_name].total_amount)
           ).toFixed(2),
+          transactions_total: (
+            parseFloat(item.transactions_total) +
+            parseFloat(
+              daily_reports[item.party.business_name].transactions_total
+            )
+          ).toFixed(2),
           name: item.party.business_name,
+          transactions: item.transactions,
         };
       } else {
         daily_reports[item.party.business_name] = {
           total_amount: parseFloat(item.total).toFixed(2),
+          transactions_total: parseFloat(item.transactions_total).toFixed(2),
           name: item.party.business_name,
+          transactions: item.transactions,
         };
       }
     });
@@ -121,20 +131,70 @@ const Content = (props) => {
           <TableBody>
             {Object.keys(data).map((key, index) => {
               return (
-                <TableRow key={index}>
-                  <TableCell>
-                    <strong>{data[key].name}</strong>
-                  </TableCell>
-                  <TableCell align="center">{data[key].total_amount}</TableCell>
-                  <TableCell
-                    align="center"
-                    style={{ border: "1px solid #ccc" }}
-                  ></TableCell>
-                  <TableCell
-                    style={{ border: "1px solid #ccc" }}
-                    align="center"
-                  ></TableCell>
-                </TableRow>
+                <>
+                  <TableRow
+                    style={{
+                      border: "1px solid #000",
+                      borderRadius: 4,
+                    }}
+                  >
+                    <TableCell>
+                      <strong>{data[key].name}</strong>
+                    </TableCell>
+                    <TableCell align="right">
+                      <strong>{data[key].transactions_total}</strong>
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      style={{ border: "1px solid #ccc" }}
+                    ></TableCell>
+                    <TableCell
+                      style={{ border: "1px solid #ccc" }}
+                      align="center"
+                    ></TableCell>
+                  </TableRow>
+                  {data[key].transactions.length > 0 && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={2}
+                        style={{ paddingLeft: 0, paddingRight: 6 }}
+                      >
+                        <Table size="small">
+                          <TableHead>
+                            <TableRow>
+                              <TableCell>
+                                <strong>Date</strong>
+                              </TableCell>
+                              <TableCell align="right">
+                                <strong>
+                                  Unpaid Transaction Amount({app.currencySymbol}
+                                  )
+                                </strong>
+                              </TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {data[key].transactions.map((transaction) => (
+                              <TableRow>
+                                <TableCell>
+                                  {new Date(
+                                    transaction.date
+                                  ).toLocaleDateString()}
+                                </TableCell>
+                                <TableCell align="right">
+                                  <strong>
+                                    {parseFloat(transaction.amount).toFixed(2)}
+                                  </strong>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </TableCell>
+                      <TableCell colSpan={2}></TableCell>
+                    </TableRow>
+                  )}
+                </>
               );
             })}
           </TableBody>
@@ -169,8 +229,7 @@ const DailyInvoices = (props) => {
               <div
                 style={{
                   margin: 10,
-                  display: "block",
-                  textAlign: "right",
+                  display: "inline-block",
                 }}
               >
                 <div>
