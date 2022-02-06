@@ -11,6 +11,7 @@ import inventories from "../inventories";
 import orders from "../orders";
 import manual_orders from "../manual_orders";
 import purchase_orders from "../purchase_orders";
+import purchase_order_costing from "../purchase_order_costing";
 import purchase_items from "../purchase_items";
 import order_reports from "../order_reports";
 import purchase_order_reports from "../purchase_order_reports";
@@ -27,7 +28,7 @@ const Menu = ({ dense = true }) => {
   const { permissions } = usePermissions();
   const [state, setState] = useState({
     orders: true,
-    products: true,
+    products: false,
     reportings: true,
     payments: true,
     invoices: true,
@@ -39,19 +40,20 @@ const Menu = ({ dense = true }) => {
   };
   return (
     <div className={classes.root}>
-      {" "}
       <MenuItemLink
         to={`/`}
         primaryText={"Dashboard"}
         leftIcon={<DashboardSharp />}
         dense={dense}
       />
-      <MenuItemLink
-        to={`/parties`}
-        primaryText={"Parties"}
-        leftIcon={<parties.icon />}
-        dense={dense}
-      />
+      {permissions === app.superAdminRole && (
+        <MenuItemLink
+          to={`/parties`}
+          primaryText={"Parties"}
+          leftIcon={<parties.icon />}
+          dense={dense}
+        />
+      )}
       <SubMenu
         handleToggle={() => handleToggle("products")}
         isOpen={state.products}
@@ -103,6 +105,14 @@ const Menu = ({ dense = true }) => {
           leftIcon={<purchase_orders.icon />}
           dense={dense}
         />
+        {permissions === app.superAdminRole && (
+          <MenuItemLink
+            to={`/purchase_order_costing`}
+            primaryText={"Purchase Orders Costing"}
+            leftIcon={<purchase_order_costing.icon />}
+            dense={dense}
+          />
+        )}
         <MenuItemLink
           to={`/purchase_items`}
           primaryText={"Purchase Items"}
@@ -120,7 +130,7 @@ const Menu = ({ dense = true }) => {
         {permissions === app.superAdminRole && (
           <MenuItemLink
             to={`/purchase_order_reports`}
-            primaryText={"Puchase Order Reportings"}
+            primaryText={"Profit/Loss Reports"}
             leftIcon={<purchase_order_reports.icon />}
             dense={dense}
           />
@@ -166,20 +176,22 @@ const Menu = ({ dense = true }) => {
           dense={dense}
         />
       </SubMenu>
-      <SubMenu
-        handleToggle={() => handleToggle("payments")}
-        isOpen={state.payments}
-        name="Payments"
-        icon={<transactions.icon />}
-        dense={dense}
-      >
-        <MenuItemLink
-          to={`/transactions`}
-          primaryText={"Party Transactions"}
-          leftIcon={<transactions.icon />}
+      {permissions === app.superAdminRole && (
+        <SubMenu
+          handleToggle={() => handleToggle("payments")}
+          isOpen={state.payments}
+          name="Payments"
+          icon={<transactions.icon />}
           dense={dense}
-        />
-      </SubMenu>
+        >
+          <MenuItemLink
+            to={`/transactions`}
+            primaryText={"Party Transactions"}
+            leftIcon={<transactions.icon />}
+            dense={dense}
+          />
+        </SubMenu>
+      )}
     </div>
   );
 };

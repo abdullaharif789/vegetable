@@ -148,7 +148,7 @@ const InvoiceList = (props) => {
         </ReferenceField>
         <NumberField
           sortable={false}
-          source="total"
+          source="total_without_discount"
           label={`Amount(${app.currencySymbol})`}
         />
         <NumberField
@@ -158,7 +158,7 @@ const InvoiceList = (props) => {
         />
         <NumberField
           sortable={false}
-          source="total_with_discount"
+          source="total"
           label={`Total Amount(${app.currencySymbol})`}
           style={{
             fontWeight: "bold",
@@ -223,7 +223,7 @@ const Cart = ({ data, submitOrder, setData, add }) => {
               <TableCell align="right">{item.type}</TableCell>
               <TableCell align="right">{item.quantity}</TableCell>
               <TableCell align="center">
-                <MaterialTextField
+                {/* <MaterialTextField
                   variant="outlined"
                   size="small"
                   type="number"
@@ -232,7 +232,9 @@ const Cart = ({ data, submitOrder, setData, add }) => {
                   onChange={(event) => {
                     updatePrice(event.target.value, "cost_price", index);
                   }}
-                />
+                  disabled={true}
+                /> */}
+                {item.cost_price}
               </TableCell>
               <TableCell align="right">
                 <MaterialTextField

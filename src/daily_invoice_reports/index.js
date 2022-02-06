@@ -33,31 +33,16 @@ const Content = (props) => {
     const data = Object.keys(props.data)
       .map((item) => props.data[item])
       .sort((a, b) => b.id - a.id);
+    console.log(JSON.stringify(data));
     data.forEach((item) => {
-      if (daily_reports[item.party.business_name]) {
-        daily_reports[item.party.business_name] = {
-          total_amount: (
-            parseFloat(item.total) +
-            parseFloat(daily_reports[item.party.business_name].total_amount)
-          ).toFixed(2),
-          transactions_total: (
-            parseFloat(item.transactions_total) +
-            parseFloat(
-              daily_reports[item.party.business_name].transactions_total
-            )
-          ).toFixed(2),
-          name: item.party.business_name,
-          transactions: item.transactions,
-        };
-      } else {
-        daily_reports[item.party.business_name] = {
-          total_amount: parseFloat(item.total).toFixed(2),
-          transactions_total: parseFloat(item.transactions_total).toFixed(2),
-          name: item.party.business_name,
-          transactions: item.transactions,
-        };
-      }
+      daily_reports[item.party.business_name] = {
+        total_amount: parseFloat(item.total).toFixed(2),
+        transactions_total: parseFloat(item.transactions_total).toFixed(2),
+        name: item.party.business_name,
+        transactions: item.transactions,
+      };
     });
+    // console.log(daily_reports);
     daily_reports = Object.keys(daily_reports)
       .sort()
       .reduce((obj, key) => {
@@ -66,7 +51,8 @@ const Content = (props) => {
       }, {});
     setData(daily_reports);
   }, [props.data]);
-  if (Object.keys(data).length === 0) return <div>Loading...</div>;
+  if (Object.keys(data).length === 0)
+    return <div style={{ padding: 10 }}>Loading...</div>;
   else
     return (
       <div style={{ padding: 10 }}>

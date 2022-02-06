@@ -22,7 +22,6 @@ import {
   NumberInput,
   BooleanField,
   Filter,
-  usePermissions,
 } from "react-admin";
 import Button from "@material-ui/core/Button";
 
@@ -31,7 +30,7 @@ import PersonIcon from "@material-ui/icons/Person";
 import ReactToPrint from "react-to-print";
 import Print from "@material-ui/icons/Print";
 import CustomPagination from "../components/PaginationCustom";
-
+import { app } from "../contants";
 const PartyTitle = ({ record }) => {
   return <span>Parties {record ? ` - ${record.name}` : ""}</span>;
 };
@@ -111,8 +110,6 @@ const PartyList = (props) => {
   );
 };
 const PartyListParent = (props) => {
-  const { permissions } = usePermissions();
-  console.log("permissions", permissions);
   return (
     <List
       filters={<PartyFilter />}
@@ -226,6 +223,13 @@ const PartyCreate = (props) => {
           variant="outlined"
           validate={required()}
           type="email"
+        />
+        <TextInput
+          source="password"
+          fullWidth
+          variant="outlined"
+          validate={required()}
+          type="password"
         />
         <TextInput
           label="Business Name"

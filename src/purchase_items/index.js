@@ -46,30 +46,81 @@ class PrintItemWiseDetails extends React.Component {
       "name"
     );
     return (
-      <DataTable
-        columns={[
-          {
-            name: "Item",
-            selector: (row) => row.name,
-            sortable: true,
-          },
-          {
-            name: "Van",
-            selector: (row) => row.van,
-            sortable: true,
-          },
-          {
-            name: "Total",
-            selector: (row) => row.total,
-          },
-        ]}
-        data={newCart}
-        pagination
-        paginationComponentOptions={{
-          selectAllRowsItem: true,
-          selectAllRowsItemText: "All Items",
-        }}
-      />
+      <div>
+        <div
+          style={{
+            display: "flex",
+            padding: "15px 10px",
+            border: "1px solid #555",
+            borderRadius: 4,
+            marginBottom: 10,
+            marginLeft: 11,
+          }}
+        >
+          <div
+            style={{
+              flex: 0.5,
+            }}
+          >
+            <strong>Date : </strong>
+            {new Date().toLocaleDateString()}
+          </div>
+          <div
+            style={{
+              flex: 1,
+            }}
+          >
+            <strong>Driver Name : </strong>
+            <div
+              style={{
+                textDecoration: "underline",
+                display: "inline-block",
+                width: "60%",
+                borderBottom: "2px dotted #000",
+              }}
+            ></div>
+          </div>
+          <div
+            style={{
+              flex: 1,
+            }}
+          >
+            <strong>Signature : </strong>
+            <div
+              style={{
+                textDecoration: "underline",
+                display: "inline-block",
+                width: "60%",
+                borderBottom: "2px dotted #000",
+              }}
+            ></div>
+          </div>
+        </div>
+        <DataTable
+          columns={[
+            {
+              name: "Item",
+              selector: (row) => row.name,
+              sortable: true,
+            },
+            {
+              name: "Van",
+              selector: (row) => row.van,
+              sortable: true,
+            },
+            {
+              name: "Total",
+              selector: (row) => row.total,
+            },
+          ]}
+          data={newCart}
+          pagination
+          paginationComponentOptions={{
+            selectAllRowsItem: true,
+            selectAllRowsItemText: "All Items",
+          }}
+        />
+      </div>
     );
   }
 }

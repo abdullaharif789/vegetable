@@ -72,6 +72,7 @@ const Report = (props) => {
           parseFloat(tempData[i].cart[j].cost_price) *
           tempData[i].cart[j].quantity;
       }
+      tabsOutput.totalProfit -= parseFloat(tempData[i].discount_amount);
     }
     setTabsData(tabsOutput);
   }, [props]);
@@ -221,7 +222,49 @@ const Report = (props) => {
                           })}
                           <TableRow>
                             <TableCell colSpan={5} align="right">
-                              <strong>Totals({app.currencySymbol})</strong>
+                              <strong>
+                                Actual Total({app.currencySymbol})
+                              </strong>
+                            </TableCell>
+                            <TableCell colSpan={1} align="right">
+                              <strong>{item.total_tax}</strong>
+                            </TableCell>
+                            <TableCell colSpan={1} align="right">
+                              <strong>{item.total_without_discount}</strong>
+                            </TableCell>
+                            <TableCell
+                              colSpan={1}
+                              align="right"
+                              style={{
+                                color: item.profit < 0 ? "red" : "green",
+                              }}
+                            >
+                              <strong>{item.profit}</strong>
+                            </TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell colSpan={5} align="right">
+                              <strong>Discount({app.currencySymbol})</strong>
+                            </TableCell>
+                            <TableCell colSpan={1} align="right">
+                              <strong>--</strong>
+                            </TableCell>
+                            <TableCell colSpan={1} align="right">
+                              <strong>{item.discount_amount}</strong>
+                            </TableCell>
+                            <TableCell
+                              colSpan={1}
+                              align="right"
+                              // style={{
+                              //   color: item.total_profit < 0 ? "red" : "green",
+                              // }}
+                            >
+                              <strong>--</strong>
+                            </TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell colSpan={5} align="right">
+                              <strong>Grand Total({app.currencySymbol})</strong>
                             </TableCell>
                             <TableCell colSpan={1} align="right">
                               <strong>{item.total_tax}</strong>

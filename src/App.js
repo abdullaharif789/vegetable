@@ -19,6 +19,7 @@ import categories from "./categories";
 import orders from "./orders";
 import invoices from "./invoices";
 import purchase_invoices from "./purchase_invoices";
+import purchase_order_costing from "./purchase_order_costing";
 import daily_invoice_reports from "./daily_invoice_reports";
 import order_reports from "./order_reports";
 import purchase_order_reports from "./purchase_order_reports";
@@ -63,7 +64,6 @@ export default function App() {
       customRoutes={customRoutes}
     >
       {(permissions) => [
-        <Resource {...parties} />,
         <Resource {...categories} />,
         <Resource {...items} />,
         <Resource {...inventories} />,
@@ -71,15 +71,21 @@ export default function App() {
         <Resource {...manual_orders} />,
         <Resource {...purchase_orders} />,
         <Resource {...purchase_items} />,
-        <Resource {...transactions} />,
         <Resource {...invoices} />,
         <Resource {...purchase_invoices} />,
         <Resource {...daily_invoice_reports} />,
+        permissions === app.superAdminRole ? <Resource {...parties} /> : null,
+        permissions === app.superAdminRole ? (
+          <Resource {...purchase_order_costing} />
+        ) : null,
         permissions === app.superAdminRole ? (
           <Resource {...order_reports} />
         ) : null,
         permissions === app.superAdminRole ? (
           <Resource {...purchase_order_reports} />
+        ) : null,
+        permissions === app.superAdminRole ? (
+          <Resource {...transactions} />
         ) : null,
         <Resource {...van_reports} />,
       ]}

@@ -32,7 +32,8 @@ import {
   TopToolbar,
   CreateButton,
   ExportButton,
-  Pagination,
+  Loading,
+  useDataProvider,
 } from "react-admin";
 import { cloneElement } from "react";
 import IconEvent from "@material-ui/icons/Event";
@@ -49,9 +50,23 @@ import Print from "@material-ui/icons/Print";
 import axios from "axios";
 import CustomPagination from "../components/PaginationCustom";
 import CustomDelete from "../components/CustomDelete";
-
+import {
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from "@material-ui/core";
 const TransactionFilter = (props) => (
   <Filter {...props}>
+    <SelectInput
+      alwaysOn
+      choices={[{ id: "Yes", name: "Yes" }]}
+      source="payment_alert"
+      label="Payment Alert"
+      variant="outlined"
+    />
     <SelectInput
       alwaysOn
       choices={app.payments.map((item) => ({ id: item, name: item }))}
@@ -135,21 +150,103 @@ const CustomDeleteWrapper = ({ record }) => {
     />
   );
 };
+const ShowPartyTransactions = (props) => {
+  const dataProvider = useDataProvider();
+  const [transactions, setTransactions] = React.useState([]);
+  const getTransactions = () => {
+    var params = { party_transactions_id: props.record.id };
+    if (window.location.href.search("payment_alert") != -1) {
+      params.payment_alert = "Yes";
+    }
+    dataProvider
+      .getListSimple("transactions", params)
+      .then(({ data }) => {
+        setTransactions(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  React.useEffect(getTransactions, []);
+  if (transactions.length == 0)
+    return <Loading loadingPrimary="" loadingSecondary="" />;
+  else
+    return (
+      <>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell>Party Name</TableCell>
+              <TableCell>Date</TableCell>
+              <TableCell>Amount Status</TableCell>
+              <TableCell align="right">Amount({app.currencySymbol})</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {transactions.map((transaction, index) => {
+              return (
+                <TableRow key={index}>
+                  <TableCell>{transaction.party_name}</TableCell>
+                  <TableCell>{transaction.date}</TableCell>
+                  <TableCell>{transaction.paid}</TableCell>
+                  <TableCell align="right">
+                    <strong>{transaction.amount}</strong>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+        {/* <List
+        {...props}
+        bulkActionButtons={false}
+        exporter={false}
+        hasCreate={false}
+        pagination={false}
+        className="set-table-height"
+        sort={{ field: "party_transactions", order: props.id }}
+      >
+        <Datagrid>
+          <TextField
+            source="party_name"
+            label={`Party`}
+            style={{
+              fontWeight: "bold",
+            }}
+          />
+          <TextField source="paid" label="Amount Status" />
+          <DateField source="date" />
+          <NumberField
+            source="amount"
+            label={`Amount(${app.currencySymbol})`}
+            style={{ fontWeight: "bold" }}
+          />
+          {!props.print && <ShowButton />}
+          {!props.print && <EditButton />}
+          {!props.print && <CustomDeleteWrapper />}
+        </Datagrid>
+      </List> */}
+      </>
+    );
+};
 const ListResult = (props) => {
   return (
     <>
       {props.print && <Logo />}
       <Total {...props} />
-      <Datagrid>
-        <ReferenceField source="party_id" reference="parties">
-          <TextField source="business_name" />
-        </ReferenceField>
-        <TextField source="paid" label="Amount Status" />
-        <DateField source="date" />
-        <NumberField source="amount" label={`Amount(${app.currencySymbol})`} />
-        {!props.print && <ShowButton />}
-        {!props.print && <EditButton />}
-        {!props.print && <CustomDeleteWrapper />}
+      <Datagrid rowClick="expand" expand={<ShowPartyTransactions {...props} />}>
+        <TextField
+          source="party_name"
+          label={`Party`}
+          style={{
+            fontWeight: "bold",
+          }}
+        />
+        <NumberField
+          source="amount"
+          label={`Total Amount(${app.currencySymbol})`}
+          style={{ fontWeight: "bold" }}
+        />
       </Datagrid>
     </>
   );
@@ -312,11 +409,9 @@ const Logo = () => {
               }}
             />
             <h4 style={classes.margin0}>Everyday Fresh Food Ltd.</h4>
-            <p style={classes.margin0}>
-              Unite 5E Jaguar Point Manning Heath Road
-            </p>
-            <p style={classes.margin0}>Poole</p>
-            <p style={classes.margin0}>Bh12 4NQ</p>
+            <p style={classes.margin0}>Unit 25 Chalwyn Industrial Estate</p>
+            <p style={classes.margin0}>Parkstone, Poole</p>
+            <p style={classes.margin0}>BH12 4PE</p>
           </div>
         </div>
       </CardContent>

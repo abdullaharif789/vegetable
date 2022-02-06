@@ -169,7 +169,7 @@ export class InvoiceShow extends React.PureComponent {
                     <strong>Total Amount({app.currencySymbol})</strong>
                   </TableCell>
                   <TableCell align="right">
-                    <strong>{this.props.record.total_with_discount}</strong>
+                    <strong>{this.props.record.total_without_discount}</strong>
                   </TableCell>
                 </TableRow>
               </TableBody>

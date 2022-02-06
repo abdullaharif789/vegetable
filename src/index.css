@@ -76,3 +76,6 @@ td {
 ::-webkit-scrollbar-thumb:hover {
   background: #666;
 }
+.set-table-height {
+  margin-top: -60px;
+}
