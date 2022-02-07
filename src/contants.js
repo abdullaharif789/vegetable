@@ -24,6 +24,50 @@ export const app = {
       value: 0.15,
     },
   ],
+  weeks: [
+    {
+      label: "Older than 1 Week",
+      value: "-1 week",
+    },
+    {
+      label: "Older than 2 Weeks",
+      value: "-2 weeks",
+    },
+    {
+      label: "Older than 3 Weeks",
+      value: "-3 weeks",
+    },
+    {
+      label: "Older than 4 Weeks",
+      value: "-4 weeks",
+    },
+    {
+      label: "Older than 5 Weeks",
+      value: "-5 weeks",
+    },
+  ],
+  filterAmounts: [
+    {
+      label: "Greater than 100",
+      value: 100,
+    },
+    {
+      label: "Greater than 200",
+      value: 200,
+    },
+    {
+      label: "Greater than 300",
+      value: 300,
+    },
+    {
+      label: "Greater than 500",
+      value: 500,
+    },
+    {
+      label: "Greater than 700",
+      value: 700,
+    },
+  ],
   boxTypes: ["Full Box", "Half Box", "Loose Item"],
   payments: ["Paid", "Unpaid"],
   status: ["Progress", "Completed", "Canceled"],

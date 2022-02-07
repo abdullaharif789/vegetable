@@ -34,9 +34,10 @@ import {
   ExportButton,
   Loading,
   useDataProvider,
+  composeSyncValidators,
 } from "react-admin";
 import { cloneElement } from "react";
-import IconEvent from "@material-ui/icons/Event";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import Typography from "@material-ui/core/Typography";
 import CardWithIcon from "./CardWithIcon";
 import ReactToPrint from "react-to-print";
@@ -62,9 +63,19 @@ const TransactionFilter = (props) => (
   <Filter {...props}>
     <SelectInput
       alwaysOn
-      choices={[{ id: "Yes", name: "Yes" }]}
-      source="payment_alert"
-      label="Payment Alert"
+      choices={app.weeks.map((item) => ({ id: item.value, name: item.label }))}
+      source="weeks"
+      label="Week"
+      variant="outlined"
+    />
+    <SelectInput
+      alwaysOn
+      choices={app.filterAmounts.map((item) => ({
+        id: item.value,
+        name: item.label,
+      }))}
+      source="amount"
+      label="Amount"
       variant="outlined"
     />
     <SelectInput
@@ -84,7 +95,7 @@ const TransactionFilter = (props) => (
     >
       <AutocompleteInput optionText="business_name" />
     </ReferenceInput>
-    <DateInput source="date" label="Date" variant="outlined" alwaysOn />
+    <DateInput source="date" label="Date" variant="outlined" />
   </Filter>
 );
 const Total = (props) => {
@@ -97,18 +108,19 @@ const Total = (props) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadRevenue = async () => {
     try {
-      if (props.filterValues.party_id) {
-        let tempData = Object.keys(data).map((item) => data[item]);
-        let sum = 0;
-        tempData.forEach((tran) => {
-          if (tran.paid == "Unpaid") sum += parseFloat(tran.amount);
-        });
-        setRevenue(sum.toFixed(2));
-      } else {
-        await axios
-          .get(app.api + "transactions?totalUnpaid=1")
-          .then((result) => setRevenue(result.data.toFixed(2)));
-      }
+      // if (props.filterValues.party_id) {
+      //   let tempData = Object.keys(data).map((item) => data[item]);
+      //   console.log(tempData);
+      //   let sum = 0;
+      //   tempData.forEach((tran) => {
+      //     if (tran.paid == "Unpaid") sum += parseFloat(tran.amount);
+      //   });
+      //   setRevenue(sum.toFixed(2));
+      // } else {
+      await axios
+        .get(app.api + "transactions?totalUnpaid=1")
+        .then((result) => setRevenue(result.data.toFixed(2)));
+      // }
     } catch (error) {
       console.log(error);
     }
@@ -153,27 +165,38 @@ const CustomDeleteWrapper = ({ record }) => {
 const ShowPartyTransactions = (props) => {
   const dataProvider = useDataProvider();
   const [transactions, setTransactions] = React.useState([]);
-  const getTransactions = () => {
-    var params = { party_transactions_id: props.record.id };
-    if (window.location.href.search("payment_alert") != -1) {
-      params.payment_alert = "Yes";
-    }
-    dataProvider
-      .getListSimple("transactions", params)
-      .then(({ data }) => {
-        setTransactions(data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  const getTransactions = async () => {
+    var params = `party_transactions_id=${props.record.id}&`;
+    params += window.location.href.split("?")[1];
+    await axios
+      .get(app.api + `transactions?${params}`)
+      .then(({ data }) => setTransactions(data));
   };
   React.useEffect(getTransactions, []);
   if (transactions.length == 0)
-    return <Loading loadingPrimary="" loadingSecondary="" />;
+    return (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
   else
     return (
       <>
-        <Table size="small">
+        <Table
+          size="small"
+          style={{
+            backgroundColor: "#f2f2f2",
+            borderRadius: "5px",
+            overflow: "hidden",
+          }}
+        >
           <TableHead>
             <TableRow>
               <TableCell>Party Name</TableCell>

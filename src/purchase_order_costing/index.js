@@ -120,83 +120,100 @@ const OrderListRows = (props) => {
     }
   }
   finalOutput.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
-  const changeCost = (value, item_id) => {
+  const changeCost = (value, item_id, type) => {
     var tempCosts = { ...costs };
-    tempCosts[item_id] = parseFloat(value);
+    tempCosts[item_id] = {
+      cost_price: parseFloat(value),
+      item_type: type,
+      item_id,
+    };
     setCosts(tempCosts);
   };
   const submitCost = async (item_id, item_type, name) => {
-    const cost_price = costs[item_id];
-    if (!cost_price) {
-      notify(`Please enter cost for '${name}'`, "error");
-    } else {
-      const data = {
-        item_id,
-        item_type,
-        cost_price,
-      };
-      await axios
-        .post(`${app.api}purchase_order_costing`, data)
-        .then((res) => {
-          notify(`Price updated of '${name}'`, "success");
-        })
-        .catch((err) => {
-          notify(`Error occured!`, "error");
-        });
-    }
+    // const cost_price = costs[item_id];
+    // if (!cost_price) {
+    //   notify(`Please enter cost for '${name}'`, "error");
+    // } else {
+    // const data = {
+    //   item_id,
+    //   item_type,
+    //   cost_price,
+    // };
+    await axios
+      .post(
+        `${app.api}purchase_order_costing`,
+        Object.values(costs).map((item) => ({
+          ...item,
+          price: 0,
+          created_at: new Date(),
+        }))
+      )
+      .then((res) => {
+        notify(`All given costs are updated.`, "success");
+      })
+      .catch((err) => {
+        console.log(err);
+        notify(`Error occured!`, "error");
+      });
+    // }
   };
   if (finalOutput.length == 0) {
     return <div style={{ padding: 10 }}>No data to show...</div>;
   } else
     return (
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>Item</TableCell>
-            <TableCell>Type</TableCell>
-            <TableCell>Quantity</TableCell>
-            <TableCell align="center" style={{ width: "20%" }}>
-              Cost Price({app.currencySymbol})
-            </TableCell>
-            <TableCell align="center" style={{ width: "20%" }}>
-              Action
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {finalOutput.map((item, i) =>
-            Object.keys(item.total).map((type, j) => (
-              <TableRow key={`${i}_${j}`}>
-                <TableCell>{item.name}</TableCell>
-                <TableCell>{type}</TableCell>
-                <TableCell>{item.total[type]}</TableCell>
-                <TableCell align="center">
-                  <MaterialTextField
-                    placeholder="0.00"
-                    variant="outlined"
-                    size="small"
-                    type="number"
-                    inputProps={{ style: { textAlign: "center" } }}
-                    onChange={(event) => {
-                      changeCost(event.target.value, item.item_id);
-                    }}
-                  />
-                </TableCell>
-                <TableCell align="center">
-                  <Button
-                    startIcon={<SaveIcon />}
-                    variant="contained"
-                    color="primary"
-                    onClick={() => submitCost(item.item_id, type, item.name)}
-                  >
-                    Update Cost
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+      <>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "end",
+            padding: "10px 35px 10px 0px",
+          }}
+        >
+          <Button
+            onClick={submitCost}
+            startIcon={<SaveIcon />}
+            variant="contained"
+            color="primary"
+          >
+            Update All Costs
+          </Button>
+        </div>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell>Item</TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell>Quantity</TableCell>
+              <TableCell align="center" style={{ width: "20%" }}>
+                Cost Price({app.currencySymbol})
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {finalOutput.map((item, i) =>
+              Object.keys(item.total).map((type, j) => (
+                <TableRow key={`${i}_${j}`}>
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell>{type}</TableCell>
+                  <TableCell>{item.total[type]}</TableCell>
+                  <TableCell align="center">
+                    <MaterialTextField
+                      placeholder="0.00"
+                      variant="outlined"
+                      size="small"
+                      type="number"
+                      inputProps={{ style: { textAlign: "center" } }}
+                      onChange={(event) => {
+                        changeCost(event.target.value, item.item_id, type);
+                      }}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </>
     );
 };
 export const OrderList = (props) => {
