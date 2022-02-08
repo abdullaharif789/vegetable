@@ -203,6 +203,7 @@ const ShowPartyTransactions = (props) => {
               <TableCell>Date</TableCell>
               <TableCell>Amount Status</TableCell>
               <TableCell align="right">Amount({app.currencySymbol})</TableCell>
+              <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -214,6 +215,17 @@ const ShowPartyTransactions = (props) => {
                   <TableCell>{transaction.paid}</TableCell>
                   <TableCell align="right">
                     <strong>{transaction.amount}</strong>
+                  </TableCell>
+                  <TableCell>
+                    {!props.print && (
+                      <EditButton
+                        record={transaction}
+                        basePath="transactions"
+                      />
+                    )}
+                    {!props.print && (
+                      <CustomDeleteWrapper record={transaction} />
+                    )}
                   </TableCell>
                 </TableRow>
               );
