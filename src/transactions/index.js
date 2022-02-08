@@ -163,7 +163,6 @@ const CustomDeleteWrapper = ({ record }) => {
   );
 };
 const ShowPartyTransactions = (props) => {
-  const dataProvider = useDataProvider();
   const [transactions, setTransactions] = React.useState([]);
   const getTransactions = async () => {
     var params = `party_transactions_id=${props.record.id}&`;
@@ -173,6 +172,7 @@ const ShowPartyTransactions = (props) => {
       .then(({ data }) => setTransactions(data));
   };
   React.useEffect(getTransactions, []);
+  var totalSum = 0;
   if (transactions.length == 0)
     return (
       <div
@@ -192,22 +192,30 @@ const ShowPartyTransactions = (props) => {
         <Table
           size="small"
           style={{
-            backgroundColor: "#f2f2f2",
+            // backgroundColor: "#f2f2f2",
             borderRadius: "5px",
             overflow: "hidden",
           }}
         >
           <TableHead>
             <TableRow>
+              <Logo />
+            </TableRow>
+          </TableHead>
+          <TableHead>
+            <TableRow>
               <TableCell>Party Name</TableCell>
               <TableCell>Date</TableCell>
               <TableCell>Amount Status</TableCell>
               <TableCell align="right">Amount({app.currencySymbol})</TableCell>
-              <TableCell>Action</TableCell>
+              {!props.allowPrint && (
+                <TableCell align="center">Action</TableCell>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
             {transactions.map((transaction, index) => {
+              totalSum += parseFloat(transaction.amount);
               return (
                 <TableRow key={index}>
                   <TableCell>{transaction.party_name}</TableCell>
@@ -217,59 +225,145 @@ const ShowPartyTransactions = (props) => {
                     <strong>{transaction.amount}</strong>
                   </TableCell>
                   <TableCell>
-                    {!props.print && (
-                      <EditButton
-                        record={transaction}
-                        basePath="transactions"
-                      />
-                    )}
-                    {!props.print && (
-                      <CustomDeleteWrapper record={transaction} />
-                    )}
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {!props.allowPrint && (
+                        <EditButton
+                          record={transaction}
+                          basePath="transactions"
+                        />
+                      )}
+                      {!props.allowPrint && (
+                        <CustomDeleteWrapper record={transaction} />
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               );
             })}
+            <TableRow>
+              <TableCell align="right" colSpan={3}>
+                <strong>Total</strong>
+              </TableCell>
+              <TableCell align="right">
+                <strong>{totalSum.toFixed(2)}</strong>
+              </TableCell>
+            </TableRow>
           </TableBody>
         </Table>
-        {/* <List
-        {...props}
-        bulkActionButtons={false}
-        exporter={false}
-        hasCreate={false}
-        pagination={false}
-        className="set-table-height"
-        sort={{ field: "party_transactions", order: props.id }}
-      >
-        <Datagrid>
-          <TextField
-            source="party_name"
-            label={`Party`}
-            style={{
-              fontWeight: "bold",
-            }}
-          />
-          <TextField source="paid" label="Amount Status" />
-          <DateField source="date" />
-          <NumberField
-            source="amount"
-            label={`Amount(${app.currencySymbol})`}
-            style={{ fontWeight: "bold" }}
-          />
-          {!props.print && <ShowButton />}
-          {!props.print && <EditButton />}
-          {!props.print && <CustomDeleteWrapper />}
-        </Datagrid>
-      </List> */}
       </>
     );
+};
+class TransactionCenter extends React.Component {
+  render() {
+    return <ShowPartyTransactions {...this.props} />;
+  }
+}
+// class PartyTransactions extends React.PureComponent {
+//   render() {
+//     return (
+//       <div>
+//         <ReactToPrint
+//           onAfterPrint={() => this.props.setPrint(false)}
+//           trigger={() => {
+//             return (
+//               <div
+//                 style={{
+//                   display: "flex",
+//                   justifyContent: "flex-end",
+//                   marginTop: 10,
+//                   marginBottom: 10,
+//                 }}
+//               >
+//                 <Button
+//                   variant="contained"
+//                   color="primary"
+//                   startIcon={<Print fontSize="inherit" />}
+//                 >
+//                   Print
+//                 </Button>
+//                 <br />
+//               </div>
+//             );
+//           }}
+//           content={() => this.componentRef}
+//           onBeforeGetContent={async () => {
+//             this.props.setPrint(true);
+//             await app.sleep(1);
+//           }}
+//           pageStyle={"padding:20px"}
+//         />
+
+//         <TransactionList
+//           ref={(el) => (this.componentRef = el)}
+//           {...this.props}
+//           print={this.props.print}
+//           setPrint={this.props.setPrint}
+//         />
+//       </div>
+//     );
+//   }
+// }
+const TransactionPrintWrapper = (props) => {
+  var tableRef;
+  const [allowPrint, setAllowPrint] = React.useState(false);
+  return (
+    <>
+      <div
+        style={{
+          marginRight: 10,
+        }}
+      >
+        <ReactToPrint
+          onAfterPrint={() => setAllowPrint(false)}
+          onBeforeGetContent={async () => {
+            setAllowPrint(true);
+            await app.sleep(1);
+          }}
+          trigger={() => {
+            return (
+              <div
+                style={{
+                  marginTop: 10,
+                  marginBottom: 10,
+                  float: "right",
+                }}
+              >
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<Print fontSize="inherit" />}
+                >
+                  Print
+                </Button>
+              </div>
+            );
+          }}
+          pageStyle={"padding:20px"}
+          content={() => tableRef}
+        />
+        <TransactionCenter
+          ref={(el) => (tableRef = el)}
+          allowPrint={allowPrint}
+          {...props}
+        />
+      </div>
+    </>
+  );
 };
 const ListResult = (props) => {
   return (
     <>
       {props.print && <Logo />}
       <Total {...props} />
-      <Datagrid rowClick="expand" expand={<ShowPartyTransactions {...props} />}>
+      <Datagrid
+        rowClick="expand"
+        expand={<TransactionPrintWrapper {...props} />}
+      >
         <TextField
           source="party_name"
           label={`Party`}
