@@ -248,6 +248,7 @@ const InvoiceList = (props) => {
       sort={{ field: "id", order: "desc" }}
       hasCreate={false}
       perPage={1000000}
+      empty={false}
     >
       <DailyInvoices />
     </List>
