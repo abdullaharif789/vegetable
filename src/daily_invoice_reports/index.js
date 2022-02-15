@@ -240,7 +240,7 @@ const DailyInvoices = (props) => {
 const InvoiceList = (props) => {
   return (
     <List
-      filterDefaultValues={{ current_date: Date(), van: app.vans[0] }}
+      // filterDefaultValues={{ current_date: Date(), van: app.vans[0] }}
       {...props}
       bulkActionButtons={false}
       filters={<OrderFilter />}
