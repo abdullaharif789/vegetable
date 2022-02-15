@@ -150,10 +150,10 @@ export class InvoiceShow extends React.PureComponent {
                 ))}
                 <TableRow>
                   <TableCell align="right" colSpan={4}>
-                    <strong>Amount({app.currencySymbol})</strong>
+                    <strong>Total({app.currencySymbol})</strong>
                   </TableCell>
                   <TableCell align="right">
-                    <strong>{this.props.record.total}</strong>
+                    <strong>{this.props.record.total_without_discount}</strong>
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -169,7 +169,7 @@ export class InvoiceShow extends React.PureComponent {
                     <strong>Total Amount({app.currencySymbol})</strong>
                   </TableCell>
                   <TableCell align="right">
-                    <strong>{this.props.record.total_without_discount}</strong>
+                    <strong>{this.props.record.total}</strong>
                   </TableCell>
                 </TableRow>
               </TableBody>

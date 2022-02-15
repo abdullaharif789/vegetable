@@ -35,6 +35,7 @@ import {
   Loading,
   useDataProvider,
   composeSyncValidators,
+  useListContext,
 } from "react-admin";
 import { cloneElement } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -59,6 +60,7 @@ import {
   TableHead,
   TableRow,
 } from "@material-ui/core";
+import { stringify } from "query-string";
 const TransactionFilter = (props) => (
   <Filter {...props}>
     <SelectInput
@@ -95,7 +97,7 @@ const TransactionFilter = (props) => (
     >
       <AutocompleteInput optionText="business_name" />
     </ReferenceInput>
-    <DateInput source="date" label="Date" variant="outlined" />
+    <DateInput alwaysOn source="date" label="Date" variant="outlined" />
   </Filter>
 );
 const Total = (props) => {
@@ -165,11 +167,12 @@ const CustomDeleteWrapper = ({ record }) => {
 const ShowPartyTransactions = (props) => {
   const [transactions, setTransactions] = React.useState([]);
   const getTransactions = async () => {
-    var params = `party_transactions_id=${props.record.id}&`;
-    params += window.location.href.split("?")[1];
-    await axios
-      .get(app.api + `transactions?${params}`)
-      .then(({ data }) => setTransactions(data));
+    var params = {
+      filter: JSON.stringify(props.filterValues),
+    };
+    params = `party_transactions_id=${props.record.id}&${stringify(params)}`;
+    const url = app.api + "transactions?" + params;
+    await axios.get(url).then(({ data }) => setTransactions(data));
   };
   React.useEffect(getTransactions, []);
   var totalSum = 0;
@@ -412,10 +415,15 @@ const UserEditToolbar = (props) => (
 const TransactionUpdate = (props) => {
   const notify = useNotify();
   const refresh = useRefresh();
+  const redirect = useRedirect();
 
   return (
     <Edit
       {...props}
+      onSuccess={(data) => {
+        redirect("/transactions");
+        refresh();
+      }}
       onFailure={(data) => {
         notify(data.body, "error");
         refresh();
@@ -441,7 +449,7 @@ const TransactionUpdate = (props) => {
           label={`Amount(${app.currencySymbol})`}
         />
         <DateInput
-          source="date"
+          source="new_date"
           variant="outlined"
           fullWidth
           validate={[required()]}
@@ -582,10 +590,7 @@ export class PartySingleTransaction extends React.PureComponent {
             return (
               <div
                 style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  marginTop: 10,
-                  marginBottom: 10,
+                  float: "right",
                 }}
               >
                 <Button
@@ -619,10 +624,9 @@ class PartyTransactions extends React.PureComponent {
             return (
               <div
                 style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
                   marginTop: 10,
                   marginBottom: 10,
+                  float: "right",
                 }}
               >
                 <Button
