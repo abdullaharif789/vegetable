@@ -376,7 +376,7 @@ const ListResult = (props) => {
         />
         <NumberField
           source="amount"
-          label={`Total Amount(${app.currencySymbol})`}
+          label={`Total Amount with out Discount(${app.currencySymbol})`}
           style={{ fontWeight: "bold" }}
         />
       </Datagrid>

@@ -13,6 +13,7 @@ import {
   Show,
   ShowButton,
   NumberField,
+  usePermissions,
 } from "react-admin";
 import ReactToPrint from "react-to-print";
 import FormLabel from "@material-ui/core/FormLabel";
@@ -180,6 +181,8 @@ const getTotalCount = (data, typeIndex) => {
     .reduce((a, b) => a + parseFloat(b["quantity"]), 0);
 };
 const Cart = ({ data, submitOrder, setData, add }) => {
+  const { permissions } = usePermissions();
+  console.log(permissions);
   if (data.cart.length === 0) return <p>There is no item in cart.</p>;
   var t1 = getTotalCount(data, 0);
   var t2 = getTotalCount(data, 1);
@@ -188,10 +191,11 @@ const Cart = ({ data, submitOrder, setData, add }) => {
     var newData = { ...data };
     newData.cart[index][key] = value;
     const total = newData.cart.reduce(
-      (a, b) => a + parseFloat(b["price"]) * parseFloat(b["quantity"]),
+      (a, b) =>
+        parseFloat(a) + parseFloat(b["price"]) * parseFloat(b["quantity"]),
       0
     );
-    newData.total = total;
+    newData.total = parseFloat(total);
     setData(newData);
   };
   return (
@@ -223,18 +227,20 @@ const Cart = ({ data, submitOrder, setData, add }) => {
               <TableCell align="right">{item.type}</TableCell>
               <TableCell align="right">{item.quantity}</TableCell>
               <TableCell align="center">
-                {/* <MaterialTextField
-                  variant="outlined"
-                  size="small"
-                  type="number"
-                  value={item.cost_price}
-                  inputProps={{ style: { textAlign: "center" } }}
-                  onChange={(event) => {
-                    updatePrice(event.target.value, "cost_price", index);
-                  }}
-                  disabled={true}
-                /> */}
-                {item.cost_price}
+                {permissions == app.superAdminRole ? (
+                  <MaterialTextField
+                    variant="outlined"
+                    size="small"
+                    type="number"
+                    value={item.cost_price}
+                    inputProps={{ style: { textAlign: "center" } }}
+                    onChange={(event) => {
+                      updatePrice(event.target.value, "cost_price", index);
+                    }}
+                  />
+                ) : (
+                  item.cost_price
+                )}
               </TableCell>
               <TableCell align="right">
                 <MaterialTextField
@@ -333,7 +339,7 @@ const PurchaseOrdersCreate = (props) => {
             setData({
               ...data,
               cart: out.cart,
-              total: out.total,
+              total: parseFloat(out.total),
               purchase_order_id: out.id,
             });
           }
@@ -356,9 +362,7 @@ const PurchaseOrdersCreate = (props) => {
     // }
     temp.cart = temp.cart.map((item) => ({
       ...item,
-      total: parseFloat(
-        parseFloat(item.price) * parseFloat(item.quantity)
-      ).toFixed(2),
+      total: parseFloat(parseFloat(item.price) * parseFloat(item.quantity)),
       price: parseFloat(item.price).toFixed(2),
       cost_price: parseFloat(item.cost_price).toFixed(2),
     }));
