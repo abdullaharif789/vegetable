@@ -6,6 +6,7 @@ import { app } from "../contants";
 import ReactToPrint from "react-to-print";
 import Print from "@material-ui/icons/Print";
 import Button from "@material-ui/core/Button";
+import moment from "moment";
 import {
   Table,
   TableBody,
@@ -71,21 +72,30 @@ const Content = (props) => {
             }}
           >
             <strong>Date : </strong>
-            {new Date().toLocaleDateString()}
+            {moment().format("DD-MMM-YYYY")}
           </div>
           <div
             style={{
               flex: 1,
+              flexDirection: "row",
+              display: "flex",
             }}
           >
-            <strong>Driver Name : </strong>
-            <span
+            <div
               style={{
-                textDecoration: "underline",
+                flex: 0.4,
+                textAlign: "right",
               }}
             >
-                                                                          
-            </span>
+              <strong>Driver Name : </strong>
+            </div>
+            <div
+              style={{
+                flex: 1,
+
+                borderBottom: "2px dotted #555",
+              }}
+            ></div>
           </div>
         </div>
         <Table size="small">
@@ -163,9 +173,9 @@ const Content = (props) => {
                             {data[key].transactions.map((transaction) => (
                               <TableRow>
                                 <TableCell>
-                                  {new Date(
-                                    transaction.date
-                                  ).toLocaleDateString()}
+                                  {moment(transaction.new_date).format(
+                                    "DD/MM/YYYY"
+                                  )}
                                 </TableCell>
                                 <TableCell align="right">
                                   <strong>

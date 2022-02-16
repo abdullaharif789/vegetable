@@ -218,7 +218,7 @@ const ShowPartyTransactions = (props) => {
           </TableHead>
           <TableBody>
             {transactions.map((transaction, index) => {
-              totalSum += parseFloat(transaction.amount);
+              totalSum += parseFloat(transaction.amount.replace(/,/g, ""));
               return (
                 <TableRow key={index}>
                   <TableCell>{transaction.party_name}</TableCell>

@@ -142,9 +142,11 @@ export class InvoiceShow extends React.PureComponent {
                     </TableCell>
                     <TableCell>{item.type}</TableCell>
                     <TableCell align="right">{item.quantity}</TableCell>
-                    <TableCell align="right">{item.price}</TableCell>
                     <TableCell align="right">
-                      <strong>{item.total}</strong>
+                      {parseFloat(item.price).toFixed(2)}
+                    </TableCell>
+                    <TableCell align="right">
+                      <strong>{parseFloat(item.total).toFixed(2)}</strong>
                     </TableCell>
                   </TableRow>
                 ))}
