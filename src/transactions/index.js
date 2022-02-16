@@ -253,7 +253,9 @@ const ShowPartyTransactions = (props) => {
                 <strong>Total</strong>
               </TableCell>
               <TableCell align="right">
-                <strong>{totalSum.toFixed(2)}</strong>
+                <strong>
+                  {totalSum.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                </strong>
               </TableCell>
             </TableRow>
           </TableBody>

@@ -5,6 +5,15 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
+(function (proxied) {
+  parseFloat = function () {
+    if (typeof arguments[0] === "string") {
+      arguments[0] = arguments[0].replace(/,/g, "");
+    }
+    return proxied.apply(this, arguments);
+  };
+})(parseFloat);
+
 ReactDOM.render(
   // <React.StrictMode>
   //   <App />
