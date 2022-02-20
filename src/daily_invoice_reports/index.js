@@ -173,7 +173,7 @@ const Content = (props) => {
                             {data[key].transactions.map((transaction) => (
                               <TableRow>
                                 <TableCell>
-                                  {moment(transaction.new_date).format(
+                                  {moment(transaction.date).format(
                                     "DD/MM/YYYY"
                                   )}
                                 </TableCell>

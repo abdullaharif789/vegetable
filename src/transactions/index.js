@@ -253,7 +253,11 @@ const ShowPartyTransactions = (props) => {
                 <strong>Total</strong>
               </TableCell>
               <TableCell align="right">
-                <strong>
+                <strong
+                  style={{
+                    marginRight: 7,
+                  }}
+                >
                   {totalSum.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                 </strong>
               </TableCell>
@@ -378,7 +382,7 @@ const ListResult = (props) => {
         />
         <NumberField
           source="amount"
-          label={`Total Amount with out Discount(${app.currencySymbol})`}
+          label={`Total Amount(${app.currencySymbol})`}
           style={{ fontWeight: "bold" }}
         />
       </Datagrid>
@@ -433,29 +437,6 @@ const TransactionUpdate = (props) => {
       undoable={false}
     >
       <SimpleForm toolbar={<UserEditToolbar />}>
-        {/* <ReferenceInput
-          source="party_id"
-          reference="parties"
-          fullWidth
-          validate={[required()]}
-          variant="outlined"
-          // filterToQuery={(searchText) => ({ business_name: searchText })}
-        >
-          <AutocompleteInput optionText="business_name" />
-        </ReferenceInput> */}
-        <NumberInput
-          source="amount"
-          variant="outlined"
-          fullWidth
-          validate={[required()]}
-          label={`Amount(${app.currencySymbol})`}
-        />
-        <DateInput
-          source="new_date"
-          variant="outlined"
-          fullWidth
-          validate={[required()]}
-        />
         <RadioButtonGroupInput
           source="paid"
           label="Amount Paid"
