@@ -30,6 +30,7 @@ import purchase_items from "./purchase_items";
 import manual_orders from "./manual_orders";
 import transactions from "./transactions";
 import { app } from "./contants";
+// import UnderConstruction from "./components/UnderContrction";
 
 export default function App() {
   React.useEffect(() => {
@@ -55,6 +56,7 @@ export default function App() {
     validate();
   }, []);
   return (
+    // <UnderConstruction />
     <Admin
       layout={layout}
       dashboard={dashboard}

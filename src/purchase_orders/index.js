@@ -430,7 +430,7 @@ const PurchaseOrdersCreate = (props) => {
   const [van, setVan] = React.useState(app.vans[0]);
   const [boxType, setBoxType] = React.useState(app.boxTypes[0]);
   const [item, setItem] = React.useState([]);
-  const [price, setPrice] = React.useState(100);
+  const [price, setPrice] = React.useState();
   const [loading, setLoading] = React.useState(false);
   React.useEffect(() => {
     const loadData = async () => {
@@ -466,7 +466,7 @@ const PurchaseOrdersCreate = (props) => {
         return;
       }
     }
-    if (price === "" || parseFloat(price) < 0) {
+    if (!price || price === "" || parseFloat(price) < 0) {
       notify(`Sorry, please enter any valid price.`, "error");
       return;
     }
@@ -502,6 +502,7 @@ const PurchaseOrdersCreate = (props) => {
     };
     setData(temp);
     // setQuantity("0.5");
+    setPrice("");
   };
   const submitOrder = async () => {
     var temp = { ...data };
