@@ -206,7 +206,9 @@ const Report = (props) => {
                                   {cartItem.tax}
                                 </TableCell>
                                 <TableCell align="right">
-                                  <strong>{cartItem.total}</strong>
+                                  <strong>
+                                    {parseFloat(cartItem.total).toFixed(2)}
+                                  </strong>
                                 </TableCell>
                                 <TableCell
                                   align="right"

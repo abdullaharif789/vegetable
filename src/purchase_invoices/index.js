@@ -182,7 +182,6 @@ const getTotalCount = (data, typeIndex) => {
 };
 const Cart = ({ data, submitOrder, setData, add }) => {
   const { permissions } = usePermissions();
-  console.log(permissions);
   if (data.cart.length === 0) return <p>There is no item in cart.</p>;
   var t1 = getTotalCount(data, 0);
   var t2 = getTotalCount(data, 1);
@@ -353,23 +352,20 @@ const PurchaseOrdersCreate = (props) => {
   }, []);
   const submitOrder = async () => {
     var temp = { ...data };
-    // const zeroFound = temp.cart.filter(
-    //   (item) => parseFloat(item.cost_price) == 0 || parseFloat(item.price) == 0
-    // );
-    // if (zeroFound.length != 0) {
-    //   notify(`Please provide all cost and sell prices.`, "error");
-    //   return;
-    // }
     temp.cart = temp.cart.map((item) => ({
       ...item,
       total: parseFloat(parseFloat(item.price) * parseFloat(item.quantity)),
       price: parseFloat(item.price).toFixed(2),
       cost_price: parseFloat(item.cost_price).toFixed(2),
     }));
+    temp.total = temp.cart
+      .map((item) => parseFloat(item.total))
+      .reduce((partialSum, a) => partialSum + a, 0);
     temp.van_id = purchase_order.van;
     temp.party_id = purchase_order.party.id;
     temp.bank = value;
     temp.discount = discount.value;
+    temp.total = Math.round(temp.total * 100) / 100;
     setLoading(true);
     const url = app.api + "purchase_invoices";
     await axios
