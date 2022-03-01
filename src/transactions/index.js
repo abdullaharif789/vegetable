@@ -437,6 +437,13 @@ const TransactionUpdate = (props) => {
       undoable={false}
     >
       <SimpleForm toolbar={<UserEditToolbar />}>
+        <NumberInput
+          source="amount"
+          variant="outlined"
+          fullWidth
+          validate={[required()]}
+          label={`Amount(${app.currencySymbol})`}
+        />
         <RadioButtonGroupInput
           source="paid"
           label="Amount Paid"

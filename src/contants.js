@@ -5,7 +5,7 @@ export const app = {
   currencyCode: "GBP",
   colorOne: "#f5881f",
   colorTwo: "#AE9EFD",
-  vans: ["Van#1", "Van#2", "Van#3", "Van#4", "Van#5"],
+  vans: ["Van#1", "Van#2", "Van#3", "Van#4", "Van#5", "Van#6"],
   discounts: [
     {
       label: "0%",

@@ -430,7 +430,7 @@ const PurchaseOrdersCreate = (props) => {
   const [van, setVan] = React.useState(app.vans[0]);
   const [boxType, setBoxType] = React.useState(app.boxTypes[0]);
   const [item, setItem] = React.useState([]);
-  const [price, setPrice] = React.useState();
+  const [price, setPrice] = React.useState(0);
   const [loading, setLoading] = React.useState(false);
   React.useEffect(() => {
     const loadData = async () => {
@@ -466,7 +466,7 @@ const PurchaseOrdersCreate = (props) => {
         return;
       }
     }
-    if (!price || price === "" || parseFloat(price) < 0) {
+    if (typeof price == "undefined" || price === "") {
       notify(`Sorry, please enter any valid price.`, "error");
       return;
     }
@@ -502,7 +502,7 @@ const PurchaseOrdersCreate = (props) => {
     };
     setData(temp);
     // setQuantity("0.5");
-    setPrice("");
+    setPrice(0);
   };
   const submitOrder = async () => {
     var temp = { ...data };
@@ -751,7 +751,7 @@ const PurchaseOrdersEdit = (props) => {
   const [boxType, setBoxType] = React.useState(app.boxTypes[0]);
   const [item, setItem] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
-  const [price, setPrice] = React.useState(100);
+  const [price, setPrice] = React.useState(0);
   React.useEffect(() => {
     const loadData = async () => {
       setLoading(true);
@@ -805,7 +805,7 @@ const PurchaseOrdersEdit = (props) => {
         return;
       }
     }
-    if (price === "" || parseFloat(price) < 0) {
+    if (price === "" || typeof price == "undefined") {
       notify(`Sorry, please enter any valid price.`, "error");
       return;
     }
