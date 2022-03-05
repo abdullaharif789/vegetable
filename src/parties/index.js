@@ -22,9 +22,10 @@ import {
   NumberInput,
   BooleanField,
   Filter,
+  ShowButton,
 } from "react-admin";
 import Button from "@material-ui/core/Button";
-
+import CustomDelete from "../components/CustomDelete";
 import PersonIcon from "@material-ui/icons/Person";
 
 import ReactToPrint from "react-to-print";
@@ -50,10 +51,22 @@ const PartyFilter = (props) => (
     />
   </Filter>
 );
+const CustomDeleteWrapper = ({ record }) => {
+  return (
+    <CustomDelete
+      dispatchCrudDelete={false}
+      startUndoable={false}
+      resource={"parties"}
+      record={record}
+      undoable={false}
+      disableLable={true}
+    />
+  );
+};
 class PartyListPrint extends React.Component {
   render() {
     return (
-      <Datagrid rowClick="show">
+      <Datagrid>
         <ImageField
           source="avatar"
           className="img-round img-50"
@@ -67,6 +80,7 @@ class PartyListPrint extends React.Component {
         <TextField source="contact_number" />
         <BooleanField source="active_boolean" label="Active Party" />
         <EditButton label="" />
+        <CustomDeleteWrapper />
       </Datagrid>
     );
   }

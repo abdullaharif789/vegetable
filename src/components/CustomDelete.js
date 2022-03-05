@@ -56,12 +56,17 @@ class CustomDeleteButton extends Component {
 
   render() {
     const { showDialog } = this.state;
-    const { label = "ra.action.delete", classes = {}, className } = this.props;
+    const {
+      label = "ra.action.delete",
+      classes = {},
+      className,
+      disableLable,
+    } = this.props;
     return (
       <Fragment>
         <Button
           onClick={this.handleClick}
-          label={label}
+          label={disableLable ? "" : label}
           className={classnames(
             "ra-delete-button",
             classes.deleteButton,
@@ -78,7 +83,7 @@ class CustomDeleteButton extends Component {
           aria-label="Are you sure?"
         >
           <form action="/" method="POST" onSubmit={this.handleDelete}>
-            <DialogTitle>Delete Purcahse Order</DialogTitle>
+            <DialogTitle>Confirmation</DialogTitle>
             <DialogContent>
               <DialogContentText>
                 Are you sure you want to delete?
