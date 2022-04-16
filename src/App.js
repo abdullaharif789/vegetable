@@ -23,13 +23,13 @@ import purchase_order_costing from "./purchase_order_costing";
 import daily_invoice_reports from "./daily_invoice_reports";
 import order_reports from "./order_reports";
 import purchase_order_reports from "./purchase_order_reports";
-// import inventory_reports from "./inventory_reports";
 import van_reports from "./van_reports";
 import purchase_orders from "./purchase_orders";
 import purchase_items from "./purchase_items";
 import manual_orders from "./manual_orders";
 import transactions from "./transactions";
 import { app } from "./contants";
+
 // import UnderConstruction from "./components/UnderContrction";
 
 export default function App() {
@@ -55,8 +55,8 @@ export default function App() {
     };
     validate();
   }, []);
+  // return <UnderConstruction />;
   return (
-    // <UnderConstruction />
     <Admin
       layout={layout}
       dashboard={dashboard}
@@ -91,7 +91,6 @@ export default function App() {
         ) : null,
         <Resource {...van_reports} />,
       ]}
-      {/* <Resource {...inventory_reports} /> */}
     </Admin>
   );
 }
