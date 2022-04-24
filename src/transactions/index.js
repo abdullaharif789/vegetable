@@ -32,10 +32,7 @@ import {
   TopToolbar,
   CreateButton,
   ExportButton,
-  Loading,
-  useDataProvider,
-  composeSyncValidators,
-  useListContext,
+  Link,
 } from "react-admin";
 import { cloneElement } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -97,7 +94,7 @@ const TransactionFilter = (props) => (
     >
       <AutocompleteInput optionText="business_name" />
     </ReferenceInput>
-    <DateInput alwaysOn source="date" label="Date" variant="outlined" />
+    <DateInput source="date" label="Date" variant="outlined" />
   </Filter>
 );
 const Total = (props) => {
@@ -210,6 +207,7 @@ const ShowPartyTransactions = (props) => {
               <TableCell>Party Name</TableCell>
               <TableCell>Date</TableCell>
               <TableCell>Amount Status</TableCell>
+              <TableCell align="right">Custom Purchase Invoice#</TableCell>
               <TableCell align="right">Amount({app.currencySymbol})</TableCell>
               {!props.allowPrint && (
                 <TableCell align="center">Action</TableCell>
@@ -224,6 +222,18 @@ const ShowPartyTransactions = (props) => {
                   <TableCell>{transaction.party_name}</TableCell>
                   <TableCell>{transaction.date}</TableCell>
                   <TableCell>{transaction.paid}</TableCell>
+                  <TableCell align="right">
+                    {transaction.custom_purchase_invoice_id ? (
+                      <Link
+                        to={`/purchase_invoices/${transaction.custom_purchase_invoice_id}/show`}
+                        target="_blank"
+                      >
+                        {transaction.custom_purchase_invoice_id}
+                      </Link>
+                    ) : (
+                      "--"
+                    )}
+                  </TableCell>
                   <TableCell align="right">
                     <strong>{transaction.amount}</strong>
                   </TableCell>
@@ -444,6 +454,12 @@ const TransactionUpdate = (props) => {
           validate={[required()]}
           label={`Amount(${app.currencySymbol})`}
         />
+        <NumberInput
+          source="custom_purchase_invoice_id"
+          variant="outlined"
+          fullWidth
+          label={`Custom Purchase Invoice#`}
+        />
         <RadioButtonGroupInput
           source="paid"
           label="Amount Paid"
@@ -492,6 +508,12 @@ const TransactionCreate = (props) => {
           fullWidth
           validate={[required()]}
           label={`Amount(${app.currencySymbol})`}
+        />
+        <NumberInput
+          source="custom_purchase_invoice_id"
+          variant="outlined"
+          fullWidth
+          label={`Custom Purchase Invoice#`}
         />
         <DateInput
           source="date"

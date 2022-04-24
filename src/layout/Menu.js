@@ -7,6 +7,7 @@ import SubMenu from "./SubMenu";
 import parties from "../parties";
 import items from "../items";
 import categories from "../categories";
+import expenses from "../expenses";
 import inventories from "../inventories";
 import orders from "../orders";
 import manual_orders from "../manual_orders";
@@ -23,15 +24,17 @@ import transactions from "../transactions";
 
 import { DashboardSharp } from "@material-ui/icons";
 import ReceiptIcon from "@material-ui/icons/Receipt";
+import DonutSmallIcon from "@material-ui/icons/DonutSmall";
 import { app } from "../contants";
 const Menu = ({ dense = true }) => {
   const { permissions } = usePermissions();
   const [state, setState] = useState({
-    orders: true,
+    orders: false,
     products: false,
     reportings: true,
     payments: true,
     invoices: true,
+    extras: true,
   });
   const classes = useStyles();
 
@@ -192,6 +195,20 @@ const Menu = ({ dense = true }) => {
           />
         </SubMenu>
       )}
+      <SubMenu
+        handleToggle={() => handleToggle("extras")}
+        isOpen={state.extras}
+        name="Extras"
+        icon={<DonutSmallIcon />}
+        dense={dense}
+      >
+        <MenuItemLink
+          to={`/${expenses.name}`}
+          primaryText={"Expenses"}
+          leftIcon={<expenses.icon />}
+          dense={dense}
+        />
+      </SubMenu>
     </div>
   );
 };

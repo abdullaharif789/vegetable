@@ -16,6 +16,7 @@ import items from "./items";
 import inventories from "./inventories";
 import parties from "./parties";
 import categories from "./categories";
+import expenses from "./expenses";
 import orders from "./orders";
 import invoices from "./invoices";
 import purchase_invoices from "./purchase_invoices";
@@ -67,6 +68,7 @@ export default function App() {
     >
       {(permissions) => [
         <Resource {...categories} />,
+        <Resource {...expenses} />,
         <Resource {...items} />,
         <Resource {...inventories} />,
         <Resource {...orders} />,
@@ -74,6 +76,7 @@ export default function App() {
         <Resource {...purchase_orders} />,
         <Resource {...purchase_items} />,
         <Resource {...invoices} />,
+        <Resource {...purchase_invoices} />,
         <Resource {...purchase_invoices} />,
         <Resource {...daily_invoice_reports} />,
         permissions === app.superAdminRole ? <Resource {...parties} /> : null,

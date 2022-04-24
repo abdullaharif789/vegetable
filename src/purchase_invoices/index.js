@@ -20,6 +20,7 @@ import FormLabel from "@material-ui/core/FormLabel";
 import Receipt from "@material-ui/icons/Receipt";
 import Button from "@material-ui/core/Button";
 import Print from "@material-ui/icons/Print";
+import MailIcon from "@material-ui/icons/Mail";
 import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { app } from "../contants";
@@ -103,10 +104,41 @@ export class InvoicePrint extends React.PureComponent {
     );
   }
 }
+const InvoicePrintWrapper = (props) => {
+  const notify = useNotify();
+  const sendEmail = () => {
+    const purchase_invoice_id = props.id;
+    // notify("Purchase Invoice hase been sent to the party.", "success");
+    notify("This module is in under progress.", "info");
+  };
+  return (
+    <>
+      <div
+        style={{
+          margin: 10,
+          display: "block",
+          textAlign: "right",
+        }}
+      >
+        <div>
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<MailIcon fontSize="inherit" />}
+            onClick={sendEmail}
+          >
+            Send Email to Party
+          </Button>
+        </div>
+      </div>
+      <InvoicePrint {...props} />
+    </>
+  );
+};
 const InvoiceShowParent = (props) => {
   return (
     <Show {...props}>
-      <InvoicePrint {...props} />
+      <InvoicePrintWrapper {...props} />
     </Show>
   );
 };

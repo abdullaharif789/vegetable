@@ -217,13 +217,13 @@ const Dashboard = () => {
             /> */}
             <NewCustomers />
           </div>
-          <div style={styles.singleCol}>
+          {/* <div style={styles.singleCol}>
             <Spacer />
             <PendingOrders
               orders={pendingOrders}
               customers={pendingOrdersCustomers}
             />
-          </div>
+          </div> */}
         </div>
       </div>
     </>

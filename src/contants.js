@@ -5,7 +5,35 @@ export const app = {
   currencyCode: "GBP",
   colorOne: "#f5881f",
   colorTwo: "#AE9EFD",
-  vans: ["Van#1", "Van#2", "Van#3", "Van#4", "Van#5", "Van#6"],
+  vans: [
+    "Van#1",
+    "Van#2",
+    "Van#3",
+    "Van#4",
+    "Van#5",
+    "Van#6",
+    "Van#7",
+    "Van#8",
+    "Van#9",
+    "Van#10",
+  ],
+  expenses: [
+    "Salaries",
+    "Office Rent",
+    "Electricity",
+    "Water",
+    "Gas",
+    "Food",
+    "Drinks",
+    "Telephone",
+    "Internet",
+    "Postage",
+    "Printing",
+    "Stationery",
+  ],
+  uniqueValuesFromArray: function (value, index, self) {
+    return self.indexOf(value) === index;
+  },
   discounts: [
     {
       label: "0%",
