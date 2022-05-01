@@ -32,6 +32,7 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CustomDelete from "../components/CustomDelete";
 import CustomPagination from "../components/PaginationCustom";
+import { TextField as MTextField, CircularProgress } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
@@ -74,10 +75,20 @@ const OrderFilter = (props) => (
 const InvoicePrintWrapper = (props) => {
   const componentRef = React.useRef();
   const notify = useNotify();
+  const [email, setEmail] = React.useState(app.defaultEmail);
+  const [loading, setLoding] = React.useState(false);
   const sendEmail = useReactToPrint({
     content: () => componentRef.current,
     copyStyles: true,
     print: async (printIframe) => {
+      // Validate Email
+      // if (!app.validateEmail(email)) {
+      if (!true) {
+        notify("Please enter a valid email address", "warning");
+        return;
+      }
+      setLoding(true);
+      // Generate Invoice HTML and send Email
       const document = printIframe.contentDocument;
       if (document) {
         const toBeRemovedAndReplaced = [
@@ -112,7 +123,7 @@ const InvoicePrintWrapper = (props) => {
         await axios
           .post(url, {
             invoice_message,
-            email: "khurram.shahzad.everyday.fresh.food+sales@dext.cc",
+            email,
           })
           .then((response) => {
             notify(response.data, "info");
@@ -121,6 +132,7 @@ const InvoicePrintWrapper = (props) => {
             notify(response.data, "error");
           });
       }
+      setLoding(false);
     },
   });
   const handlePrint = useReactToPrint({
@@ -128,18 +140,35 @@ const InvoicePrintWrapper = (props) => {
   });
   return (
     <>
+      <MTextField
+        style={{
+          margin: 10,
+          width: "40%",
+        }}
+        variant="outlined"
+        margin="dense"
+        label="Enter Email"
+        size="small"
+        onChange={(e) => setEmail(e.target.value)}
+        value={email}
+      />
       <Button
         style={{
           margin: 10,
+          marginTop: 12,
         }}
         variant="outlined"
         color="primary"
         startIcon={<MailIcon fontSize="inherit" />}
         onClick={sendEmail}
       >
-        Send Email to Party
+        Email Invoice{" "}
+        {loading && <CircularProgress size={20} style={{ marginLeft: 6 }} />}
       </Button>
       <Button
+        style={{
+          marginTop: 4,
+        }}
         variant="contained"
         color="primary"
         startIcon={<Print fontSize="inherit" />}

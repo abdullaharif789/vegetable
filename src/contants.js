@@ -1,6 +1,7 @@
 export const app = {
   api: "https://server.everydayfreshfood.com/api/",
   // api: "http://127.0.0.1:8000/api/",
+  defaultEmail: "khurram.shahzad.everyday.fresh.food+sales@dext.cc",
   currencySymbol: "£",
   currencyCode: "GBP",
   colorOne: "#f5881f",
@@ -102,6 +103,10 @@ export const app = {
   tax: 20,
   adminRole: "admin",
   superAdminRole: "superadmin",
+  validateEmail: function (mail) {
+    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) return true;
+    return false;
+  },
   sleep: (ms) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
   },
