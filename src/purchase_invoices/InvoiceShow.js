@@ -4,8 +4,6 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
-import { Link } from "react-admin";
-import logo from "./logo.jpeg";
 import {
   Table,
   TableBody,
@@ -39,20 +37,24 @@ export class InvoiceShow extends React.PureComponent {
     return (
       <Card style={this.classes.root}>
         <CardContent>
+          <img
+            src={"https://i.ibb.co/JHsgN8d/logo.png"}
+            style={{
+              width: 150,
+            }}
+            alt="logo"
+          />
           <div
             style={{
-              display: "flex",
-              justifyContent: "space-between",
+              width: "100%",
             }}
           >
-            <div>
-              <img
-                src={logo}
-                style={{
-                  width: 150,
-                }}
-                alt="logo"
-              />
+            <div
+              style={{
+                width: "50%",
+                display: "inline-block",
+              }}
+            >
               <h4 style={this.classes.margin0}>Everyday Fresh Food Ltd.</h4>
               <p style={this.classes.margin0}>
                 Unit 25 Chalwyn Industrial Estate
@@ -87,15 +89,13 @@ export class InvoiceShow extends React.PureComponent {
                 <i>{this.props.record.created_at}</i>
               </p>
             </div>
-            <div>
-              <img
-                src={logo}
-                style={{
-                  width: 150,
-                  opacity: 0,
-                }}
-                alt="logo"
-              />
+            <div
+              style={{
+                width: "50%",
+                display: "inline-block",
+                verticalAlign: "top",
+              }}
+            >
               <h4
                 style={{
                   margin: 0,

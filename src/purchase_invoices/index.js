@@ -15,7 +15,7 @@ import {
   NumberField,
   usePermissions,
 } from "react-admin";
-import ReactToPrint from "react-to-print";
+import { useReactToPrint } from "react-to-print";
 import FormLabel from "@material-ui/core/FormLabel";
 import Receipt from "@material-ui/icons/Receipt";
 import Button from "@material-ui/core/Button";
@@ -71,67 +71,83 @@ const OrderFilter = (props) => (
     <DateInput source="end_date" alwaysOn variant="outlined" />
   </Filter>
 );
-export class InvoicePrint extends React.PureComponent {
-  render() {
-    return (
-      <div>
-        <ReactToPrint
-          trigger={() => {
-            return (
-              <div
-                style={{
-                  margin: 10,
-                  display: "block",
-                  textAlign: "right",
-                }}
-              >
-                <div>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<Print fontSize="inherit" />}
-                  >
-                    Print
-                  </Button>
-                </div>
-              </div>
-            );
-          }}
-          content={() => this.componentRef}
-        />
-        <InvoiceShow ref={(el) => (this.componentRef = el)} {...this.props} />
-      </div>
-    );
-  }
-}
 const InvoicePrintWrapper = (props) => {
+  const componentRef = React.useRef();
   const notify = useNotify();
-  const sendEmail = () => {
-    const purchase_invoice_id = props.id;
-    // notify("Purchase Invoice hase been sent to the party.", "success");
-    notify("This module is in under progress.", "info");
-  };
+  const sendEmail = useReactToPrint({
+    content: () => componentRef.current,
+    copyStyles: true,
+    print: async (printIframe) => {
+      const document = printIframe.contentDocument;
+      if (document) {
+        const toBeRemovedAndReplaced = [
+          {
+            removed:
+              '<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&amp;display=swap">',
+            replace: "",
+          },
+          {
+            removed:
+              '<div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2">',
+            replace:
+              '<div style="width:100%" class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2">',
+          },
+          {
+            removed: 'style="width: 100%;"',
+            replace: 'style="width: 100%;margin-top:20px"',
+          },
+        ];
+        var invoice_message =
+          document.getElementsByTagName("html")[0].innerHTML;
+
+        for (let i = 0; i < toBeRemovedAndReplaced.length; i++) {
+          const element = toBeRemovedAndReplaced[i];
+          invoice_message = invoice_message.replace(
+            element.removed,
+            element.replace
+          );
+        }
+
+        const url = app.api + "send_email";
+        await axios
+          .post(url, {
+            invoice_message,
+            email: "khurram.shahzad.everyday.fresh.food+sales@dext.cc",
+          })
+          .then((response) => {
+            notify(response.data, "info");
+          })
+          .catch((response) => {
+            notify(response.data, "error");
+          });
+      }
+    },
+  });
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
   return (
     <>
-      <div
+      <Button
         style={{
           margin: 10,
-          display: "block",
-          textAlign: "right",
         }}
+        variant="outlined"
+        color="primary"
+        startIcon={<MailIcon fontSize="inherit" />}
+        onClick={sendEmail}
       >
-        <div>
-          <Button
-            variant="outlined"
-            color="primary"
-            startIcon={<MailIcon fontSize="inherit" />}
-            onClick={sendEmail}
-          >
-            Send Email to Party
-          </Button>
-        </div>
-      </div>
-      <InvoicePrint {...props} />
+        Send Email to Party
+      </Button>
+      <Button
+        variant="contained"
+        color="primary"
+        startIcon={<Print fontSize="inherit" />}
+        onClick={handlePrint}
+      >
+        Print
+      </Button>
+      <InvoiceShow ref={componentRef} {...props} />
     </>
   );
 };

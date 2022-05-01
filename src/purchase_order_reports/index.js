@@ -42,6 +42,13 @@ const ReportFilter = (props) => (
     >
       <AutocompleteInput optionText="business_name" />
     </ReferenceInput>
+    <SelectInput
+      choices={app.vans.map((item) => ({ id: item, name: item }))}
+      source="van"
+      label="Van"
+      variant="outlined"
+      alwaysOn
+    />
   </Filter>
 );
 const Report = (props) => {
@@ -51,14 +58,14 @@ const Report = (props) => {
     totalRevenue: 0,
     totalBuying: 0,
     totalTax: 0,
-    totalExpense: 0,
   });
-  const loadData = async () => {
-    if (data) {
-      var created_dates = data
-        .map((item) => item.created_at)
-        .filter(app.uniqueValuesFromArray);
-      console.log(created_dates);
+  const [totalExpense, setTotalExpense] = React.useState(0);
+  const getTotalExpense = async () => {
+    var created_dates = data
+      .map((item) => item.created_at)
+      .filter(app.uniqueValuesFromArray);
+    console.log(created_dates);
+    if (created_dates.length > 0) {
       for (let i = 0; i < created_dates.length; i++) {
         const exploded_date = created_dates[i].split("/");
         created_dates[i] =
@@ -67,17 +74,19 @@ const Report = (props) => {
       const { data: expenses } = await dataProvider.getListSimple("expenses", {
         dates: created_dates.join(","),
       });
-      const totalExpense = expenses.reduce((a, b) => a + b["amount"], 0);
-      setTabsData({ ...tabsData, totalExpense: totalExpense });
+      const total = expenses.reduce((a, b) => a + b["amount"], 0);
+      setTotalExpense(total);
+    } else {
+      setTotalExpense(0);
     }
   };
+  React.useEffect(getTotalExpense, [tabsData.totalProfit]);
   React.useEffect(() => {
     let tabsOutput = {
       totalProfit: 0,
       totalRevenue: 0,
       totalBuying: 0,
       totalTax: 0,
-      totalExpense: 0,
     };
 
     let tempData = Object.keys(props.data)
@@ -94,9 +103,6 @@ const Report = (props) => {
           tempData[i].cart[j].quantity;
       }
       tabsOutput.totalProfit -= parseFloat(tempData[i].discount_amount);
-    }
-    if (tabsOutput.totalProfit != 0) {
-      loadData();
     }
     setTabsData(tabsOutput);
   }, [props]);
@@ -139,11 +145,7 @@ const Report = (props) => {
     <>
       <div style={styles.flex}>
         <Tile title="Total Spent" sub={tabsData.totalBuying.toFixed(2)} />
-        <Tile
-          title="Expense"
-          sub={tabsData.totalExpense.toFixed(2)}
-          color="red"
-        />
+        <Tile title="Expense" sub={totalExpense.toFixed(2)} color="red" />
         <Tile
           title="Profit"
           sub={tabsData.totalProfit.toFixed(2)}
@@ -151,10 +153,8 @@ const Report = (props) => {
         />
         <Tile
           title="Net Profit"
-          sub={(tabsData.totalProfit - tabsData.totalExpense).toFixed(2)}
-          color={
-            tabsData.totalProfit - tabsData.totalExpense <= 0 ? "red" : "green"
-          }
+          sub={(tabsData.totalProfit - totalExpense).toFixed(2)}
+          color={tabsData.totalProfit - totalExpense <= 0 ? "red" : "green"}
         />
         <Tile title="Total Revenue" sub={tabsData.totalRevenue.toFixed(2)} />
       </div>
