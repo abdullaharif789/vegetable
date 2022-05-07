@@ -17,6 +17,8 @@ import inventories from "./inventories";
 import parties from "./parties";
 import categories from "./categories";
 import expenses from "./expenses";
+import expense_types from "./expense_types";
+import expense_views from "./expense_views";
 import orders from "./orders";
 import invoices from "./invoices";
 import purchase_invoices from "./purchase_invoices";
@@ -69,6 +71,8 @@ export default function App() {
       {(permissions) => [
         <Resource {...categories} />,
         <Resource {...expenses} />,
+        <Resource {...expense_types} />,
+        <Resource {...expense_views} />,
         <Resource {...items} />,
         <Resource {...inventories} />,
         <Resource {...orders} />,

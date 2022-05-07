@@ -8,6 +8,8 @@ import parties from "../parties";
 import items from "../items";
 import categories from "../categories";
 import expenses from "../expenses";
+import expense_types from "../expense_types";
+import expense_views from "../expense_views";
 import inventories from "../inventories";
 import orders from "../orders";
 import manual_orders from "../manual_orders";
@@ -198,14 +200,26 @@ const Menu = ({ dense = true }) => {
       <SubMenu
         handleToggle={() => handleToggle("extras")}
         isOpen={state.extras}
-        name="Extras"
+        name="Expenses"
         icon={<DonutSmallIcon />}
         dense={dense}
       >
         <MenuItemLink
+          to={`/${expense_types.name}`}
+          primaryText={"Expense Types"}
+          leftIcon={<expense_types.icon />}
+          dense={dense}
+        />
+        <MenuItemLink
           to={`/${expenses.name}`}
           primaryText={"Expenses"}
           leftIcon={<expenses.icon />}
+          dense={dense}
+        />
+        <MenuItemLink
+          to={`/${expense_views.name}`}
+          primaryText={"View Expenses"}
+          leftIcon={<expense_views.icon />}
           dense={dense}
         />
       </SubMenu>
