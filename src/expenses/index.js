@@ -52,7 +52,8 @@ const UserEditToolbar = (props) => (
 );
 const ExpenseFilter = (props) => (
   <Filter {...props}>
-    <DateInput source="date" variant="outlined" fullWidth alwaysOn />
+    <DateInput source="start_date" alwaysOn variant="outlined" />
+    <DateInput source="end_date" alwaysOn variant="outlined" />
     <ReferenceInput
       source="expense_type"
       reference="expense_types"

@@ -10,6 +10,7 @@ import {
 import Button from "@material-ui/core/Button";
 import Print from "@material-ui/icons/Print";
 import Card from "@material-ui/core/Card";
+import FormHelperText from "@material-ui/core/FormHelperText";
 import {
   Table,
   TableBody,
@@ -22,7 +23,8 @@ import { app } from "../contants";
 import moment from "moment";
 const ExpenseFilter = (props) => (
   <Filter {...props}>
-    <DateInput source="date" variant="outlined" fullWidth alwaysOn />
+    <DateInput source="start_date" alwaysOn variant="outlined" />
+    <DateInput source="end_date" alwaysOn variant="outlined" />
     <ReferenceInput
       source="expense_type"
       reference="expense_types"
@@ -53,7 +55,6 @@ const ExpenseListView = (props) => {
     const expenses_data = Object.keys(props.data).map(
       (item) => props.data[item]
     );
-    console.log(props.data);
     if (expenses_data.length > 0) {
       var processed_expenses = {};
 
@@ -133,8 +134,13 @@ const ExpenseListView = (props) => {
               <TableRow>
                 {row.map((expense, index) => (
                   <TableCell key={index}>
-                    {expense ? `${expense.amount.toFixed(2)}` : ""}
-                    {expense && expense.extra ? ` - ${expense.extra}` : ""}
+                    {expense && (
+                      <div>
+                        {expense.amount.toFixed(2)}
+                        {expense.extra && ` - ${expense.extra}`}
+                        <FormHelperText>{expense.date}</FormHelperText>
+                      </div>
+                    )}
                   </TableCell>
                 ))}
               </TableRow>
@@ -167,7 +173,6 @@ export const ExpenseList = (props) => {
     <List
       {...props}
       filters={<ExpenseFilter />}
-      filterDefaultValues={{ date: Date() }}
       bulkActionButtons={false}
       pagination={false}
       hasCreate={false}
