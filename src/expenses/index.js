@@ -78,6 +78,7 @@ export const ExpenseList = (props) => {
           <TextField source="name" />
         </ReferenceField>
         <TextField source="amount" />
+        <TextField source="extra" label={"E.Name"} emptyText="--" />
         <TextField source="date" />
         <TextField source="created_at" label={"Created At"} />
         <EditButton />
@@ -100,20 +101,30 @@ export const ExpenseEdit = (props) => {
       }}
     >
       <SimpleForm toolbar={<UserEditToolbar />}>
-        <SelectInput
-          validate={[required()]}
+        <ReferenceInput
+          source="expense_type_id"
+          reference="expense_types"
           fullWidth
-          choices={app.expenses.map((item) => ({ id: item, name: item }))}
-          source="type"
-          label="Expense Type"
+          validate={[required()]}
           variant="outlined"
-        />
+          perPage={10000000}
+          filterToQuery={(searchText) => ({ name: searchText })}
+        >
+          <AutocompleteInput optionText="name" />
+        </ReferenceInput>
         <NumberInput
           source="amount"
           variant="outlined"
           fullWidth
           validate={[required()]}
           label={`Amount(${app.currencySymbol})`}
+        />
+        <TextInput
+          source="extra"
+          variant="outlined"
+          fullWidth
+          validate={[required()]}
+          label={`Employee Name`}
         />
       </SimpleForm>
     </Edit>
@@ -195,6 +206,17 @@ export const ExpenseCreate = (props) => {
   };
   React.useEffect(loadData, []);
   if (loading) return <Loading loadingPrimary="" loadingSecondary="" />;
+  else if (!expenseTypes.length)
+    return (
+      <Card
+        variant="elevation"
+        style={{
+          padding: 15,
+        }}
+      >
+        <div>No expense types found. Please add.</div>
+      </Card>
+    );
   else
     return (
       <Card

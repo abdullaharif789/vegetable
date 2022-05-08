@@ -1,18 +1,25 @@
 import * as React from "react";
+import { useReactToPrint } from "react-to-print";
 import {
   List,
-  Datagrid,
-  TextField,
-  EditButton,
   Filter,
   DateInput,
-  ShowButton,
   ReferenceInput,
   AutocompleteInput,
-  ReferenceField,
-  DeleteButton,
 } from "react-admin";
-import ExpenseIcon from "@material-ui/icons/GraphicEq";
+import Button from "@material-ui/core/Button";
+import Print from "@material-ui/icons/Print";
+import Card from "@material-ui/core/Card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from "@material-ui/core";
+import ExpenseIcon from "@material-ui/icons/BarChart";
+import { app } from "../contants";
+import moment from "moment";
 const ExpenseFilter = (props) => (
   <Filter {...props}>
     <DateInput source="date" variant="outlined" fullWidth alwaysOn />
@@ -29,21 +36,145 @@ const ExpenseFilter = (props) => (
     </ReferenceInput>
   </Filter>
 );
+const process_expense = (expense) => {
+  return {
+    id: expense.id,
+    amount: expense.amount,
+    date: expense.date,
+    extra: expense.extra,
+    expense_type: expense.expense_type.name,
+  };
+};
+const ExpenseListView = (props) => {
+  const [expenses, setExpenses] = React.useState([]);
+  const [headers, setHeaders] = React.useState([]);
+  const [totalAmounts, setTotalAmounts] = React.useState([]);
+  React.useEffect(() => {
+    const expenses_data = Object.keys(props.data).map(
+      (item) => props.data[item]
+    );
+    console.log(props.data);
+    if (expenses_data.length > 0) {
+      var processed_expenses = {};
+
+      expenses_data.forEach((item) => {
+        if (processed_expenses[item.expense_type.name] === undefined) {
+          processed_expenses[item.expense_type.name] = [process_expense(item)];
+        } else {
+          processed_expenses[item.expense_type.name].push(
+            process_expense(item)
+          );
+        }
+      });
+      const processed_total_amounts = Object.keys(processed_expenses).map((e) =>
+        processed_expenses[e].reduce((a, b) => a + b.amount, 0)
+      );
+      setTotalAmounts(processed_total_amounts);
+      const expense_types_keys = Object.keys(processed_expenses);
+      setHeaders(expense_types_keys);
+      const rows = Math.max.apply(
+        null,
+        expense_types_keys.map((key) => processed_expenses[key].length)
+      );
+
+      expense_types_keys.map((key) => {
+        let length = processed_expenses[key].length;
+        processed_expenses[key] = processed_expenses[key].concat(
+          new Array(Math.abs(length - rows)).fill(null)
+        );
+      });
+      const new_expenses = [];
+      for (let i = 0; i < rows; i++) {
+        new_expenses.push([]);
+      }
+      Object.values(processed_expenses).map((e_type) => {
+        e_type.map((expense, index) => {
+          new_expenses[index].push(expense);
+        });
+      });
+      setExpenses(new_expenses);
+    } else {
+      setExpenses([]);
+      setHeaders([]);
+      setTotalAmounts([]);
+    }
+  }, [props]);
+  const componentRef = React.useRef();
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
+  if (expenses.length > 0)
+    return (
+      <>
+        <Button
+          style={{
+            margin: 10,
+            float: "right",
+          }}
+          variant="contained"
+          color="primary"
+          startIcon={<Print fontSize="inherit" />}
+          onClick={handlePrint}
+        >
+          Print
+        </Button>
+        <Table size="small" ref={componentRef}>
+          <TableHead>
+            <TableRow>
+              {headers.map((key, index) => (
+                <TableCell key={index}>
+                  {key}({app.currencySymbol})
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {expenses.map((row) => (
+              <TableRow>
+                {row.map((expense, index) => (
+                  <TableCell key={index}>
+                    {expense ? `${expense.amount.toFixed(2)}` : ""}
+                    {expense && expense.extra ? ` - ${expense.extra}` : ""}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+            <TableRow>
+              {totalAmounts.map((amount, index) => (
+                <TableCell key={index}>
+                  <strong>{amount.toFixed(2)}</strong>
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableBody>
+        </Table>
+      </>
+    );
+  else
+    return (
+      <Card
+        variant="outlined"
+        style={{
+          padding: 15,
+        }}
+      >
+        Expenses not found.
+      </Card>
+    );
+};
 export const ExpenseList = (props) => {
   return (
-    <List {...props} bulkActionButtons={false} filters={<ExpenseFilter />}>
-      <Datagrid rowClick="show">
-        <ReferenceField
-          source="expense_type.id"
-          reference="expense_types"
-          label={"Expense Type"}
-        >
-          <TextField source="name" />
-        </ReferenceField>
-        <TextField source="amount" />
-        <TextField source="date" />
-        <TextField source="created_at" label={"Created At"} />
-      </Datagrid>
+    <List
+      {...props}
+      filters={<ExpenseFilter />}
+      filterDefaultValues={{ date: Date() }}
+      bulkActionButtons={false}
+      pagination={false}
+      hasCreate={false}
+      perPage={1000000}
+      empty={false}
+    >
+      <ExpenseListView />
     </List>
   );
 };

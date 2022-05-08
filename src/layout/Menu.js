@@ -33,9 +33,9 @@ const Menu = ({ dense = true }) => {
   const [state, setState] = useState({
     orders: false,
     products: false,
-    reportings: true,
-    payments: true,
-    invoices: true,
+    reportings: false,
+    payments: false,
+    invoices: false,
     extras: true,
   });
   const classes = useStyles();
