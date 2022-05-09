@@ -75,8 +75,11 @@ const OrderFilter = (props) => (
 const InvoicePrintWrapper = (props) => {
   const componentRef = React.useRef();
   const notify = useNotify();
-  const [email, setEmail] = React.useState(app.defaultEmail);
+  const [email, setEmail] = React.useState("");
   const [loading, setLoding] = React.useState(false);
+  React.useEffect(() => {
+    setEmail(props.record.party.email);
+  }, [props]);
   const sendEmail = useReactToPrint({
     content: () => componentRef.current,
     copyStyles: true,
