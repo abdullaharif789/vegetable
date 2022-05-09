@@ -127,6 +127,7 @@ const ExpenseListView = (props) => {
                   {key}({app.currencySymbol})
                 </TableCell>
               ))}
+              <TableCell>Total({app.currencySymbol})</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -151,6 +152,11 @@ const ExpenseListView = (props) => {
                   <strong>{amount.toFixed(2)}</strong>
                 </TableCell>
               ))}
+              <TableCell>
+                <strong>
+                  {totalAmounts.reduce((a, b) => a + b, 0).toFixed(2)}
+                </strong>
+              </TableCell>
             </TableRow>
           </TableBody>
         </Table>

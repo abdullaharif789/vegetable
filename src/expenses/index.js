@@ -6,7 +6,6 @@ import {
   Edit,
   SimpleForm,
   TextInput,
-  Create,
   ImageField,
   Show,
   SimpleShowLayout,
@@ -15,7 +14,6 @@ import {
   useNotify,
   useRefresh,
   useRedirect,
-  SelectInput,
   Toolbar,
   SaveButton,
   EditButton,
@@ -78,7 +76,7 @@ export const ExpenseList = (props) => {
         >
           <TextField source="name" />
         </ReferenceField>
-        <TextField source="amount" />
+        <TextField source="amount" label={`Amount(${app.currencySymbol})`} />
         <TextField source="extra" label={"E.Name"} emptyText="--" />
         <TextField source="date" />
         <TextField source="created_at" label={"Created At"} />
@@ -156,10 +154,9 @@ export const ExpenseCreate = (props) => {
     const { data: expense_types } = await dataProvider.getListSimple(
       "expense_types"
     );
-    var updated_expense_types = expense_types.map((i, index) =>
-      processExpenseType(i, index)
-    );
-
+    var updated_expense_types = app
+      .sort(expense_types)
+      .map((i, index) => processExpenseType(i, index));
     setExpenseTypes(updated_expense_types);
     setListExpenseTypes([...updated_expense_types]);
     setExpenseType(updated_expense_types[0]);
@@ -189,10 +186,9 @@ export const ExpenseCreate = (props) => {
         notify("Expenses added successfully.", "success");
         redirect("/expenses");
         refresh();
-        console.log(data);
       })
       .catch((result) => {
-        console.log(result);
+        notify("Expenses not added.", "error");
       });
   };
   const changeAmount = (id, amount) => {
@@ -234,7 +230,7 @@ export const ExpenseCreate = (props) => {
               paddingBottom: 8,
             }}
           >
-            <Grid item xs={12} md={8}>
+            <Grid item xs={12} md={9}>
               <Autocomplete
                 value={expenseType}
                 onChange={(event, value) => {
@@ -255,7 +251,7 @@ export const ExpenseCreate = (props) => {
               />
               <FormHelperText>Add extra Expense Type</FormHelperText>
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={3}>
               <Button
                 startIcon={<SaveIcon />}
                 variant="contained"
@@ -266,7 +262,14 @@ export const ExpenseCreate = (props) => {
                     ...expenseType,
                     id: expenseTypes.length,
                   };
-                  setExpenseTypes([...expenseTypes, tempExpenseType]);
+                  setExpenseTypes(
+                    app
+                      .sort([...expenseTypes, tempExpenseType])
+                      .map((i, j) => ({
+                        ...i,
+                        id: j,
+                      }))
+                  );
                 }}
               >
                 Add Expense Type
@@ -287,47 +290,53 @@ export const ExpenseCreate = (props) => {
               Enter Date, enter any date to record expense.
             </FormHelperText>
           </div>
-          {expenseTypes.map((expense_type) => (
-            <div style={{ marginBottom: 10 }} key={expense_type.id}>
-              <MTextField
-                label={expense_type.name}
-                variant="outlined"
-                size="small"
-                style={{
-                  width: expense_type.extend ? "50%" : "100%",
-                }}
-                value={expense_type.amount}
-                onChange={(e) => {
-                  changeAmount(expense_type.id, e.target.value);
-                }}
-              />
-              {expense_type.extend && (
-                <MTextField
-                  label="Employee Name"
-                  variant="outlined"
-                  size="small"
-                  value={expense_type.extra}
-                  style={{
-                    width: "50%",
-                  }}
-                  onChange={(e) => {
-                    changeExtra(expense_type.id, e.target.value);
-                  }}
-                />
-              )}
-              <FormHelperText>
-                Enter {expense_type.name}, enter any value to record expense.
-              </FormHelperText>
-            </div>
-          ))}
-          <Button
-            startIcon={<SaveIcon />}
-            variant="contained"
-            color="primary"
-            onClick={addExpense}
+          <Grid
+            container
+            spacing={2}
+            style={{
+              padding: 8,
+            }}
           >
-            Add Expense
-          </Button>
+            {expenseTypes.map((expense_type) => (
+              <div style={{ marginBottom: 10 }} key={expense_type.id}>
+                <Grid item xs={12} md={12}>
+                  <MTextField
+                    style={{ padding: 2 }}
+                    label={`${expense_type.name}(${app.currencySymbol})`}
+                    variant="outlined"
+                    size="small"
+                    value={expense_type.amount}
+                    onChange={(e) => {
+                      changeAmount(expense_type.id, e.target.value);
+                    }}
+                  />
+                </Grid>
+                {expense_type.extend && (
+                  <MTextField
+                    style={{ padding: 2 }}
+                    label="Employee Name"
+                    variant="outlined"
+                    size="small"
+                    value={expense_type.extra}
+                    onChange={(e) => {
+                      changeExtra(expense_type.id, e.target.value);
+                    }}
+                  />
+                )}
+              </div>
+            ))}
+          </Grid>
+          <div>
+            <Button
+              style={{ marginTop: 10 }}
+              startIcon={<SaveIcon />}
+              variant="contained"
+              color="primary"
+              onClick={addExpense}
+            >
+              Add Expense
+            </Button>
+          </div>
         </FormControl>
       </Card>
     );

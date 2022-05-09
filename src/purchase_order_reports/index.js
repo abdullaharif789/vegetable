@@ -28,6 +28,7 @@ import FileCopyIcon from "@material-ui/icons/FileCopy";
 import { app } from "../contants";
 import CardWithIcon from "../dashboard/CardWithIcon";
 import CustomPagination from "../components/PaginationCustom";
+import moment from "moment";
 const ReportFilter = (props) => (
   <Filter {...props}>
     <DateInput source="start_date" alwaysOn variant="outlined" />
@@ -60,16 +61,48 @@ const Report = (props) => {
     totalTax: 0,
   });
   const [totalExpense, setTotalExpense] = React.useState(0);
+  const filterIsExists = (filter_name = "") => {
+    try {
+      var filters;
+      let searchParams = new URLSearchParams(window.location.href);
+      for (let p of searchParams) {
+        filters = p[1];
+        break;
+      }
+      filters = JSON.parse(filters);
+      const filter_keys = Object.keys(filters);
+      if (filter_keys.indexOf(filter_name) > -1) return filters[filter_name];
+      return false;
+    } catch (e) {
+      return false;
+    }
+  };
   const getTotalExpense = async () => {
-    var created_dates = data
-      .map((item) => item.created_at)
-      .filter(app.uniqueValuesFromArray);
-    console.log(created_dates);
+    const start_date = filterIsExists("start_date");
+    const end_date = filterIsExists("end_date");
+    var needToSplit = true;
+    var created_dates;
+    if (start_date && end_date) {
+      created_dates = app.getDaysBetweenDates(
+        moment(start_date),
+        moment(end_date)
+      );
+      needToSplit = false;
+    } else {
+      created_dates = data
+        .map((item) => item.created_at)
+        .filter(app.uniqueValuesFromArray);
+    }
     if (created_dates.length > 0) {
-      for (let i = 0; i < created_dates.length; i++) {
-        const exploded_date = created_dates[i].split("/");
-        created_dates[i] =
-          exploded_date[2] + "-" + exploded_date[1] + "-" + exploded_date[0];
+      if (needToSplit) {
+        for (let i = 0; i < created_dates.length; i++) {
+          const exploded_date = created_dates[i].split("/");
+          // YYYY-MM-DD
+          // 2022-05-03 -> To be Used
+          // 2022-May-03
+          created_dates[i] =
+            exploded_date[2] + "-" + exploded_date[1] + "-" + exploded_date[0];
+        }
       }
       const { data: expenses } = await dataProvider.getListSimple("expenses", {
         dates: created_dates.join(","),
@@ -80,7 +113,10 @@ const Report = (props) => {
       setTotalExpense(0);
     }
   };
-  React.useEffect(getTotalExpense, [tabsData.totalProfit]);
+  React.useEffect(getTotalExpense, [
+    tabsData.totalProfit,
+    window.location.href,
+  ]);
   React.useEffect(() => {
     let tabsOutput = {
       totalProfit: 0,
@@ -94,7 +130,7 @@ const Report = (props) => {
       .sort((a, b) => b.id - a.id);
     setData(tempData);
     for (let i = 0; i < tempData.length; i++) {
-      tabsOutput.totalRevenue += parseFloat(tempData[i].total);
+      // tabsOutput.totalRevenue += parseFloat(tempData[i].total);
       tabsOutput.totalTax += parseFloat(tempData[i].total_tax);
       for (let j = 0; j < tempData[i].cart.length; j++) {
         tabsOutput.totalProfit += parseFloat(tempData[i].cart[j].profit);
@@ -156,7 +192,13 @@ const Report = (props) => {
           sub={(tabsData.totalProfit - totalExpense).toFixed(2)}
           color={tabsData.totalProfit - totalExpense <= 0 ? "red" : "green"}
         />
-        <Tile title="Total Revenue" sub={tabsData.totalRevenue.toFixed(2)} />
+        <Tile
+          title="Total Revenue"
+          sub={(
+            tabsData.totalBuying +
+            (tabsData.totalProfit - totalExpense)
+          ).toFixed(2)}
+        />
       </div>
       <div style={classes.invoices}>
         <Table size="small">

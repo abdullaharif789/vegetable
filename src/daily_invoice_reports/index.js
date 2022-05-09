@@ -34,7 +34,6 @@ const Content = (props) => {
     const data = Object.keys(props.data)
       .map((item) => props.data[item])
       .sort((a, b) => b.id - a.id);
-    console.log(JSON.stringify(data));
     data.forEach((item) => {
       daily_reports[item.party.business_name] = {
         total_amount: parseFloat(item.total).toFixed(2),
@@ -43,7 +42,6 @@ const Content = (props) => {
         transactions: item.transactions,
       };
     });
-    // console.log(daily_reports);
     daily_reports = Object.keys(daily_reports)
       .sort()
       .reduce((obj, key) => {

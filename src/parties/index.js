@@ -165,11 +165,6 @@ const PartyEdit = (props) => {
         refresh();
       }}
       undoable={false}
-      // onSuccess={(data) => {
-      //   console.log("Success", data);
-      //   redirect("/parties");
-      //   refresh();
-      // }}
     >
       <SimpleForm toolbar={<UserEditToolbar />}>
         <TextInput

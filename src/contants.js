@@ -32,6 +32,16 @@ export const app = {
     "Printing",
     "Stationery",
   ],
+  getDaysBetweenDates: function (startDate, endDate) {
+    var now = startDate.clone(),
+      dates = [];
+
+    while (now.isSameOrBefore(endDate)) {
+      dates.push(now.format("YYYY-MM-DD"));
+      now.add(1, "days");
+    }
+    return dates;
+  },
   uniqueValuesFromArray: function (value, index, self) {
     return self.indexOf(value) === index;
   },

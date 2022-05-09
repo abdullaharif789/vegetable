@@ -62,23 +62,6 @@ const TransactionFilter = (props) => (
   <Filter {...props}>
     <SelectInput
       alwaysOn
-      choices={app.weeks.map((item) => ({ id: item.value, name: item.label }))}
-      source="weeks"
-      label="Week"
-      variant="outlined"
-    />
-    <SelectInput
-      alwaysOn
-      choices={app.filterAmounts.map((item) => ({
-        id: item.value,
-        name: item.label,
-      }))}
-      source="amount"
-      label="Amount"
-      variant="outlined"
-    />
-    <SelectInput
-      alwaysOn
       choices={app.payments.map((item) => ({ id: item, name: item }))}
       source="paid"
       label="Amount Status"
@@ -94,6 +77,28 @@ const TransactionFilter = (props) => (
     >
       <AutocompleteInput optionText="business_name" />
     </ReferenceInput>
+    <NumberInput
+      source="purchase_invoice_id"
+      variant="outlined"
+      fullWidth
+      label={`Purchase Invoice#`}
+      alwaysOn
+    />
+    <SelectInput
+      choices={app.weeks.map((item) => ({ id: item.value, name: item.label }))}
+      source="weeks"
+      label="Week"
+      variant="outlined"
+    />
+    <SelectInput
+      choices={app.filterAmounts.map((item) => ({
+        id: item.value,
+        name: item.label,
+      }))}
+      source="amount"
+      label="Amount"
+      variant="outlined"
+    />
     <DateInput source="date" label="Date" variant="outlined" />
   </Filter>
 );

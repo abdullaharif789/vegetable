@@ -81,12 +81,6 @@ const neutralData = (data) => {
 const Report = (props) => {
   const [data, setData] = React.useState([]);
   React.useEffect(() => {
-    console.log(
-      Object.keys(props.data)
-        .map((item) => props.data[item])
-        .filter((item) => item.status === "Progress")
-        .sort((a, b) => b.id - a.id)
-    );
     let tempData = neutralData(
       Object.keys(props.data)
         .map((item) => props.data[item])

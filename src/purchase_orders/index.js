@@ -514,7 +514,6 @@ const PurchaseOrdersCreate = (props) => {
       price: parseFloat(item.price).toFixed(2),
     }));
     temp.van_id = van;
-    console.log(temp);
     setLoading(true);
     const url = app.api + "purchase_orders";
     await axios
@@ -789,7 +788,6 @@ const PurchaseOrdersEdit = (props) => {
     loadData();
   }, []);
   const addItemInCart = () => {
-    console.log(quantity, boxType);
     if (quantity === "" || parseInt(quantity) <= 0) {
       if (boxType !== app.boxTypes[2]) {
         notify(`Sorry, please enter any valid integral quantity.`, "error");

@@ -41,7 +41,6 @@ const Password = () => {
   };
   const changePassword = () => {
     authProvider.getIdentity().then(async (user) => {
-      // console.log(user.user_id);
       if (values.password == "" || values.confirmPassword == "") {
         error("Please fill all fields.");
         return;

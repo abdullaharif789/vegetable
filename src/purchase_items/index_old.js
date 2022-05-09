@@ -172,7 +172,6 @@ const OrderListRows = (props) => {
       });
     });
   });
-  console.log(cartArray);
   Object.keys(allCart).map((key) => {
     let tempData = {};
     allCart[key].map((item) => {

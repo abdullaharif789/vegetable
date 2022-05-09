@@ -103,7 +103,6 @@ const Dashboard = () => {
       // nbNewOrders: aggregations.newOrders,
       pendingOrders: aggregations.pendingOrders,
     }));
-    // console.log(aggregations.pendingOrders);
     const { data: customers } = await dataProvider.getMany("parties", {
       ids: aggregations.pendingOrders.map((order) => order.party_id),
     });

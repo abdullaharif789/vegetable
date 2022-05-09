@@ -68,6 +68,9 @@ export class InvoiceShow extends React.PureComponent {
               <p style={this.classes.margin0}>
                 Cheque payable to <strong>Everyday Fresh Food Ltd.</strong>
               </p>
+              <p style={this.classes.margin0}>
+                VAT registration number: <strong>409 2028 21</strong>
+              </p>
               {this.props.record.bank_visible == 1 && (
                 <>
                   <p style={this.classes.margin1}>
