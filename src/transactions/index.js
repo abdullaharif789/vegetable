@@ -212,7 +212,8 @@ const ShowPartyTransactions = (props) => {
               <TableCell>Party Name</TableCell>
               <TableCell>Date</TableCell>
               <TableCell>Amount Status</TableCell>
-              <TableCell align="right">Custom Purchase Invoice#</TableCell>
+              <TableCell align="right">C.Purchase Invoice#</TableCell>
+              <TableCell align="right">Purchase Invoice#</TableCell>
               <TableCell align="right">Amount({app.currencySymbol})</TableCell>
               {!props.allowPrint && (
                 <TableCell align="center">Action</TableCell>
@@ -240,6 +241,9 @@ const ShowPartyTransactions = (props) => {
                     )}
                   </TableCell>
                   <TableCell align="right">
+                    {transaction.purchase_invoice_id || "--"}
+                  </TableCell>
+                  <TableCell align="right">
                     <strong>{transaction.amount}</strong>
                   </TableCell>
                   <TableCell>
@@ -264,7 +268,7 @@ const ShowPartyTransactions = (props) => {
               );
             })}
             <TableRow>
-              <TableCell align="right" colSpan={3}>
+              <TableCell align="right" colSpan={5}>
                 <strong>Total</strong>
               </TableCell>
               <TableCell align="right">
