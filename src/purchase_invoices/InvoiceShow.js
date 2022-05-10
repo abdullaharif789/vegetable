@@ -68,6 +68,7 @@ export class InvoiceShow extends React.PureComponent {
               <p style={this.classes.margin0}>
                 Cheque payable to <strong>Everyday Fresh Food Ltd.</strong>
               </p>
+
               <p style={this.classes.margin0}>
                 VAT registration number: <strong>409 2028 21</strong>
               </p>
@@ -182,7 +183,11 @@ export class InvoiceShow extends React.PureComponent {
           </div>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <h4>
+              <i style={{ width: "100%" }}>
+                Please provide invoice number's reference when using bank
+                transfer.
+              </i>
+              <h4 style={{ padding: 0, marginTop: 8 }}>
                 <i> Thank you for your business with us.</i>
               </h4>
             </Grid>
