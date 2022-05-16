@@ -32,11 +32,11 @@ const Menu = ({ dense = true }) => {
   const { permissions } = usePermissions();
   const [state, setState] = useState({
     orders: false,
-    products: false,
+    products: true,
     reportings: false,
     payments: false,
     invoices: false,
-    extras: true,
+    extras: false,
   });
   const classes = useStyles();
 

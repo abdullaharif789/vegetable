@@ -78,7 +78,7 @@ const InvoicePrintWrapper = (props) => {
   const [email, setEmail] = React.useState("");
   const [loading, setLoding] = React.useState(false);
   React.useEffect(() => {
-    setEmail(props.record.party.email);
+    setEmail(props.record.party.email + "," + app.defaultEmail);
   }, [props]);
   const sendEmail = useReactToPrint({
     content: () => componentRef.current,
@@ -126,7 +126,7 @@ const InvoicePrintWrapper = (props) => {
         await axios
           .post(url, {
             invoice_message,
-            email,
+            emails: email,
           })
           .then((response) => {
             notify(response.data, "info");

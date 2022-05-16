@@ -158,8 +158,11 @@ export const ExpenseCreate = (props) => {
       .sort(expense_types)
       .map((i, index) => processExpenseType(i, index));
     setExpenseTypes(updated_expense_types);
-    setListExpenseTypes([...updated_expense_types]);
-    setExpenseType(updated_expense_types[0]);
+    let temp_updated_expense_types = updated_expense_types.filter(
+      (i) => i.name == "Wages"
+    );
+    setListExpenseTypes(temp_updated_expense_types);
+    setExpenseType(temp_updated_expense_types[0]);
     setLoading(false);
   };
   const addExpense = async () => {
@@ -168,14 +171,18 @@ export const ExpenseCreate = (props) => {
     }
     const tempExpenseTypes = [];
     expenseTypes.forEach((item) => {
-      if (item.amount && item.amount > 0) {
-        tempExpenseTypes.push({
-          date,
-          amount: parseFloat(item.amount),
-          expense_type_id: item.expense_type_id,
-          extra: item.extra,
-        });
-      }
+      let amount = item.amount.toString();
+      let amounts = amount.split("+").map((i) => parseFloat(i));
+      amounts.forEach((am) => {
+        if (am && am > 0) {
+          tempExpenseTypes.push({
+            date,
+            amount: parseFloat(am),
+            expense_type_id: item.expense_type_id,
+            extra: item.extra,
+          });
+        }
+      });
     });
     const url = `${app.api}expenses`;
     await axios
