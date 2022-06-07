@@ -78,7 +78,7 @@ const InvoicePrintWrapper = (props) => {
   const [email, setEmail] = React.useState("");
   const [loading, setLoding] = React.useState(false);
   React.useEffect(() => {
-    setEmail(props.record.party.email + "," + app.defaultEmail);
+    setEmail(props.record.party.email);
   }, [props]);
   const sendEmail = useReactToPrint({
     content: () => componentRef.current,
