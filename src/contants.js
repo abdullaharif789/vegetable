@@ -1,7 +1,7 @@
 export const app = {
   api: "https://server.everydayfreshfood.com/api/",
   // api: "http://127.0.0.1:8000/api/",
-  defaultEmail: "khurram.shahzad.everyday.fresh.food+sales@dext.cc",
+  defaultEmail: "everydayfreshfood007@gmail.com",
   currencySymbol: "£",
   currencyCode: "GBP",
   colorOne: "#f5881f",
