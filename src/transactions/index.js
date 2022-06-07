@@ -457,7 +457,7 @@ const TransactionUpdate = (props) => {
     >
       <SimpleForm toolbar={<UserEditToolbar />}>
         <NumberInput
-          source="amount"
+          source="f_amount"
           variant="outlined"
           fullWidth
           validate={[required()]}
